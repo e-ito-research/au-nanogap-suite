@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Au Nanogap Detector</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
+<style>
+/* ── Reset ──────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Base (mobile-first) ───────────────────────────────────── */
+body{
+  font-family:'Menlo','Courier New',monospace;
+  background:#f4f6fa;
+  color:#222;
+  font-size:clamp(11px,3vw,13px);
+  -webkit-text-size-adjust:100%;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+header{
+  background:#11172a;color:#dde;
+  padding:clamp(10px,2.5vw,13px) clamp(14px,4vw,20px);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+header h1{font-size:clamp(.85rem,3.5vw,1rem);letter-spacing:.4px}
+header span{font-size:clamp(.62rem,2.2vw,.75rem);color:#8899bb}
+
+/* ── Layout: mobile=1col, PC(1024+)=sidebar+content ─────────── */
+.layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:clamp(10px,3vw,14px);
+  max-width:1280px;
+  margin:0 auto;
+}
+@media(min-width:1024px){
+  .layout{grid-template-columns:270px 1fr}
+}
+
+/* ── Panel ──────────────────────────────────────────────────── */
+.panel{
+  background:#fff;
+  border-radius:8px;
+  padding:clamp(12px,3vw,15px);
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+}
+
+/* ── Form ───────────────────────────────────────────────────── */
+fieldset{border:none;margin-bottom:4px}
+legend{
+  font-size:clamp(9px,2.2vw,10px);
+  text-transform:uppercase;letter-spacing:.5px;
+  color:#778;margin-bottom:6px;font-weight:600;
+}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+.g1{display:grid;grid-template-columns:1fr;gap:5px}
+.inp-lbl{font-size:9px;color:#999;margin-bottom:2px}
+
+input[type=number]{
+  width:100%;
+  padding:clamp(6px,1.5vw,7px) 7px;
+  border:1px solid #cdd;
+  border-radius:4px;
+  font:clamp(13px,3vw,14px)/1 inherit;  /* ≥16px prevents iOS zoom */
+}
+/* ensure iOS doesn't zoom on focus */
+@media(max-width:767px){
+  input[type=number]{font-size:16px;padding:9px 8px}
+}
+input[type=number]:focus{outline:none;border-color:#3b82f6}
+
+button.calc{
+  width:100%;
+  margin-top:12px;
+  padding:clamp(10px,2.5vw,11px);
+  background:#2563eb;color:#fff;border:none;
+  border-radius:6px;
+  font:bold clamp(13px,3vw,14px)/1 inherit;
+  cursor:pointer;letter-spacing:.3px;
+  touch-action:manipulation;
+}
+button.calc:hover{background:#1d4ed8}
+button.calc:active{background:#1e40af}
+
+.divider{height:1px;background:#eee;margin:13px 0}
+
+.const{
+  background:#f7f8fb;border-radius:5px;
+  padding:10px 11px;
+  font-size:clamp(9px,2.2vw,10.5px);
+  color:#556;line-height:2;
+  word-break:break-word;
+}
+
+/* ── Best card ──────────────────────────────────────────────── */
+.best{
+  background:#eff6ff;border:1px solid #bfdbfe;
+  border-radius:8px;padding:13px;margin-bottom:12px;
+}
+.best h3{
+  font-size:clamp(9px,2.2vw,10px);
+  text-transform:uppercase;letter-spacing:.5px;
+  color:#3b69a8;margin-bottom:9px;
+}
+/* 2col on mobile, 3col on tablet+ */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:480px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+
+.kpi{text-align:center;min-width:0;overflow:hidden}
+.kpi .v{
+  font-size:clamp(1rem,5vw,1.35rem);
+  font-weight:700;color:#1e3a5f;
+  white-space:nowrap;
+}
+.kpi .l{font-size:clamp(8.5px,2vw,9.5px);color:#7a90b0;margin-top:2px}
+.kpi.warn .v{color:#b45309}
+.best-foot{
+  margin-top:9px;
+  font-size:clamp(9px,2vw,10.5px);
+  color:#3b69a8;line-height:1.7;
+  word-break:break-word;
+}
+
+/* ── Stats row ──────────────────────────────────────────────── */
+.stats{
+  display:flex;gap:10px 16px;
+  font-size:clamp(10px,2.2vw,11px);
+  color:#667;margin-bottom:9px;
+  flex-wrap:wrap;
+}
+.stats strong{color:#333}
+
+/* ── Table (horizontal scroll on mobile) ───────────────────── */
+.tbl-wrap{
+  border:1px solid #e2e8f0;border-radius:6px;
+  max-height:260px;
+  overflow-y:auto;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  margin-bottom:13px;
+}
+table{
+  border-collapse:collapse;
+  font-size:clamp(10px,2.2vw,11.5px);
+  min-width:520px;   /* preserve columns; scrolls horizontally when viewport < 520px */
+  width:100%;
+}
+th{
+  background:#f0f3f9;padding:6px 8px;
+  text-align:right;font-weight:600;color:#445;
+  border-bottom:1px solid #dde;
+  position:sticky;top:0;z-index:1;
+  white-space:nowrap;
+}
+th:first-child,td:first-child{text-align:center}
+td{
+  padding:4px 8px;text-align:right;
+  border-bottom:1px solid #f0f0f0;
+  white-space:nowrap;
+}
+tr.top{background:#fffbeb;font-weight:700}
+tr:hover{background:#f0f6ff}
+
+/* ── Chart (shrinks with viewport) ─────────────────────────── */
+.chart-wrap{
+  position:relative;
+  height:clamp(180px,45vw,240px);
+}
+@media(min-width:768px){.chart-wrap{height:clamp(200px,30vw,240px)}}
+@media(min-width:1024px){.chart-wrap{height:240px}}
+
+/* ── Empty / error ──────────────────────────────────────────── */
+.msg{
+  text-align:center;padding:clamp(30px,8vw,48px) 20px;
+  color:#aaa;font-size:clamp(11px,2.5vw,12px);line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Au Nanogap Designer</h1>
+  <span>optical pulse model</span>
+</header>
+
+<div class="layout">
+
+<!-- ── Left: Inputs ────────────────────────────────────────── -->
+<div>
+<div class="panel">
+
+  <fieldset>
+    <legend>gap (nm)</legend>
+    <div class="g3">
+      <div><div class="inp-lbl">Min</div><input type="number" id="gMin" value="1.5" step="0.1" min="0.5" max="10"></div>
+      <div><div class="inp-lbl">Max</div><input type="number" id="gMax" value="3.3" step="0.1" min="0.5" max="10"></div>
+      <div><div class="inp-lbl">Step</div><input type="number" id="gStep" value="0.5" step="0.1" min="0.1" max="2"></div>
+    </div>
+  </fieldset>
+
+  <fieldset style="margin-top:10px">
+    <legend>Cin (fF)</legend>
+    <div class="g2">
+      <div><div class="inp-lbl">Min</div><input type="number" id="cMin" value="2" step="1" min="1" max="1000"></div>
+      <div><div class="inp-lbl">Max</div><input type="number" id="cMax" value="100" step="1" min="1" max="1000"></div>
+    </div>
+    <div style="font-size:9.5px;color:#aaa;margin-top:3px">Candidates: 2 · 5 · 10 · 20 · 50 · 100 fF</div>
+  </fieldset>
+
+  <fieldset style="margin-top:10px">
+    <legend>Rf (Ω)</legend>
+    <div class="g2">
+      <div><div class="inp-lbl">Min</div><input type="number" id="rfMin" value="100" step="100" min="10" max="100000"></div>
+      <div><div class="inp-lbl">Max</div><input type="number" id="rfMax" value="10000" step="100" min="10" max="100000"></div>
+    </div>
+  </fieldset>
+
+  <fieldset style="margin-top:10px">
+    <legend>SNR minimum</legend>
+    <div class="g1">
+      <input type="number" id="snrMin" value="10" step="1" min="1" max="10000">
+    </div>
+  </fieldset>
+
+  <button class="calc" onclick="runScan()">Find Optimal Design</button>
+
+  <div class="divider"></div>
+
+  <div class="const">
+    <strong>Fixed constants (v5)</strong><br>
+    τ★ = 25,317 Ω·fF<br>
+    τ_min = 12,000<br>
+    τ_upper = 41,137<br>
+    κ = −0.903<br>
+    G = 50·exp(−g/1.5)/g^0.8<br>
+    I = 2μA·G·[exp(−t/0.5ns)+0.5·exp(−t/2ns)]<br>
+    SNR = ΣV²_sig / ΣV²_noise
+  </div>
+
+</div>
+</div>
+
+<!-- ── Right: Results ──────────────────────────────────────── -->
+<div>
+<div class="panel">
+  <div id="out">
+    <div class="msg">← Set parameters and click<br>"Find Optimal Design"</div>
+  </div>
+</div>
+</div>
+
+</div><!-- /layout -->
+
+<script>
+// Input sanitization guard
+function safeNum(id, min, max, fallback) {
+  var n = parseFloat(document.getElementById(id).value);
+  if (!isFinite(n) || isNaN(n)) return fallback;
+  if (n < min) return min;
+  if (n > max) return max;
+  return n;
+}
+
+'use strict';
+
+// ── Physical constants (cv5 final) ───────────────────────────
+const TAU_STAR  = 25317;
+const TAU_MIN   = 12000;
+const TAU_UPPER = 41137;
+
+const G0 = 50.0, D0 = 1.5, BETA = 0.8, GAP_FLOOR = 0.5;
+
+const DT    = 0.02e-9;
+const T_END = 10e-9;
+const N_T   = Math.round(T_END / DT);  // 500
+
+const A1 = 1.0, T1 = 0.5e-9;
+const A2 = 0.5, T2 = 2.0e-9;
+const I_SCALE = 2e-6;
+
+const KB       = 1.380649e-23;
+const ECHARGE  = 1.602176634e-19;
+const T_KELVIN = 300.0;
+
+// Precompute time array and fixed exponentials
+const T_ARR  = new Float64Array(N_T);
+const EXP_T1 = new Float64Array(N_T);
+const EXP_T2 = new Float64Array(N_T);
+for (let i = 0; i < N_T; i++) {
+    T_ARR[i]  = i * DT;
+    EXP_T1[i] = Math.exp(-T_ARR[i] / T1);
+    EXP_T2[i] = Math.exp(-T_ARR[i] / T2);
+}
+
+// ── Physical model ────────────────────────────────────────────
+function gapGain(gap) {
+    const g = Math.max(gap, GAP_FLOOR);
+    return G0 * Math.exp(-g / D0) / Math.pow(g, BETA);
+}
+
+const expTauCache = new Map();
+function getExpTau(tau_si) {
+    const key = tau_si.toPrecision(6);
+    if (expTauCache.has(key)) return expTauCache.get(key);
+    const arr = new Float64Array(N_T);
+    for (let i = 0; i < N_T; i++) arr[i] = Math.exp(-T_ARR[i] / tau_si);
+    expTauCache.set(key, arr);
+    return arr;
+}
+
+function calcSNR(gap, Cin_fF, Rf) {
+    const G    = gapGain(gap);
+    const CinF = Cin_fF * 1e-15;
+    const tau  = Rf * CinF;
+    const BW   = 1.0 / (2.0 * Math.PI * tau);
+
+    const expT = getExpTau(tau);
+    const degen1 = Math.abs(T1 - tau) < Math.max(T1, tau) * 1e-6;
+    const degen2 = Math.abs(T2 - tau) < Math.max(T2, tau) * 1e-6;
+    const c1 = degen1 ? 0 : A1 * G * I_SCALE * Rf * T1 / (T1 - tau);
+    const c2 = degen2 ? 0 : A2 * G * I_SCALE * Rf * T2 / (T2 - tau);
+
+    let Esig = 0.0, Isum = 0.0;
+    for (let i = 0; i < N_T; i++) {
+        const et = expT[i];
+        const v1 = degen1
+            ? A1 * G * I_SCALE * Rf * (T_ARR[i] / tau) * et
+            : c1 * (EXP_T1[i] - et);
+        const v2 = degen2
+            ? A2 * G * I_SCALE * Rf * (T_ARR[i] / tau) * et
+            : c2 * (EXP_T2[i] - et);
+        const v = v1 + v2;
+        Esig += v * v;
+        Isum += v > 0 ? v : -v;
+    }
+
+    const Imean  = Isum / Rf / N_T;
+    const thermV = Math.sqrt(4.0 * KB * T_KELVIN * Rf * BW);
+    const shotV  = Math.sqrt(2.0 * ECHARGE * Imean * BW) * Rf;
+    const nStd   = thermV + shotV + 1e-9;
+
+    return Esig / (nStd * nStd * N_T);
+}
+
+function calcScore(gap, Cin_fF, Rf) {
+    const snr  = calcSNR(gap, Cin_fF, Rf);
+    const rise = 2.2 * Rf * Cin_fF * 1e-3;
+    if (snr <= 0 || rise <= 0) return -Infinity;
+    return Math.log10(snr) / rise;
+}
+
+// ── Parameter scan ────────────────────────────────────────────
+const CIN_CANDS = [2, 5, 10, 20, 50, 100];
+
+function runScan() {
+    expTauCache.clear();
+
+    const gMin   = safeNum('gMin',   0.5,  10,    1.5);
+    const gMax   = safeNum('gMax',   0.5,  10,    3.3);
+    const gStep  = safeNum('gStep',  0.1,   5,    0.5);
+    const cMin   = safeNum('cMin',   0.1, 500,    2.0);
+    const cMax   = safeNum('cMax',   0.1, 500,   10.0);
+    const rfMin  = safeNum('rfMin',  10, 1e6,  1000.0);
+    const rfMax  = safeNum('rfMax',  10, 1e6, 10000.0);
+    const snrMin = safeNum('snrMin',  0, 1e6,   10.0);
+
+    const gaps = [];
+    for (let g = gMin; g <= gMax + 1e-9; g = +(g + gStep).toFixed(4)) gaps.push(g);
+
+    const cins = CIN_CANDS.filter(c => c >= cMin && c <= cMax);
+    if (!cins.length) {
+        document.getElementById('out').innerHTML =
+            '<div class="msg">No Cin candidates in range.<br>Available: 2, 5, 10, 20, 50, 100 fF</div>';
+        return;
+    }
+
+    const rfs = [];
+    for (let r = rfMin; r <= rfMax + 1e-6; r += 100) rfs.push(Math.round(r));
+
+    const t0 = performance.now();
+    const rows = [];
+
+    for (const gap of gaps) {
+        for (const cin of cins) {
+            for (const rf of rfs) {
+                const tau_ff = rf * cin;
+                if (tau_ff < TAU_MIN || tau_ff > TAU_UPPER) continue;
+                const snr = calcSNR(gap, cin, rf);
+                if (snr < snrMin) continue;
+                const sc   = calcScore(gap, cin, rf);
+                const rise = 2.2 * tau_ff * 1e-3;
+                rows.push({ gap, cin, rf, tau: tau_ff, snr, rise, sc });
+            }
+        }
+    }
+
+    renderResults(rows, (performance.now() - t0).toFixed(0));
+}
+
+// ── Render results ────────────────────────────────────────────
+let chartInst = null;
+const PALETTE = ['#2563eb','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#be185d'];
+
+function renderResults(rows, ms) {
+    const out = document.getElementById('out');
+
+    if (!rows.length) {
+        out.innerHTML = '<div class="msg">No designs pass the SNR threshold.<br>Lower SNR minimum or widen parameter range.</div>';
+        return;
+    }
+
+    rows.sort((a, b) => b.sc - a.sc);
+    const best = rows[0];
+    const f1   = v => v.toFixed(1);
+    const f0   = v => Math.round(v).toLocaleString();
+    const fp   = v => v.toFixed(5);
+    const wSNR = best.snr < 100;
+
+    // ── best card ──
+    let h = `<div class="best">
+  <h3>★ Best Design</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="v">${f1(best.gap)} nm</div><div class="l">gap</div></div>
+    <div class="kpi"><div class="v">${best.cin} fF</div><div class="l">Cin</div></div>
+    <div class="kpi"><div class="v">${best.rf} Ω</div><div class="l">Rf</div></div>
+    <div class="kpi"><div class="v">${f0(best.tau)}</div><div class="l">τ (Ω·fF)</div></div>
+    <div class="kpi ${wSNR?'warn':''}"><div class="v">${Math.round(best.snr)}</div><div class="l">SNR${wSNR?' ⚠':''}</div></div>
+    <div class="kpi"><div class="v">${f1(best.rise)} ns</div><div class="l">Rise</div></div>
+  </div>
+  <div class="best-foot">
+    score = ${fp(best.sc)} [log₁₀(SNR)/ns]<br>
+    computed: ${ms} ms &nbsp;|&nbsp; passed: ${rows.length} designs
+  </div>
+</div>`;
+
+    // ── stats ──
+    const shown = rows.slice(0, 100);
+    h += `<div class="stats">
+  <span>Passed <strong>${rows.length}</strong> designs</span>
+  <span>Showing top <strong>${shown.length}</strong></span>
+  <span>SNR max <strong>${Math.round(best.snr)}</strong></span>
+  <span>SNR min (passed) <strong>${Math.round(rows[rows.length-1].snr)}</strong></span>
+</div>`;
+
+    // ── table ──
+    h += `<div class="tbl-wrap"><table>
+<thead><tr>
+  <th>#</th><th>gap nm</th><th>Cin fF</th><th>Rf Ω</th>
+  <th>τ Ω·fF</th><th>SNR</th><th>Rise ns</th><th>score</th>
+</tr></thead><tbody>`;
+
+    shown.forEach((r, i) => {
+        h += `<tr class="${i===0?'top':''}">
+  <td>${i+1}</td><td>${f1(r.gap)}</td><td>${r.cin}</td><td>${r.rf}</td>
+  <td>${f0(r.tau)}</td><td>${Math.round(r.snr)}</td>
+  <td>${f1(r.rise)}</td><td>${fp(r.sc)}</td>
+</tr>`;
+    });
+
+    h += '</tbody></table></div>';
+
+    // ── chart ──
+    h += '<div class="chart-wrap"><canvas id="ch"></canvas></div>';
+    out.innerHTML = h;
+
+    if (chartInst) { chartInst.destroy(); chartInst = null; }
+
+    const uniqueGaps = [...new Set(rows.map(r => r.gap))].sort((a, b) => a - b);
+    const gapColor   = Object.fromEntries(uniqueGaps.map((g, i) => [g, PALETTE[i % PALETTE.length]]));
+
+    const datasets = uniqueGaps.map(g => ({
+        label: `gap ${g.toFixed(1)} nm`,
+        data: rows.filter(r => r.gap === g).map(r => ({ x: r.tau, y: r.sc })),
+        backgroundColor: gapColor[g] + 'aa',
+        borderColor: gapColor[g],
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        showLine: false,
+    }));
+
+    // τ_star reference line
+    const scMin = rows.reduce((a, r) => Math.min(a, r.sc), Infinity);
+    datasets.push({
+        label: `τ★ ${TAU_STAR.toLocaleString()}`,
+        data: [{ x: TAU_STAR, y: scMin }, { x: TAU_STAR, y: best.sc * 1.05 }],
+        borderColor: '#94a3b8',
+        borderDash: [4, 3],
+        pointRadius: 0,
+        showLine: true,
+        borderWidth: 1.5,
+    });
+
+    // best marker
+    datasets.push({
+        label: '★ Best',
+        data: [{ x: best.tau, y: best.sc }],
+        backgroundColor: '#fbbf24',
+        borderColor: '#92400e',
+        pointRadius: 9,
+        pointStyle: 'star',
+        showLine: false,
+    });
+
+    chartInst = new Chart(document.getElementById('ch').getContext('2d'), {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { font: { size: 10 }, boxWidth: 10, padding: 8 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: item => {
+                            const r = item.raw;
+                            return ` τ=${Math.round(r.x).toLocaleString()}  score=${r.y.toFixed(5)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'logarithmic',
+                    title: { display: true, text: 'τ = Rf × Cin  (Ω·fF)', font: { size: 10 } },
+                    min: TAU_MIN * 0.92,
+                    max: TAU_UPPER * 1.08,
+                    ticks: { font: { size: 10 } }
+                },
+                y: {
+                    title: { display: true, text: 'score = log₁₀(SNR) / Rise_ns', font: { size: 10 } },
+                    ticks: { font: { size: 10 } }
+                }
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>

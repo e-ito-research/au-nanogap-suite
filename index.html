@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<!-- saved from url=(0037)file:///Users/eo/Downloads/index.html -->
+<html lang="en"><head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Au Nanogap Design Suite</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f8f8f6;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: #042C53;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 12px;
+}
+.site-header .logo {
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+.site-header .logo span {
+  color: #85B7EB;
+  font-weight: 400;
+  font-size: 13px;
+  margin-left: 10px;
+}
+.lang-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.lang-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 0.5px solid rgba(255,255,255,0.3);
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.lang-btn.active, .lang-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(135deg, #042C53 0%, #0C447C 60%, #185FA5 100%);
+  padding: 3rem 2rem 2.5rem;
+  text-align: center;
+  color: #fff;
+}
+.hero h1 {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.hero .sub-ja {
+  font-size: 14px;
+  color: #B5D4F4;
+  margin-bottom: 4px;
+}
+.hero .sub-en {
+  font-size: 13px;
+  color: #85B7EB;
+  font-style: italic;
+}
+.hero .badge-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1.5rem;
+}
+.hero-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 0.5px solid rgba(255,255,255,0.25);
+  color: #B5D4F4;
+  background: rgba(255,255,255,0.08);
+}
+
+/* ── Main ── */
+.main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+/* ── Tool Cards ── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 2.5rem;
+}
+.tool-card {
+  background: #fff;
+  border: 0.5px solid #ddd;
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+.tool-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.tool-card.primary { border: 0.5px solid #ddd; }
+
+.tool-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+.tool-number {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.tool-name {
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #042C53;
+}
+.tool-desc {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #444;
+  margin-bottom: 6px;
+  flex: 1;
+}
+.tool-desc.en {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 16px;
+}
+.tag-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 18px;
+}
+.tag {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 400;
+}
+.tag-blue  { background: #E6F1FB; color: #0C447C; }
+.tag-teal  { background: #E1F5EE; color: #085041; }
+.tag-amber { background: #FAEEDA; color: #633806; }
+
+.open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+  width: fit-content;
+}
+.open-btn:hover { opacity: 0.85; }
+.open-btn.blue  { background: #185FA5; color: #fff; }
+.open-btn.teal  { background: #0F6E56; color: #fff; }
+.open-btn.amber { background: #633806; color: #fff; }
+
+/* ── Physics section ── */
+.section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.physics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 2.5rem;
+}
+.physics-card {
+  background: #fff;
+  border: 0.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.physics-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dot-ok   { background: #1D9E75; }
+.dot-warn { background: #EF9F27; }
+.physics-formula {
+  font-size: 13px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  color: #26215C;
+}
+
+/* ── Disclaimer ── */
+.disclaimer {
+  background: #FAEEDA;
+  border-left: 4px solid #EF9F27;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  color: #633806;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* ── Footer ── */
+.site-footer {
+  border-top: 0.5px solid #e0e0e0;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.8;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .hero { padding: 2rem 1rem 1.5rem; }
+  .main { padding: 1.5rem 1rem; }
+  .tool-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Language toggle logic ── */
+.ja { display: block; }
+.en { display: none; }
+body.lang-en .ja { display: none; }
+body.lang-en .en { display: block; }
+body.lang-en .tool-desc.en { display: block; }
+body.lang-en .tool-desc.ja { display: none; }
+</style>
+</head>
+<body class="lang-en">
+
+<header class="site-header">
+  <span class="logo">Au Nanogap Design Suite <span>v1.0</span></span>
+  <div class="lang-toggle">
+    <button class="lang-btn" id="btn-ja" onclick="setLang(&#39;ja&#39;)">日本語</button>
+    <button class="lang-btn active" id="btn-en" onclick="setLang(&#39;en&#39;)">English</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Au Nanogap Design Suite</h1>
+  <p class="sub-ja ja">金ナノギャップ構造の設計最適化ツール群</p>
+  <p class="sub-en en">Au nanogap structure design optimization tools</p>
+  <p class="sub-en" style="margin-top:4px">
+    <span class="ja" style="font-style:normal;font-size:13px;color:#85B7EB">gap 1.5〜3.3 nm &nbsp;|&nbsp; 文献校正済み物理モデル &nbsp;|&nbsp; ブラウザで動作</span>
+    <span class="en" style="font-size:13px;color:#85B7EB">gap 1.5–3.3 nm &nbsp;|&nbsp; Literature-calibrated physics &nbsp;|&nbsp; Runs in browser</span>
+  </p>
+  <div class="badge-row">
+    <span class="hero-badge">de Graaf et al. 2018</span>
+    <span class="hero-badge">score ∝ τ⁻⁰·⁹⁰ R²=0.94</span>
+    <span class="hero-badge">A ∝ gap⁺³·¹³ R²=0.97</span>
+    <span class="hero-badge">Gans theory</span>
+    <span class="hero-badge">Johnson &amp; Christy 1972</span>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- Tool Cards -->
+  <div class="tool-grid">
+
+    <!-- Tool 1: Detector Designer -->
+    <div class="tool-card primary">
+      <div class="tool-icon-wrap" style="background:#E6F1FB">
+        <span style="font-size:26px">📡</span>
+      </div>
+      <p class="tool-number">Tool 1</p>
+      <p class="tool-name">Detector Designer</p>
+      <p class="tool-desc ja">
+        Auナノギャップ検出器回路の最適設計。
+        SNRを確保しながら時定数 τ = Rf × Cin を最小化します。
+        gap・Cin・Rfをスイープして最高scoreの設計を自動選択。
+      </p>
+      <p class="tool-desc en">
+        Optimize Au nanogap detector circuits: minimize time-constant
+        τ = Rf × Cin while maximizing signal-to-noise ratio.
+        Sweep gap, Cin, Rf to auto-select the highest-score design.
+      </p>
+      <div class="tag-row">
+        <span class="tag tag-blue">gap 1.5–3.3 nm</span>
+        <span class="tag tag-blue">tau minimization</span>
+        <span class="tag tag-blue">score ∝ τ⁻⁰·⁹⁰</span>
+        <span class="tag tag-blue">v5 physics</span>
+      </div>
+      <a class="open-btn blue" href="detector.html">
+        ▶ &nbsp;<span class="ja">Detector Designer を開く</span><span class="en">Open Detector Designer</span>
+      </a>
+    </div>
+
+    <!-- Tool 2: Qubit Noise Designer -->
+    <div class="tool-card">
+      <div class="tool-icon-wrap" style="background:#E1F5EE">
+        <span style="font-size:26px">⚛️</span>
+      </div>
+      <p class="tool-number">Tool 2</p>
+      <p class="tool-name">Qubit Noise Designer</p>
+      <p class="tool-desc ja">
+        プラズモンDIETによる量子ビット1/fノイズ低減設計。
+        Auナノギャップとレーザー波長を最適化して
+        TLS脱コヒーレンスを抑制します。SAWフォノンとの協調制御も計算可能。
+      </p>
+      <p class="tool-desc en">
+        Reduce qubit 1/f noise via plasmonic TLS desorption:
+        optimize Au nanogap geometry and laser wavelength to suppress
+        decoherence. Dual control with SAW phonon also available.
+      </p>
+      <div class="tag-row">
+        <span class="tag tag-teal">gap 1.5–10 nm</span>
+        <span class="tag tag-teal">λ 785–830 nm</span>
+        <span class="tag tag-teal">A ∝ gap³·¹³</span>
+        <span class="tag tag-teal">DIET model</span>
+      </div>
+      <a class="open-btn teal" href="qubit_noise.html">
+        ▶ &nbsp;<span class="ja">Qubit Noise Designer を開く</span><span class="en">Open Qubit Noise Designer</span>
+      </a>
+    </div>
+
+    <!-- Tool 3: LiNbO3 Cryogenic Stress Calculator -->
+    <div class="tool-card">
+      <div class="tool-icon-wrap" style="background:#FAEEDA">
+        <span style="font-size:26px">🧊</span>
+      </div>
+      <p class="tool-number">Tool 3</p>
+      <p class="tool-name">LiNbO3 Cryogenic Stress Calculator</p>
+      <p class="tool-desc ja">
+        LiNbO₃/サファイア接合の極低温熱応力を計算。
+        Magic-cut非存在を異方性テンソル計算で証明。
+        ScAlNによる解決策を提案。
+      </p>
+      <p class="tool-desc en">
+        Calculate cryogenic thermal stress for LiNbO₃ bonded structures.
+        Proves magic-cut non-existence via full anisotropic tensor calculation.
+        Proposes ScAlN as the optimal solution.
+      </p>
+      <div class="tag-row">
+        <span class="tag tag-amber">theta-phi scan</span>
+        <span class="tag tag-amber">tensor calc</span>
+        <span class="tag tag-amber">ScAlN solution</span>
+        <span class="tag tag-amber">mK design</span>
+      </div>
+      <a class="open-btn amber" href="cryo_stress/LiNbO3_stress_calculator_v2.html">
+        ▶ &nbsp;<span class="ja">Cryogenic Stress Calculator を開く</span><span class="en">Open Cryogenic Stress Calculator</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Physics section -->
+  <p class="section-title ja">確立済み物理モデル</p>
+  <p class="section-title en">Calibrated physical models</p>
+  <div class="physics-grid">
+    <div class="physics-card">
+      <p class="physics-label">
+        <span class="status-dot dot-ok"></span>
+        <span class="ja">検出器：ユニバーサル則</span>
+        <span class="en">Detector: universal scaling</span>
+      </p>
+      <p class="physics-formula">score ∝ τ⁻⁰·⁹⁰  R²=0.94</p>
+    </div>
+    <div class="physics-card">
+      <p class="physics-label">
+        <span class="status-dot dot-ok"></span>
+        <span class="ja">量子ビット：ノイズ振幅</span>
+        <span class="en">Qubit: noise amplitude</span>
+      </p>
+      <p class="physics-formula">A ∝ gap⁺³·¹³  R²=0.97</p>
+    </div>
+    <div class="physics-card">
+      <p class="physics-label">
+        <span class="status-dot dot-ok"></span>
+        <span class="ja">DIETモデル（文献校正済み）</span>
+        <span class="en">DIET model (calibrated)</span>
+      </p>
+      <p class="physics-formula">A/A₀ = exp(−k·|E/E₀|²·t)</p>
+    </div>
+    <div class="physics-card">
+      <p class="physics-label">
+        <span class="status-dot dot-warn"></span>
+        <span class="ja">SAWフォノン（未検証）</span>
+        <span class="en">SAW phonon (unverified)</span>
+      </p>
+      <p class="physics-formula">coupling_eff: 実験要</p>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <strong>⚠️ Disclaimer:</strong>
+    <span class="ja">
+      プラズモンDIETモデルはde Graaf et al. (2018) で校正済みです。
+      SAWフォノンモデルのcoupling_effは理論推定値であり、実験検証されていません。
+      SAWの予測値はご注意の上ご使用ください。
+    </span>
+    <span class="en">
+      The plasmon DIET model is calibrated against de Graaf et al. (2018).
+      The SAW phonon model (coupling_eff) is a theoretical estimate —
+      not yet experimentally verified. Use SAW predictions with caution.
+    </span>
+  </div>
+
+</main>
+
+
+  <!-- Consulting -->
+  <section style="max-width:860px;margin:40px auto;padding:0 24px;">
+    <div style="background:#fffbe6;border:1.5px solid #d4a017;border-radius:10px;padding:24px 28px;">
+      <div style="font-size:16px;font-weight:700;color:#7a5c00;margin-bottom:10px;">
+        Technical Consulting &amp; Custom Analysis
+      </div>
+      <div style="font-size:13px;color:#444;line-height:1.8;margin-bottom:16px;">
+        Custom material parameters, proprietary substrate analysis,
+        cryogenic bonding design review, or integration with your
+        experimental data — consulting services are available.
+      </div>
+      <a href="https://forms.gle/YnzHgewPydQYFfa99"
+         target="_blank" rel="noopener noreferrer"
+         style="display:inline-block;background:#d4a017;color:#fff;
+                font-weight:700;font-size:13px;padding:10px 28px;
+                border-radius:6px;text-decoration:none;">
+        Submit Inquiry Form
+      </a>
+      <span style="font-size:11px;color:#888;margin-left:12px;">
+        Please describe your application and material system
+      </span>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+  Au Nanogap Design Suite v1.0 — 2026-05-08<br>
+  Plasmon DIET model: de Graaf et al. <em>Nature Communications</em> 9, 1143 (2018)<br>
+  Detector model: universal scaling law (unpublished) &nbsp;|&nbsp; Not peer reviewed
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('lang-en', lang === 'en');
+  document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+}
+</script>
+
+
+</body></html>

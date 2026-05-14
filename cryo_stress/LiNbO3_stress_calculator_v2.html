@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+  font-src https://fonts.gstatic.com;
+  connect-src 'none';
+  img-src 'self' data:;
+  object-src 'none';
+">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiNbO₃ Cryogenic Stress Calculator v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Spectral:ital,wght@0,300;0,600;1,300&display=swap');
+:root{
+  --bg:#0a0e14;--bg2:#111620;--bg3:#161d2a;
+  --border:#1e2d45;--accent:#00c8ff;--accent2:#ff6b35;--accent3:#39ff14;
+  --text:#c8d8e8;--text-dim:#5a7090;--text-bright:#e8f4ff;
+  --danger:#ff3860;--warn:#ffdd57;--ok:#39ff14;--panel-r:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;min-height:100vh;}
+header{background:linear-gradient(135deg,#060a10,#0d1625);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.logo-mark{width:34px;height:34px;border:2px solid var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--accent);flex-shrink:0;box-shadow:0 0 12px rgba(0,200,255,.3);}
+.header-text h1{font-family:'Spectral',serif;font-size:clamp(13px,2.2vw,19px);font-weight:600;color:var(--text-bright);}
+.header-text p{font-size:10px;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;}
+.badge{margin-left:auto;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);color:var(--accent);font-size:9px;padding:3px 8px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;}
+/* nav tabs */
+.nav-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
+.nav-tab{padding:10px 18px;font-size:10px;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;transition:all .15s;}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+/* pages */
+.page{display:none;max-width:1200px;margin:0 auto;padding:16px;gap:14px;}
+.page.active{display:grid;}
+/* panels */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--panel-r);overflow:hidden;}
+.panel-header{background:var(--bg3);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.panel-header .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);}
+.panel-header h2{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:400;}
+.panel-body{padding:14px;}
+/* sliders */
+.section-label{font-size:9px;color:var(--text-dim);letter-spacing:.15em;text-transform:uppercase;margin:16px 0 8px;border-left:2px solid var(--accent2);padding-left:8px;}
+.section-label:first-child{margin-top:0;}
+.slider-group{margin-bottom:14px;}
+.slider-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.slider-label{color:var(--text-bright);font-size:12px;}
+.slider-value{color:var(--accent);font-size:14px;font-weight:600;min-width:60px;text-align:right;font-variant-numeric:tabular-nums;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(0,200,255,.6);border:2px solid var(--bg);transition:transform .1s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3);}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);}
+/* grid helpers */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+@media(max-width:600px){.g4{grid-template-columns:1fr 1fr;}}
+.param-field{display:flex;flex-direction:column;gap:4px;}
+.param-field label{font-size:9px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;}
+.param-field label .unit{text-transform:none;letter-spacing:0;}
+.param-field input,.param-field select{background:var(--bg3);border:1px solid var(--border);color:var(--text-bright);font-family:inherit;font-size:12px;padding:6px 8px;border-radius:4px;outline:none;width:100%;transition:border-color .2s;}
+.param-field input:focus,.param-field select:focus{border-color:var(--accent);}
+/* presets */
+.preset-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.preset-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);font-family:inherit;font-size:10px;padding:5px 10px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.preset-btn:hover,.preset-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,200,255,.08);}
+/* metric cards */
+.metric-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px 10px;text-align:center;transition:border-color .3s;}
+.metric-card.highlight{border-color:var(--accent2);}
+.metric-card .m-label{font-size:9px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.metric-card .m-value{font-size:18px;font-weight:600;color:var(--text-bright);font-variant-numeric:tabular-nums;}
+.metric-card .m-unit{font-size:10px;color:var(--text-dim);}
+/* gauges */
+.gauge-row{margin-bottom:10px;}
+.gauge-top{display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);margin-bottom:4px;}
+.gauge-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.gauge-fill{height:100%;border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1),background .4s;}
+/* status */
+.status-box{border-radius:6px;padding:10px 14px;border:1px solid;margin-bottom:12px;font-size:11px;line-height:1.7;transition:all .3s;}
+.status-box.danger{border-color:var(--danger);background:rgba(255,56,96,.08);color:var(--danger);}
+.status-box.warning{border-color:var(--warn);background:rgba(255,221,87,.08);color:var(--warn);}
+.status-box.ok{border-color:var(--ok);background:rgba(57,255,20,.08);color:var(--ok);}
+/* In cards */
+.in-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;}
+.in-card .ic-label{font-size:9px;color:var(--text-dim);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase;}
+.in-card .ic-val{font-size:15px;font-weight:600;color:var(--accent2);}
+.in-card .ic-method{font-size:9px;color:var(--text-dim);margin-top:2px;}
+/* chart tabs */
+.chart-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto;}
+.chart-tab{padding:8px 14px;font-size:10px;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;transition:all .15s;}
+.chart-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+canvas{width:100%!important;display:block;}
+/* ref table */
+.ref-table{width:100%;border-collapse:collapse;font-size:11px;}
+.ref-table th{text-align:left;padding:6px 8px;color:var(--text-dim);font-weight:400;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.ref-table td{padding:7px 8px;border-bottom:1px solid rgba(30,45,69,.5);font-variant-numeric:tabular-nums;}
+.ref-table tr:hover td{background:rgba(0,200,255,.04);}
+.ref-table td.hi{color:var(--ok);}
+.ref-table td.lo{color:var(--danger);}
+.ref-table tr.cur td{background:rgba(0,200,255,.06);}
+.ref-table tr.cur td:first-child{border-left:2px solid var(--accent);}
+/* heatmap canvas */
+#heatmap-canvas{cursor:crosshair;border-radius:4px;}
+.heatmap-wrap{position:relative;background:var(--bg3);border-radius:6px;padding:10px;}
+.heatmap-info{font-size:10px;color:var(--text-dim);margin-top:8px;text-align:center;}
+/* critical temp */
+.crit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:600px){.crit-grid{grid-template-columns:1fr 1fr;}}
+.crit-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center;}
+.crit-card .cc-label{font-size:9px;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.crit-card .cc-val{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;}
+.crit-card .cc-unit{font-size:10px;color:var(--text-dim);}
+/* back-calc */
+.backcalc-result{background:var(--bg3);border:1px solid var(--accent2);border-radius:6px;padding:14px;margin-top:12px;}
+.backcalc-result .bc-title{font-size:10px;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+/* substrate selector */
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+@media(max-width:500px){.sub-grid{grid-template-columns:1fr 1fr;}}
+.sub-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);font-family:inherit;font-size:10px;padding:8px 6px;border-radius:6px;cursor:pointer;text-align:center;transition:all .15s;line-height:1.4;}
+.sub-btn:hover,.sub-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(255,107,53,.08);}
+.sub-btn small{display:block;font-size:8px;color:var(--text-dim);margin-top:2px;}
+/* PDF btn */
+.action-btn{background:var(--bg3);border:1px solid var(--accent);color:var(--accent);font-family:inherit;font-size:11px;padding:8px 16px;border-radius:5px;cursor:pointer;transition:all .2s;letter-spacing:.06em;}
+.action-btn:hover{background:rgba(0,200,255,.12);}
+.action-btn.danger{border-color:var(--accent2);color:var(--accent2);}
+/* footnote */
+.footnote{font-size:9px;color:var(--text-dim);padding:10px 14px;line-height:1.8;border-top:1px solid var(--border);}
+/* loading overlay */
+#heatmap-loading{position:absolute;inset:0;background:rgba(10,14,20,.85);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--accent);border-radius:6px;z-index:10;}
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+/* page1 layout */
+#page-main{grid-template-columns:1fr;}
+@media(min-width:900px){
+  #page-main{grid-template-columns:320px 1fr;}
+  #page-main .controls-col{grid-row:1/3;}
+  #page-main .result-col{grid-row:1;}
+  #page-main .chart-col{grid-row:2;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">⬡</div>
+  <div class="header-text">
+    <h1>LiNbO₃ / Sapphire · Cryogenic Stress Calculator</h1>
+    <p>Anisotropic thermoelastic analysis · v2.0</p>
+  </div>
+  <div class="badge">v2.0 · Research Tool</div>
+</header>
+
+<!-- Navigation -->
+<div class="nav-tabs">
+  <div class="nav-tab active" data-page="page-main">⚙ Stress Calculator</div>
+  <div class="nav-tab" data-page="page-heatmap">🗺 2D Heatmap</div>
+  <div class="nav-tab" data-page="page-critical">🌡 Critical Temperature</div>
+  <div class="nav-tab" data-page="page-substrate">🔬 Substrate Comparison</div>
+  <div class="nav-tab" data-page="page-backcalc">↩ Back-calculation</div>
+  <div class="nav-tab" data-page="page-report">📄 Report</div>
+  <div class="nav-tab" data-page="page-scaln">⚡ ScAlN Calculator</div>
+  <div class="nav-tab" data-page="page-about">&#9432; About</div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 1: Main ══ -->
+<div id="page-main" class="page active">
+
+  <div class="controls-col panel">
+    <div class="panel-header"><div class="dot"></div><h2>Parameters</h2></div>
+    <div class="panel-body">
+      <div class="section-label">Crystal Orientation</div>
+      <div class="slider-group">
+        <div class="slider-row"><span class="slider-label">θ - Tilt from c-axis</span><span class="slider-value" id="theta-val">90°</span></div>
+        <input type="range" id="theta" min="0" max="180" step="1" value="90">
+      </div>
+      <div class="slider-group">
+        <div class="slider-row"><span class="slider-label">φ - In-plane rotation</span><span class="slider-value" id="phi-val">0°</span></div>
+        <input type="range" id="phi" min="0" max="360" step="1" value="0">
+      </div>
+      <div class="section-label">Quick Presets</div>
+      <div class="preset-row" id="presets">
+        <button class="preset-btn" data-th="0" data-ph="0">Z-cut</button>
+        <button class="preset-btn active" data-th="90" data-ph="0">X-cut ★</button>
+        <button class="preset-btn" data-th="90" data-ph="90">Y-cut</button>
+        <button class="preset-btn" data-th="90" data-ph="128">128°Y</button>
+        <button class="preset-btn" data-th="36" data-ph="0">36°Y-X</button>
+        <button class="preset-btn" data-th="64" data-ph="0">64°Y-X</button>
+      </div>
+      <div class="section-label">Thermal Parameters</div>
+      <div class="g2" style="margin-bottom:10px;">
+        <div class="param-field"><label>α_a LiNbO₃ <span class="unit">(x10⁻⁶/K)</span></label><input type="number" id="alpha_a_LN" value="14.8" step="0.1" min="0.1" max="30"></div>
+        <div class="param-field"><label>α_c LiNbO₃ <span class="unit">(x10⁻⁶/K)</span></label><input type="number" id="alpha_c_LN" value="4.1" step="0.1" min="0.1" max="30"></div>
+        <div class="param-field"><label>α Sapphire <span class="unit">(x10⁻⁶/K)</span></label><input type="number" id="alpha_Sap" value="5.3" step="0.1" min="0.1" max="30"></div>
+        <div class="param-field"><label>ΔT <span class="unit">(K)</span></label><input type="number" id="dT" value="296" step="1" min="1" max="1000"></div>
+      </div>
+      <div class="section-label">In-layer Design</div>
+      <div class="g2" style="margin-bottom:10px;">
+        <div class="param-field"><label>Chip size L <span class="unit">(mm)</span></label><input type="number" id="chipL" value="10" step="1" min="1" max="100"></div>
+        <div class="param-field"><label>In ductility ε_f <span class="unit">(%)</span></label><input type="number" id="eps_f" value="10" step="1" min="1" max="100"></div>
+        <div class="param-field"><label>K_IC LiNbO₃ <span class="unit">(MPa√m)</span></label><input type="number" id="kic" value="0.9" step="0.05" min="0.1" max="5"></div>
+        <div class="param-field"><label>Defect size a <span class="unit">(μm)</span></label><input type="number" id="defect_a" value="10" step="1" min="0.1" max="1000"></div>
+      </div>
+      <div class="footnote">
+        Elastic constants: Weis &amp; Gaylord, <em>Appl. Phys. A</em> (1985)<br>
+        Bond limit 23 MPa: Watanabe &amp; Takigawa, <em>Appl. Surf. Sci.</em> (2023)<br>
+        K_IC: Bhatt et al., <em>Opt. Mater.</em> (2012) · Model: Plane stress, Full constraint
+      </div>
+    </div>
+  </div>
+
+  <div class="result-col panel">
+    <div class="panel-header"><div class="dot"></div><h2>Stress Analysis</h2></div>
+    <div class="panel-body">
+      <div class="g4" style="margin-bottom:12px;">
+        <div class="metric-card highlight"><div class="m-label">sigma_metric</div><div class="m-value" id="r-metric">-</div><div class="m-unit">MPa</div></div>
+        <div class="metric-card"><div class="m-label">sigma_xx</div><div class="m-value" id="r-sxx">-</div><div class="m-unit">MPa</div></div>
+        <div class="metric-card"><div class="m-label">sigma_yy</div><div class="m-value" id="r-syy">-</div><div class="m-unit">MPa</div></div>
+        <div class="metric-card"><div class="m-label">sigma_xy</div><div class="m-value" id="r-sxy">-</div><div class="m-unit">MPa</div></div>
+      </div>
+      <div class="gauge-row"><div class="gauge-top"><span>vs Bond limit 23 MPa</span><span id="g1-pct">-</span></div><div class="gauge-bar"><div class="gauge-fill" id="g1-fill"></div></div></div>
+      <div class="gauge-row"><div class="gauge-top"><span>vs LiNbO₃ fracture limit</span><span id="g2-pct">-</span></div><div class="gauge-bar"><div class="gauge-fill" id="g2-fill"></div></div></div>
+      <div class="gauge-row" style="margin-bottom:12px;"><div class="gauge-top"><span>Required stress relief</span><span id="g3-pct">-</span></div><div class="gauge-bar"><div class="gauge-fill" id="g3-fill"></div></div></div>
+      <div class="status-box danger" id="status-box">Computing...</div>
+      <div class="section-label">In-layer Design (Partial Relaxation)</div>
+      <div class="g2">
+        <div class="in-card"><div class="ic-label">sigma_fracture LiNbO₃</div><div class="ic-val" id="in-sfrac">-</div><div class="ic-method">K_IC/(Y·√(π·a)), Y=1.12</div></div>
+        <div class="in-card"><div class="ic-label">sigma_target (x0.5 safety)</div><div class="ic-val" id="in-starget">-</div><div class="ic-method">Partial relaxation target</div></div>
+        <div class="in-card"><div class="ic-label">Required t_In</div><div class="ic-val" id="in-thick">-</div><div class="ic-method" id="in-method">-</div></div>
+        <div class="in-card"><div class="ic-label">Required relief</div><div class="ic-val" id="in-relief">-</div><div class="ic-method">to reach sigma_target</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-col panel">
+    <div class="chart-tabs" id="chart-tabs">
+      <div class="chart-tab active" data-tab="theta">θ-scan</div>
+      <div class="chart-tab" data-tab="phi">φ-scan</div>
+      <div class="chart-tab" data-tab="compare">Cut comparison</div>
+    </div>
+    <div class="panel-body">
+      <canvas id="main-chart" height="200"></canvas>
+      <div style="margin-top:14px;">
+        <table class="ref-table"><thead><tr><th>Cut</th><th>θ</th><th>φ</th><th>sigma_metric (MPa)</th><th>x23 MPa</th></tr></thead><tbody id="ref-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 2: Heatmap ══ -->
+<div id="page-heatmap" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>2D Stress Heatmap - Full Orientation Space</h2></div>
+    <div class="panel-body">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:12px;">
+        Full θxφ orientation space (θ: 0–180°, φ: 0–360°). Red = high stress, green = lower stress.<br>
+        Click anywhere on the map to jump to that orientation in the calculator.<br>
+        The cross-hair shows your current (θ,φ). <strong style="color:var(--accent);">No green region approaches the 23 MPa bond limit - magic-cut does not exist.</strong>
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="action-btn" id="heatmap-compute-btn">▶ Compute Heatmap (takes ~5s)</button>
+        <span style="font-size:10px;color:var(--text-dim);align-self:center;" id="heatmap-status">Not computed yet. Click to start.</span>
+      </div>
+      <div class="heatmap-wrap" style="position:relative;">
+        <canvas id="heatmap-canvas" height="400"></canvas>
+        <div id="heatmap-loading" style="display:none;">Computing… please wait</div>
+      </div>
+      <div class="heatmap-info" id="heatmap-hover-info">Hover over map to see stress value · Click to select orientation</div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="font-size:10px;color:var(--text-dim);">Color scale:</div>
+        <canvas id="colorbar" width="200" height="18" style="border-radius:4px;"></canvas>
+        <div style="font-size:10px;color:var(--text-dim);" id="colorbar-labels"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 3: Critical Temperature ══ -->
+<div id="page-critical" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>Critical Temperature - When Does Bonding Fail?</h2></div>
+    <div class="panel-body">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">
+        Estimates the temperature at which thermal stress exceeds the bonding/fracture limit during cooldown from 300 K.<br>
+        Formula: T_critical = T_room − sigma_limit / (α_eff · E_eff)<br>
+        <em style="color:var(--warn);">Note: This assumes linear α(T). Real α(T) decreases at low T → T_critical is a conservative upper bound.</em>
+      </p>
+      <div class="crit-grid" id="crit-cards"></div>
+      <div style="margin-top:16px;"><canvas id="crit-chart" height="220"></canvas></div>
+      <div class="footnote" style="margin-top:10px;">
+        E_eff: effective in-plane modulus of LiNbO₃ at current orientation (from rotated stiffness tensor C'₁₁₁₁)<br>
+        α_eff: effective mismatch expansion coefficient = |α_Sap − α_LN_inplane|<br>
+        sigma_limit options: 23 MPa (bond), sigma_fracture_LN (bulk), sigma_yield_In (In layer)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 4: Substrate Comparison ══ -->
+<div id="page-substrate" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>Substrate Comparison - Which Substrate Minimizes Stress?</h2></div>
+    <div class="panel-body">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:12px;">
+        Compare thermal stress for LiNbO₃ bonded to different substrates at current orientation (θ=<span id="sub-theta">90</span>°, φ=<span id="sub-phi">0</span>°).<br>
+        Substrate α values are room-temperature literature values (conservative upper bounds for 300→4K).
+      </p>
+      <div class="sub-grid" id="sub-grid"></div>
+      <div style="margin-top:8px;"><canvas id="sub-chart" height="240"></canvas></div>
+      <div style="margin-top:14px;">
+        <table class="ref-table" id="sub-table">
+          <thead><tr><th>Substrate</th><th>α (x10⁻⁶/K)</th><th>sigma_metric (MPa)</th><th>vs Sapphire</th><th>Status</th></tr></thead>
+          <tbody id="sub-tbody"></tbody>
+        </table>
+      </div>
+      <div class="footnote" style="margin-top:10px;">
+        Sources: Si (Okada &amp; Tokumaru 1984), SiC (Slack &amp; Bartram 1975), GaAs (Blakemore 1982),
+        GaN (Leszczynski et al. 1996), Diamond (Slack 1973), Fused SiO₂ (NIST).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 5: Back-calculation ══ -->
+<div id="page-backcalc" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>Back-calculation - Extract Material Properties from Experiment</h2></div>
+    <div class="panel-body">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">
+        Enter your experimental result → the tool calculates the implied material property.<br>
+        This bridges theory and experiment, and can yield world-first data on In ductility at 4K.
+      </p>
+      <div class="section-label">Mode A: Critical In Thickness → In Ductility at 4K</div>
+      <div class="g2" style="margin-bottom:10px;">
+        <div class="param-field"><label>Measured t_critical <span class="unit">(μm)</span></label><input type="number" id="bc-t-crit" value="40" step="1" min="0.1" max="10000"></div>
+        <div class="param-field"><label>Chip size L <span class="unit">(mm)</span></label><input type="number" id="bc-L" value="10" step="1" min="0.1" max="500"></div>
+      </div>
+      <div class="backcalc-result" id="bc-result-A">
+        <div class="bc-title">Implied In ductility at 4K</div>
+        <div class="g2">
+          <div class="in-card"><div class="ic-label">ε_f_In (4K)</div><div class="ic-val" id="bc-epf">-</div><div class="ic-method">= Δε_eff x L / t_critical</div></div>
+          <div class="in-card"><div class="ic-label">Interpretation</div><div class="ic-val" id="bc-interp" style="font-size:12px;">-</div><div class="ic-method">vs RT value ~60%</div></div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px;">Mode B: Post-cycle Bond Strength → LiNbO₃ Fracture Stress at 4K</div>
+      <div class="g2" style="margin-bottom:10px;">
+        <div class="param-field"><label>Measured sigma_post_cycle <span class="unit">(MPa)</span></label><input type="number" id="bc-sigma-post" value="15" step="0.5" min="0.1" max="10000"></div>
+        <div class="param-field"><label>Failure mode</label>
+          <select id="bc-failure">
+            <option value="bulk">LiNbO₃ bulk fracture</option>
+            <option value="interface">Interface delamination</option>
+            <option value="in">In layer failure</option>
+          </select>
+        </div>
+      </div>
+      <div class="backcalc-result" id="bc-result-B">
+        <div class="bc-title">Interpretation</div>
+        <div id="bc-interp-B" style="font-size:11px;line-height:1.8;color:var(--text);">-</div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px;">Mode C: Survival Temperature → Effective α·E product</div>
+      <div class="g2" style="margin-bottom:10px;">
+        <div class="param-field"><label>Lowest survival temperature <span class="unit">(K)</span></label><input type="number" id="bc-T-survive" value="77" step="1" min="4" max="300"></div>
+        <div class="param-field"><label>Failure stress limit <span class="unit">(MPa)</span></label><input type="number" id="bc-sigma-lim" value="23" step="1" min="0.1" max="10000"></div>
+      </div>
+      <div class="backcalc-result" id="bc-result-C">
+        <div class="bc-title">Implied α·E at current orientation</div>
+        <div id="bc-interp-C" style="font-size:11px;line-height:1.8;color:var(--text);">-</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ PAGE 6: Report ══ -->
+<div id="page-report" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>Report - Export Current Results</h2></div>
+    <div class="panel-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <button class="action-btn" id="btn-print">🖨 Print / Save as PDF</button>
+        <button class="action-btn" id="btn-copy-csv">📋 Copy as CSV</button>
+      </div>
+      <div id="report-content" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;font-size:11px;line-height:2;">
+        <div style="font-family:'Spectral',serif;font-size:16px;color:var(--text-bright);margin-bottom:12px;">LiNbO₃/Sapphire Cryogenic Stress Analysis Report</div>
+        <div id="report-body">Generate by navigating to this tab after setting parameters.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE 7: ScAlN Calculator ══ -->
+<div id="page-scaln" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>ScAlN Cryogenic Calculator - Sc(x)Al(1-x)N / C-Sapphire</h2></div>
+    <div class="panel-body">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">
+        Calculates thermal stress, K2, Q-factor, and FOM for ScAlN on C-Sapphire at any Sc concentration.<br>
+        Elastic constants: Zukauskaite et al., J.Appl.Phys. 114, 243516 (2013) · Phase stable: x &lt; 43.75%
+      </p>
+
+      <div class="section-label">Sc Concentration</div>
+      <div class="slider-group">
+        <div class="slider-row">
+          <span class="slider-label">x - Sc fraction in Sc(x)Al(1-x)N</span>
+          <span class="slider-value" id="scaln-x-val">20%</span>
+        </div>
+        <input type="range" id="scaln-x" min="0" max="43" step="1" value="20">
+      </div>
+
+      <div class="section-label">Thermal Parameters</div>
+      <div class="g2" style="margin-bottom:12px;">
+        <div class="param-field"><label>Deposition temperature <span class="unit">(°C)</span></label>
+          <input type="number" id="scaln-Tdep" value="300" step="50" min="100" max="800"></div>
+        <div class="param-field"><label>Final temperature <span class="unit">(K)</span></label>
+          <input type="number" id="scaln-Tfinal" value="4" step="1" min="4" max="300"></div>
+      </div>
+
+      <!-- Results grid -->
+      <div class="g4" style="margin-bottom:14px;">
+        <div class="metric-card highlight">
+          <div class="m-label">Thermal stress</div>
+          <div class="m-value" id="sc-stress">-</div>
+          <div class="m-unit">MPa</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">K2 (piezo coupling)</div>
+          <div class="m-value" id="sc-k2">-</div>
+          <div class="m-unit">%</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Q_disorder (4K)</div>
+          <div class="m-value" id="sc-q">-</div>
+          <div class="m-unit">relative</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">FOM = K2 x Q</div>
+          <div class="m-value" id="sc-fom">-</div>
+          <div class="m-unit">rel. units</div>
+        </div>
+      </div>
+
+      <!-- Gauge bars -->
+      <div class="gauge-row"><div class="gauge-top"><span>Thermal stress vs Bond limit (23 MPa)</span><span id="sc-g1">-</span></div><div class="gauge-bar"><div class="gauge-fill" id="sc-gf1"></div></div></div>
+      <div class="gauge-row"><div class="gauge-top"><span>Thermal stress vs LiNbO3 X-cut (545.7 MPa)</span><span id="sc-g2">-</span></div><div class="gauge-bar"><div class="gauge-fill" id="sc-gf2"></div></div></div>
+      <div class="status-box danger" id="sc-status" style="margin-top:12px;">Computing...</div>
+
+      <!-- Elastic constants display -->
+      <div class="section-label" style="margin-top:16px;">Interpolated Elastic Constants (GPa)</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;">
+        <div class="in-card"><div class="ic-label">C11</div><div class="ic-val" id="sc-C11" style="font-size:13px;">-</div></div>
+        <div class="in-card"><div class="ic-label">C33</div><div class="ic-val" id="sc-C33" style="font-size:13px;">-</div></div>
+        <div class="in-card"><div class="ic-label">C44</div><div class="ic-val" id="sc-C44" style="font-size:13px;">-</div></div>
+        <div class="in-card"><div class="ic-label">C12</div><div class="ic-val" id="sc-C12" style="font-size:13px;">-</div></div>
+        <div class="in-card"><div class="ic-label">C13</div><div class="ic-val" id="sc-C13" style="font-size:13px;">-</div></div>
+        <div class="in-card"><div class="ic-label">M_biaxial</div><div class="ic-val" id="sc-M" style="font-size:13px;">-</div></div>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-tabs" id="scaln-chart-tabs">
+        <div class="chart-tab active" data-stab="stress">Stress vs Sc%</div>
+        <div class="chart-tab" data-stab="k2">K2 vs Sc%</div>
+        <div class="chart-tab" data-stab="fom">FOM vs Sc%</div>
+        <div class="chart-tab" data-stab="design">Design Map</div>
+      </div>
+      <div class="panel-body" style="padding-top:12px;">
+        <canvas id="scaln-chart" height="220"></canvas>
+      </div>
+
+      <!-- Phase warning -->
+      <div style="margin-top:12px;padding:10px 14px;border:1px solid var(--warn);border-radius:6px;background:rgba(255,221,87,.06);font-size:11px;">
+        <span style="color:var(--warn);font-weight:600;">Phase stability limits:</span>
+        <span style="color:var(--text-dim);margin-left:8px;">
+          x &lt; 31.25%: safe · x = 31-43.75%: elastic properties affected · x &gt; 43.75%: wurtzite structure lost
+          <br>Source: ScienceDirect 2025 · Ferroelectric transition &gt;1100°C confirmed - no phase loss at 4K (arXiv:2105.08331)
+        </span>
+      </div>
+
+      <div class="footnote" style="margin-top:10px;">
+        Elastic constants interpolated from Zukauskaite et al. (2013) · K2 from Ligl et al. (2021) ·
+        Q_disorder: Rayleigh mass-disorder scattering model · Biaxial modulus: Freund &amp; Suresh (2003)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="scaln-script">
+// ================================================
+// ScAlN Physics Engine
+// ================================================
+
+// Elastic constants (linear interpolation from Zukauskaite 2013)
+// x=0 (AlN): C11=410, C33=389, C44=125, C12=149, C13=99
+// x=0.36:    C11=190, C33=140, C44=30,  C12=172, C13=138
+function scalnElastic(x){
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const t=x/0.36;
+  return{
+    C11:lerp(410,190,t), C33:lerp(389,140,t),
+    C44:lerp(125,30,t),  C12:lerp(149,172,t),
+    C13:lerp(99,138,t),
+    alpha_a:(4.20+x*2.0),   // x10^-6/K, approx
+    e33:lerp(1.55,6.0,t),   // C/m2
+    eps33:lerp(8.5,15.0,t), // x eps0
+    thetaD:lerp(950,620,t), // K, Debye temp
+  };
+}
+
+function scalnBiaxialModulus(e){
+  return e.C11+e.C12-2*e.C13*e.C13/e.C33;
+}
+
+function scalnK2(e){
+  const eps0=8.854e-12;
+  return e.e33*e.e33/(e.C33*1e9*e.eps33*eps0);
+}
+
+function scalnQdisorder(x){
+  if(x<1e-4)return Infinity;
+  const M_Al=26.98,M_Sc=44.96;
+  const Ma=x*M_Sc+(1-x)*M_Al;
+  return 1/(x*(1-x)*Math.pow((M_Sc-M_Al)/Ma,2));
+}
+
+function scalnStress(x,Tdep_C,Tfinal_K){
+  const e=scalnElastic(x);
+  const M=scalnBiaxialModulus(e);
+  const alpha_sap=5.3e-6;
+  const dT=(Tfinal_K)-(Tdep_C+273);
+  return M*(alpha_sap-e.alpha_a*1e-6)*dT*1e3; // MPa
+}
+
+function updateScAlN(){
+  const x=+document.getElementById('scaln-x').value/100;
+  const Tdep=+document.getElementById('scaln-Tdep').value;
+  const Tf=+document.getElementById('scaln-Tfinal').value;
+
+  const e=scalnElastic(x);
+  const M=scalnBiaxialModulus(e);
+  const sigma=Math.abs(scalnStress(x,Tdep,Tf));
+  const K2=scalnK2(e)*100;
+  const Qdis=scalnQdisorder(x);
+  const QdisStr=isFinite(Qdis)?Qdis.toFixed(1):'inf';
+  const FOM=K2/100*(isFinite(Qdis)?Qdis:1e4);
+
+  document.getElementById('sc-stress').textContent=sigma.toFixed(1);
+  document.getElementById('sc-k2').textContent=K2.toFixed(1);
+  document.getElementById('sc-q').textContent=QdisStr;
+  document.getElementById('sc-fom').textContent=FOM.toFixed(0);
+
+  document.getElementById('sc-C11').textContent=e.C11.toFixed(0);
+  document.getElementById('sc-C33').textContent=e.C33.toFixed(0);
+  document.getElementById('sc-C44').textContent=e.C44.toFixed(0);
+  document.getElementById('sc-C12').textContent=e.C12.toFixed(0);
+  document.getElementById('sc-C13').textContent=e.C13.toFixed(0);
+  document.getElementById('sc-M').textContent=M.toFixed(0);
+
+  // Gauges
+  const pct1=Math.min(sigma/23*100,100);
+  const pct2=Math.min(sigma/545.7*100,100);
+  const c1=pct1>100?'var(--danger)':pct1>50?'var(--warn)':'var(--ok)';
+  document.getElementById('sc-gf1').style.cssText='width:'+Math.min(pct1,100)+'%;background:'+c1;
+  document.getElementById('sc-gf2').style.cssText='width:'+Math.min(pct2,100)+'%;background:var(--accent2)';
+  document.getElementById('sc-g1').textContent=sigma.toFixed(1)+' MPa  ('+( sigma/23).toFixed(1)+'x limit)';
+  document.getElementById('sc-g2').textContent=(sigma/545.7*100).toFixed(1)+'% of LiNbO3';
+
+  const box=document.getElementById('sc-status');
+  const phaseLim=x>0.4375?'DANGER: wurtzite lost!':x>0.3125?'CAUTION: elastic properties affected':null;
+  if(sigma<=23&&!phaseLim){
+    box.className='status-box ok';
+    box.innerHTML='OK - sigma='+sigma.toFixed(1)+' MPa below bond limit. Direct bonding may be possible.';
+  } else if(phaseLim){
+    box.className='status-box danger';
+    box.innerHTML='PHASE WARNING: x='+(x*100).toFixed(0)+'% '+phaseLim;
+  } else {
+    box.className='status-box warning';
+    box.innerHTML='sigma='+sigma.toFixed(1)+' MPa exceeds bond limit. In-layer needed.';
+  }
+
+  updateScAlNChart();
+}
+
+let scalnChart=null;
+let scalnTab='stress';
+
+function updateScAlNChart(){
+  if(typeof Chart==='undefined'){return;} // Chart.js not loaded yet
+  const ctx=document.getElementById('scaln-chart').getContext('2d');
+  if(scalnChart){scalnChart.destroy();scalnChart=null;}
+  const xs=[];const y1=[],y2=[],y3=[],y4=[];
+  const Tdep=+document.getElementById('scaln-Tdep').value;
+  const Tf=+document.getElementById('scaln-Tfinal').value;
+  const curX=+document.getElementById('scaln-x').value/100;
+
+  for(let xi=0;xi<=43;xi+=1){
+    const x=xi/100;
+    xs.push(xi);
+    const s=Math.abs(scalnStress(x,Tdep,Tf));
+    const e=scalnElastic(x);
+    const k2=scalnK2(e)*100;
+    const qd=scalnQdisorder(x);
+    const fom=k2/100*(isFinite(qd)?qd:1e4);
+    y1.push(+s.toFixed(2));
+    y2.push(+k2.toFixed(2));
+    y3.push(isFinite(qd)?+qd.toFixed(1):500);
+    y4.push(+fom.toFixed(1));
+  }
+
+  const tab=scalnTab;
+  let datasets=[],ylabel='',title='';
+  if(tab==='stress'){
+    datasets=[
+      {label:'Thermal stress (MPa)',data:y1,borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false},
+      {label:'Bond limit 23 MPa',data:xs.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'LiNbO3 X-cut 545.7 MPa',data:xs.map(()=>545.7),borderColor:'#ff6b35',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
+    ];
+    ylabel='MPa'; title='Thermal Stress vs Sc%';
+  } else if(tab==='k2'){
+    datasets=[
+      {label:'K2 (%)',data:y2,borderColor:'#39ff14',borderWidth:2,pointRadius:0,fill:false},
+      {label:'LiNbO3 K2 5.5%',data:xs.map(()=>5.5),borderColor:'#ff6b35',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+    ];
+    ylabel='K2 (%)'; title='K2 (Piezoelectric Coupling) vs Sc%';
+  } else if(tab==='fom'){
+    datasets=[
+      {label:'FOM = K2 x Q_disorder',data:y4,borderColor:'#ffdd57',borderWidth:2,pointRadius:0,fill:false},
+    ];
+    ylabel='FOM'; title='Performance Index K2 x Q vs Sc%';
+  } else {
+    // Design map - scatter
+    const pts=xs.map((xi,i)=>({x:y1[i],y:y2[i]}));
+    scalnChart=new Chart(ctx,{type:'scatter',data:{datasets:[
+      {label:'ScAlN (stress vs K2)',data:pts,
+       backgroundColor:xs.map(xi=>xi<=+document.getElementById('scaln-x').value?'rgba(0,200,255,0.7)':'rgba(0,200,255,0.15)'),
+       pointRadius:5,pointHoverRadius:7},
+      {label:'LiNbO3 X-cut',data:[{x:545.7,y:5.5}],
+       backgroundColor:'rgba(255,56,96,0.8)',pointRadius:12,pointStyle:'rectRot'},
+    ]},options:{responsive:true,animation:{duration:200},plugins:{legend:{labels:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}}}},scales:{
+      x:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Thermal stress (MPa)',color:'#5a7090',font:{size:9}}},
+      y:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'K2 (%)',color:'#5a7090',font:{size:9}}},
+    }}});
+    return;
+  }
+
+  scalnChart=new Chart(ctx,{type:'line',data:{labels:xs,datasets:datasets},options:{responsive:true,animation:{duration:200},
+    plugins:{legend:{labels:{color:'#5a7090',font:{size:9}}}},
+    scales:{
+      x:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Sc concentration (%)',color:'#5a7090',font:{size:9}}},
+      y:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:ylabel,color:'#5a7090',font:{size:9}}}
+    }
+  }});
+}
+
+document.getElementById('scaln-x').addEventListener('input',e=>{
+  document.getElementById('scaln-x-val').textContent=e.target.value+'%';
+  updateScAlN();
+});
+document.getElementById('scaln-Tdep').addEventListener('change',updateScAlN);
+document.getElementById('scaln-Tfinal').addEventListener('change',updateScAlN);
+
+document.getElementById('scaln-chart-tabs').querySelectorAll('.chart-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('#scaln-chart-tabs .chart-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    scalnTab=tab.dataset.stab;
+    updateScAlNChart();
+  });
+});
+
+// Init when page is shown
+document.querySelectorAll('.nav-tab').forEach(t=>{
+  if(t.dataset.page==='page-scaln'){
+    t.addEventListener('click',()=>{setTimeout(updateScAlN,300);setTimeout(updateScAlNChart,400);});
+  }
+});
+</script>
+<script>
+
+// ============ Security: input sanitization ============
+function safeNum(val, min, max, fallback) {
+  var n = parseFloat(val);
+  if (!isFinite(n) || isNaN(n)) return fallback;
+  if (n < min) return min;
+  if (n > max) return max;
+  return n;
+}
+function sanitizeHTML(str) {
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+// ======================================================
+const C11=203,C33=245,C44=60,C12=53,C13=75,C14=9,C66=(C11-C12)/2;
+const C_voigt=[[C11,C12,C13,C14,0,0],[C12,C11,C13,-C14,0,0],[C13,C13,C33,0,0,0],[C14,-C14,0,C44,0,0],[0,0,0,0,C44,C14],[0,0,0,0,C14,C66]];
+const vm=[[0,0],[1,1],[2,2],[1,2],[0,2],[0,1]];
+
+function v2t(Cv){
+  const T=Array.from({length:3},()=>Array.from({length:3},()=>Array.from({length:3},()=>new Array(3).fill(0))));
+  for(let p=0;p<6;p++){const[i,j]=vm[p];for(let q=0;q<6;q++){const[k,l]=vm[q];const v=Cv[p][q];[[i,j,k,l],[j,i,k,l],[i,j,l,k],[j,i,l,k]].forEach(([a,b,c,d])=>{T[a][b][c][d]=v;});}}
+  return T;
+}
+function t2v(T){const Cv=Array.from({length:6},()=>new Array(6).fill(0));for(let p=0;p<6;p++){const[i,j]=vm[p];for(let q=0;q<6;q++){const[k,l]=vm[q];Cv[p][q]=T[i][j][k][l];}}return Cv;}
+const C_tensor=v2t(C_voigt);
+
+function rotM(th,ph){
+  const t=th*Math.PI/180,p=ph*Math.PI/180,ct=Math.cos(t),st=Math.sin(t),cp=Math.cos(p),sp=Math.sin(p);
+  const Ry=[[ct,0,st],[0,1,0],[-st,0,ct]],Rz=[[cp,-sp,0],[sp,cp,0],[0,0,1]];
+  const R=[[0,0,0],[0,0,0],[0,0,0]];
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)R[i][j]+=Rz[i][k]*Ry[k][j];
+  return R;
+}
+function rotT(C,R){
+  const T=Array.from({length:3},()=>Array.from({length:3},()=>Array.from({length:3},()=>new Array(3).fill(0))));
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)for(let l=0;l<3;l++){let v=0;for(let a=0;a<3;a++)for(let b=0;b<3;b++)for(let c=0;c<3;c++)for(let d=0;d<3;d++)v+=R[i][a]*R[j][b]*R[k][c]*R[l][d]*C[a][b][c][d];T[i][j][k][l]=v;}
+  return T;
+}
+function m3v(A,v){return[A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2],A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2],A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]];}
+function m3m(A,B){const C=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)C[i][j]+=A[i][k]*B[k][j];return C;}
+
+function computeStress(theta,phi,p){
+  // 冷却（300K→4K）なので収縮 = 負符号
+  const ea=-(p.alpha_a_LN||14.8)*1e-6*(p.dT||296);
+  const ec=-(p.alpha_c_LN||4.1)*1e-6*(p.dT||296);
+  const es=-(p.alpha_Sap||5.3)*1e-6*(p.dT||296);
+  const R=rotM(theta,phi);
+  const Crot=rotT(C_tensor,R);
+  const Cv=t2v(Crot);
+  const eps_cryst=[[ea,0,0],[0,ea,0],[0,0,ec]];
+  const Rt=[[R[0][0],R[1][0],R[2][0]],[R[0][1],R[1][1],R[2][1]],[R[0][2],R[1][2],R[2][2]]];
+  const eps_LN=m3m(R,m3m(eps_cryst,Rt));
+  // サファイア（C面）は等方対角テンソル: Sap[0,1]=Sap[0,2]=Sap[1,2]=0
+  const de_xx=es-eps_LN[0][0],de_yy=es-eps_LN[1][1],de_xy=0-eps_LN[0][1];
+  const Cin=[[Cv[0][0],Cv[0][1],Cv[0][5]],[Cv[1][0],Cv[1][1],Cv[1][5]],[Cv[5][0],Cv[5][1],Cv[5][5]]];
+  const sv=m3v(Cin,[de_xx,de_yy,2*de_xy]);
+  const sxx=sv[0]*1e3,syy=sv[1]*1e3,sxy=sv[2]*1e3;
+  const cen=(sxx+syy)/2,rad=Math.sqrt(((sxx-syy)/2)**2+sxy**2);
+  const s1=cen+rad,s2=cen-rad,metric=Math.max(Math.abs(s1),Math.abs(s2));
+  // effective E (C'_1111 in lab frame, GPa→MPa)
+  const E_eff=Cv[0][0]*1e3;
+  return{sxx,syy,sxy,s1,s2,metric,E_eff};
+}
+
+function fractureMPa(p){
+  // K_IC [MPa√m], a [m] → sigma_fracture [MPa]
+  // sigma = K_IC / (Y x √(πxa))  - no unit conversion needed
+  const Y=1.12,a=(p.defect_a||10)*1e-6,kic=p.kic||0.9;
+  return kic/(Y*Math.sqrt(Math.PI*a));
+}
+
+// ================================================════════════
+// Substrates database
+// ================================================════════════
+const SUBSTRATES=[
+  {id:'sapphire', name:'Sapphire',  alpha:5.3,  note:'C-face Al₂O₃ · current baseline'},
+  {id:'si',       name:'Silicon',   alpha:2.6,  note:'Si (100) · CMOS compatible'},
+  {id:'sic',      name:'4H-SiC',    alpha:4.2,  note:'High thermal conductivity'},
+  {id:'gaas',     name:'GaAs',      alpha:6.4,  note:'III-V · optoelectronics'},
+  {id:'gan',      name:'GaN',       alpha:5.6,  note:'Wide-bandgap'},
+  {id:'diamond',  name:'Diamond',   alpha:1.0,  note:'Ultra-low CTE · high κ'},
+  {id:'sio2',     name:'Fused SiO₂',alpha:0.55, note:'Very low CTE · LNOI'},
+  {id:'linbo3',   name:'LiNbO₃',    alpha:14.8, note:'Homo-bonding · zero mismatch a-axis'},
+];
+let activeSubstrate='sapphire';
+
+// ================================================════════════
+// State & helpers
+// ================================================════════════
+let currentChartTab='theta';
+let mainChart=null,critChart=null,subChart=null;
+let heatmapData=null;
+
+function getP(){
+  return{
+    alpha_a_LN:safeNum(document.getElementById('alpha_a_LN').value,0.1,30,14.8),
+    alpha_c_LN:safeNum(document.getElementById('alpha_c_LN').value,0.1,30,4.1),
+    alpha_Sap:safeNum(document.getElementById('alpha_Sap').value,0.1,30,5.3),
+    dT:safeNum(document.getElementById('dT').value,1,1000,296),
+    chipL:safeNum(document.getElementById('chipL').value,0.1,500,10),
+    eps_f:safeNum(document.getElementById('eps_f').value,1,100,10)/100,
+    kic:safeNum(document.getElementById('kic').value,0.1,5,0.9),
+    defect_a:safeNum(document.getElementById('defect_a').value,0.1,1000,10),
+    theta:safeNum(document.getElementById('theta').value,0,180,90),
+    phi:safeNum(document.getElementById('phi').value,0,360,0),
+  };
+}
+const fmt=(v,d=1)=>isFinite(v)?v.toFixed(d):'-';
+
+function setGauge(id,pct,color){
+  const f=document.getElementById(id+'-fill');
+  f.style.width=Math.min(pct,100)+'%';
+  f.style.background=color;
+}
+function inMethod(t){
+  if(t<1)return'PVD evaporation (<1 μm)';
+  if(t<5)return'Thick-film evaporation';
+  if(t<50)return'Electroplating / thin foil';
+  if(t<500)return'In foil thermal bonding';
+  return'Bulk In layer';
+}
+
+// ================================================════════════
+// Main update
+// ================================================════════════
+function update(){
+  const p=getP();
+  const{sxx,syy,sxy,metric,E_eff}=computeStress(p.theta,p.phi,p);
+  document.getElementById('r-metric').textContent=fmt(metric);
+  document.getElementById('r-sxx').textContent=fmt(sxx);
+  document.getElementById('r-syy').textContent=fmt(syy);
+  document.getElementById('r-sxy').textContent=fmt(sxy);
+
+  const sfrac=fractureMPa(p);
+  const starget=sfrac*0.5;
+  const pct1=metric/23*100,pct2=metric/sfrac*100,relief=Math.max(0,(1-23/metric)*100);
+  setGauge('g1',pct1,pct1>100?'var(--danger)':pct1>50?'var(--warn)':'var(--ok)');
+  setGauge('g2',pct2,pct2>100?'var(--danger)':pct2>80?'var(--warn)':'var(--ok)');
+  setGauge('g3',relief,'var(--accent2)');
+  document.getElementById('g1-pct').textContent=fmt(metric/23,1)+'x limit';
+  document.getElementById('g2-pct').textContent=fmt(metric/sfrac,1)+'x fracture';
+  document.getElementById('g3-pct').textContent=fmt(relief,1)+'%';
+
+  const box=document.getElementById('status-box');
+  if(metric>500){box.className='status-box danger';box.innerHTML='WARNING sigma = '+fmt(metric)+' MPa - '+fmt(metric/23,0)+'x bond limit. In-layer required.';}
+  else if(metric>100){box.className='status-box warning';box.innerHTML='CAUTION sigma = '+fmt(metric)+' MPa - Partial relaxation needed.';}
+  else{box.className='status-box ok';box.innerHTML='OK sigma = '+fmt(metric)+' MPa - Within acceptable range.';}
+
+  // In layer
+  const f=Math.max(0,1-starget/metric);
+  const eps_eff=2.812e-3*(1-f);
+  const t_In=eps_eff*(p.chipL*1e-3)/p.eps_f*1e6;
+  document.getElementById('in-sfrac').textContent=fmt(sfrac)+' MPa';
+  document.getElementById('in-starget').textContent=fmt(starget)+' MPa';
+  document.getElementById('in-thick').textContent=fmt(t_In)+' μm';
+  document.getElementById('in-relief').textContent=fmt(f*100)+'%';
+  document.getElementById('in-method').textContent=inMethod(t_In);
+
+  updateMainChart(p);
+  updateRefTable(p);
+  updateSubLabels(p);
+  updateBackCalc(p,sfrac,E_eff);
+  updateReport(p,metric,sxx,syy,sxy,sfrac,starget,t_In,f);
+  updateHeatmapCursor(p);
+  updateCriticalPage(p,sfrac,E_eff);
+  updateSubstratePage(p);
+}
+
+// ================================================════════════
+// Main chart
+// ================================================════════════
+const CUT_REFS=[
+  {name:'Z-cut',th:0,ph:0},{name:'36°Y-X',th:36,ph:0},{name:'64°Y-X',th:64,ph:0},
+  {name:'X-cut',th:90,ph:0},{name:'Y-cut',th:90,ph:90},{name:'128°Y',th:90,ph:128},{name:'163°Y',th:90,ph:163},
+];
+
+function updateMainChart(p){
+  const ctx=document.getElementById('main-chart').getContext('2d');
+  if(mainChart){mainChart.destroy();mainChart=null;}
+  const sfrac=fractureMPa(p);
+  let type='line',labels=[],datasets=[];
+  if(currentChartTab==='theta'){
+    for(let th=0;th<=180;th+=2){labels.push(th);datasets[0]=(datasets[0]||[]);datasets[0].push(computeStress(th,p.phi,p).metric);}
+    datasets=[
+      {label:'sigma_metric',data:datasets[0],borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false,tension:.3},
+      {label:'Bond limit 23 MPa',data:labels.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'sigma_fracture',data:labels.map(()=>sfrac),borderColor:'#ffdd57',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
+    ];
+  } else if(currentChartTab==='phi'){
+    const ys=[];for(let ph=0;ph<=360;ph+=2){labels.push(ph);ys.push(computeStress(p.theta,ph,p).metric);}
+    datasets=[
+      {label:'sigma_metric',data:ys,borderColor:'#ff6b35',borderWidth:2,pointRadius:0,fill:false,tension:.3},
+      {label:'Bond limit 23 MPa',data:labels.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+    ];
+  } else {
+    type='bar';
+    const cuts=[...CUT_REFS,{name:'Current',th:p.theta,ph:p.phi}];
+    labels=cuts.map(c=>c.name);
+    const vals=cuts.map(c=>+computeStress(c.th,c.ph,p).metric.toFixed(1));
+    datasets=[{label:'sigma_metric (MPa)',data:vals,backgroundColor:cuts.map((_,i)=>i===cuts.length-1?'rgba(255,107,53,.6)':'rgba(0,200,255,.2)'),borderColor:cuts.map((_,i)=>i===cuts.length-1?'#ff6b35':'#00c8ff'),borderWidth:1}];
+  }
+  mainChart=new Chart(ctx,{type,data:{labels,datasets},options:{responsive:true,animation:{duration:250},plugins:{legend:{labels:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}}},tooltip:{backgroundColor:'rgba(10,14,20,.95)',borderColor:'#1e2d45',borderWidth:1,titleColor:'#c8d8e8',bodyColor:'#c8d8e8',titleFont:{family:'JetBrains Mono',size:10},bodyFont:{family:'JetBrains Mono',size:10}}},scales:{x:{ticks:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}},grid:{color:'rgba(30,45,69,.5)'}},y:{ticks:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'MPa',color:'#5a7090',font:{size:9}}}}}});
+}
+
+function updateRefTable(p){
+  const tbody=document.getElementById('ref-tbody');
+  tbody.innerHTML=CUT_REFS.map(c=>{
+    const m=computeStress(c.th,c.ph,p).metric;
+    const isCur=Math.abs(c.th-p.theta)<1&&Math.abs(c.ph-p.phi)<1;
+    var curCls=isCur?'cur':'';
+    var valCls=m<100?'hi':m>400?'lo':'';
+    return '<tr class="'+curCls+'">'
+      +'<td class="val">'+c.name+'</td>'
+      +'<td>'+c.th+' deg</td>'
+      +'<td>'+c.ph+' deg</td>'
+      +'<td class="'+valCls+'">'+m.toFixed(1)+'</td>'
+      +'<td style="color:var(--danger);font-size:10px;">'+(m/23).toFixed(0)+'x</td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ================================================════════════
+// Heatmap (pre-computed, 91x181 grid)
+// ================================================════════════
+const HM_TH=91, HM_PH=181;
+
+function computeHeatmap(p){
+  const data=new Float32Array(HM_TH*HM_PH);
+  let mn=Infinity,mx=-Infinity;
+  for(let ti=0;ti<HM_TH;ti++){
+    const th=ti*2;
+    for(let pi=0;pi<HM_PH;pi++){
+      const ph=pi*2;
+      const v=computeStress(th,ph,p).metric;
+      data[ti*HM_PH+pi]=v;
+      if(v<mn)mn=v; if(v>mx)mx=v;
+    }
+  }
+  return{data,mn,mx};
+}
+
+function heatColor(t){
+  // green(low)→yellow→red(high), t∈[0,1]
+  if(t<0.5){const u=t*2;return[Math.round(57+u*(255-57)),Math.round(255-u*(255-221)),Math.round(20+u*(87-20))];}
+  const u=(t-.5)*2;return[255,Math.round(221-u*221),Math.round(87-u*87)];
+}
+
+function drawHeatmap(p){
+  const canvas=document.getElementById('heatmap-canvas');
+  const W=canvas.clientWidth||canvas.width;
+  canvas.width=W; canvas.height=Math.round(W*0.45);
+  const ctx=canvas.getContext('2d');
+  if(!heatmapData)return;
+  const{data,mn,mx}=heatmapData;
+  const imgData=ctx.createImageData(canvas.width,canvas.height);
+  for(let y=0;y<canvas.height;y++){
+    const ti=Math.min(HM_TH-1,Math.floor(y/canvas.height*HM_TH));
+    for(let x=0;x<canvas.width;x++){
+      const pi=Math.min(HM_PH-1,Math.floor(x/canvas.width*HM_PH));
+      const v=data[ti*HM_PH+pi];
+      const t=(v-mn)/(mx-mn||1);
+      const[r,g,b]=heatColor(t);
+      const idx=(y*canvas.width+x)*4;
+      imgData.data[idx]=r;imgData.data[idx+1]=g;imgData.data[idx+2]=b;imgData.data[idx+3]=255;
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+  // axis labels
+  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,0,canvas.width,16);ctx.fillRect(0,canvas.height-16,canvas.width,16);
+  ctx.fillStyle='#5a7090';ctx.font='10px JetBrains Mono';
+  ctx.fillText('φ: 0°',4,12);ctx.fillText('360°',canvas.width-30,12);
+  ctx.save();ctx.translate(12,canvas.height/2);ctx.rotate(-Math.PI/2);ctx.fillText('θ: 0°→180°',0,0);ctx.restore();
+  drawCursor(p,canvas,mn,mx);
+  drawColorbar(mn,mx);
+}
+
+function drawCursor(p,canvas,mn,mx){
+  const ctx=canvas.getContext('2d');
+  const cx=(p.phi/720)*canvas.width;
+  const cy=(p.theta/360)*canvas.height;
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-10,cy);ctx.lineTo(cx+10,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-10);ctx.lineTo(cx,cy+10);ctx.stroke();
+  ctx.strokeStyle='#00c8ff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.stroke();
+}
+
+function updateHeatmapCursor(p){
+  if(!heatmapData)return;
+  const canvas=document.getElementById('heatmap-canvas');
+  drawHeatmap(p);
+}
+
+function drawColorbar(mn,mx){
+  const cb=document.getElementById('colorbar');
+  const ctx=cb.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,200,0);
+  for(let i=0;i<=10;i++){const[r,g,b]=heatColor(i/10);grad.addColorStop(i/10,'rgb('+r+','+g+','+b+')');}
+  ctx.fillStyle=grad;ctx.fillRect(0,0,200,18);
+  document.getElementById('colorbar-labels').textContent=mn.toFixed(0)+' ? '+mx.toFixed(0)+' MPa';
+}
+
+document.getElementById('heatmap-compute-btn').addEventListener('click',async()=>{
+  const p=getP();
+  const loading=document.getElementById('heatmap-loading');
+  const status=document.getElementById('heatmap-status');
+  loading.style.display='flex';
+  status.textContent='Computing…';
+  await new Promise(r=>setTimeout(r,30));
+  heatmapData=computeHeatmap(p);
+  loading.style.display='none';
+  status.textContent='Done. Min='+heatmapData.mn.toFixed(1)+' MPa, Max='+heatmapData.mx.toFixed(1)+' MPa';
+  drawHeatmap(p);
+});
+
+// Heatmap interaction
+document.getElementById('heatmap-canvas').addEventListener('mousemove',e=>{
+  if(!heatmapData)return;
+  const canvas=e.target;
+  const rect=canvas.getBoundingClientRect();
+  const x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const ph=Math.round(x/rect.width*720);
+  const th=Math.round(y/rect.height*360);
+  if(th>180||ph>360)return;
+  const ti=Math.min(HM_TH-1,Math.floor(th/2)),pi=Math.min(HM_PH-1,Math.floor(ph/2));
+  const v=heatmapData.data[ti*HM_PH+pi];
+  document.getElementById('heatmap-hover-info').textContent='?='+th+'?, ?='+ph+'? -> sigma_metric = '+v.toFixed(1)+' MPa  ('+(v/23).toFixed(0)+'x bond limit)';
+});
+document.getElementById('heatmap-canvas').addEventListener('click',e=>{
+  const canvas=e.target;
+  const rect=canvas.getBoundingClientRect();
+  const ph=Math.round((e.clientX-rect.left)/rect.width*360);
+  const th=Math.round((e.clientY-rect.top)/rect.height*180);
+  if(th>180||ph>360)return;
+  document.getElementById('theta').value=th;
+  document.getElementById('phi').value=ph;
+  document.getElementById('theta-val').textContent=th+'°';
+  document.getElementById('phi-val').textContent=ph+'°';
+  update();
+});
+
+// ================================================════════════
+// Critical Temperature
+// ================================================════════════
+function updateCriticalPage(p,sfrac,E_eff){
+  // T_crit = T_room - sigma_limit / (alpha_eff * E_eff)
+  // alpha_eff = |alpha_Sap - alpha_LN_eff| (in-plane mismatch, per K)
+  const alpha_eff=Math.abs((p.alpha_Sap - p.alpha_a_LN)*1e-6); // conservative: use a-axis
+  const E_MPa=E_eff; // already in MPa
+  const T_room=300;
+
+  const limits=[
+    {name:'Bond limit (23 MPa)',sigma:23,color:'#ff3860'},
+    {name:'LiNbO₃ fracture',sigma:sfrac,color:'#ffdd57'},
+    {name:'In yield (0.9 MPa)',sigma:0.9,color:'#39ff14'},
+    {name:'In yield 4K est. (5 MPa)',sigma:5,color:'#00c8ff'},
+  ];
+
+  const cards=limits.map(l=>{
+    const T=T_room - l.sigma/(alpha_eff*E_MPa);
+    const safe=T<4;
+    var col=safe?'var(--ok)':T<77?'var(--warn)':'var(--danger)';
+    var val=T<0?'<0':fmt(T,0);
+    var msg=safe?'OK Survives 4K':'WARNING Fails before 4K';
+    return '<div class="crit-card">'
+      +'<div class="cc-label">'+l.name+'</div>'
+      +'<div class="cc-val" style="color:'+col+'">'+val+'</div>'
+      +'<div class="cc-unit">K (cools below this -> failure)</div>'
+      +'<div style="font-size:9px;color:var(--text-dim);margin-top:4px;">'+msg+'</div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('crit-cards').innerHTML=cards;
+
+  // chart: stress vs temperature
+  const ctx=document.getElementById('crit-chart').getContext('2d');
+  if(critChart){critChart.destroy();critChart=null;}
+  const Ts=[],stress=[];
+  for(let T=300;T>=4;T-=5){Ts.push(T);stress.push(alpha_eff*E_MPa*(300-T));}
+  critChart=new Chart(ctx,{type:'line',data:{labels:Ts,datasets:[
+    {label:'Accumulated thermal stress (MPa)',data:stress,borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false,tension:.3},
+    {label:'Bond limit 23 MPa',data:Ts.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+    {label:'sigma_fracture LiNbO₃',data:Ts.map(()=>sfrac),borderColor:'#ffdd57',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
+  ]},options:{responsive:true,animation:{duration:200},plugins:{legend:{labels:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}}}},scales:{x:{reverse:true,ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Temperature (K)',color:'#5a7090',font:{size:9}}},y:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Stress (MPa)',color:'#5a7090',font:{size:9}}}}}});
+}
+
+// ================================================════════════
+// Substrate Comparison
+// ================================================════════════
+function updateSubLabels(p){
+  document.getElementById('sub-theta').textContent=p.theta;
+  document.getElementById('sub-phi').textContent=p.phi;
+}
+
+function updateSubstratePage(p){
+  var grid=document.getElementById('sub-grid');
+  grid.innerHTML=SUBSTRATES.map(function(s){
+    var cls=s.id===activeSubstrate?'active':'';
+    return '<button class="sub-btn '+cls+'" data-id="'+s.id+'">'+s.name+'<small>a='+s.alpha+'x10^-6/K</small>'+'</button>';
+  }).join('');
+  grid.querySelectorAll('.sub-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){activeSubstrate=btn.dataset.id;updateSubstratePage(p);});
+  });
+  if(subChart){subChart.destroy();subChart=null;}
+  var ctx=document.getElementById('sub-chart').getContext('2d');
+  var baseSap=computeStress(p.theta,p.phi,{alpha_a_LN:p.alpha_a_LN,alpha_c_LN:p.alpha_c_LN,alpha_Sap:5.3,dT:p.dT,kic:p.kic,defect_a:p.defect_a}).metric;
+  var vals=SUBSTRATES.map(function(s){return +computeStress(p.theta,p.phi,{alpha_a_LN:p.alpha_a_LN,alpha_c_LN:p.alpha_c_LN,alpha_Sap:s.alpha,dT:p.dT,kic:p.kic,defect_a:p.defect_a}).metric.toFixed(1);});
+  var minV=Math.min.apply(null,vals);
+  subChart=new Chart(ctx,{type:'bar',data:{labels:SUBSTRATES.map(function(s){return s.name;}),datasets:[{label:'sigma_metric (MPa)',data:vals,backgroundColor:SUBSTRATES.map(function(s,i){return s.id===activeSubstrate?'rgba(255,107,53,.6)':vals[i]===minV?'rgba(57,255,20,.3)':'rgba(0,200,255,.2)';}),borderColor:SUBSTRATES.map(function(s,i){return s.id===activeSubstrate?'#ff6b35':vals[i]===minV?'#39ff14':'#00c8ff';}),borderWidth:1}]},options:{responsive:true,animation:{duration:200},plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'}},y:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'sigma_metric (MPa)',color:'#5a7090',font:{size:9}}}}}});
+  var tbody=document.getElementById('sub-tbody');
+  tbody.innerHTML=SUBSTRATES.map(function(s,i){
+    var m=vals[i];
+    var rel=m/baseSap;
+    var isBest=m===minV;
+    var cls2=s.id===activeSubstrate?'cur':'';
+    var star=isBest?' *':'';
+    var vc=m<100?'hi':m>400?'lo':'';
+    var rc=rel<1?'var(--ok)':rel>1?'var(--danger)':'var(--text-dim)';
+    var rd=rel<1?'down':'up';
+    var rv=Math.abs(rel-1)*100<1?'same':((rel-1)*100).toFixed(0)+'%';
+    return '<tr class="'+cls2+'">'
+      +'<td class="val">'+s.name+star+'</td>'
+      +'<td>'+s.alpha+'</td>'
+      +'<td class="'+vc+'">'+m.toFixed(1)+'</td>'
+      +'<td style="color:'+rc+'">'+rd+' '+rv+'</td>'
+      +'<td style="font-size:9px;color:var(--text-dim);">'+s.note+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ================================================════════════
+// Back-calculation
+// ================================================════════════
+function updateBackCalc(p,sfrac,E_eff){
+  // Mode A
+  const tCrit=+document.getElementById('bc-t-crit').value;
+  const bcL=+document.getElementById('bc-L').value;
+  const eps_mismatch=2.812e-3;
+  const f=Math.max(0,1-(sfrac*0.5)/computeStress(p.theta,p.phi,p).metric);
+  const eps_eff=eps_mismatch*(1-f);
+  const epf=eps_eff*(bcL*1e-3)/(tCrit*1e-6)*100;
+  document.getElementById('bc-epf').textContent=fmt(epf,1)+'%';
+  let interp='';
+  if(epf>30)interp='Close to RT value (60%) - In ductility well preserved at 4K';
+  else if(epf>10)interp='Moderate ductility loss - reasonable for BCT metal at 4K';
+  else if(epf>3)interp='Significant ductility loss - thin film effect likely dominant';
+  else interp='Very low - possible embrittlement or thin-film constraint';
+  document.getElementById('bc-interp').textContent=interp;
+
+  // Mode B
+  const sigPost=+document.getElementById('bc-sigma-post').value;
+  const mode=document.getElementById('bc-failure').value;
+  let interpB='';
+  if(mode==='bulk')interpB='Fracture occurred in LiNbO3 bulk at sigma = '+sigPost+' MPa.\n-> sigma_fracture_LN(4K) ? '+sigPost+' MPa (direct measurement).\n-> Compare with RT value (~143 MPa from K_IC=0.9). If lower, LiNbO3 becomes more brittle at 4K.';
+  else if(mode==='interface')interpB='Interface delamination at sigma = '+sigPost+' MPa.\n-> Bonding energy at 4K ? '+sigPost+' MPa (upper bound).\n-> Surface treatment improvement needed before cryogenic use.';
+  else interpB='In layer failure at sigma = '+sigPost+' MPa.\n-> In layer yield/fracture stress at 4K ? '+sigPost+' MPa.\n-> Direct measurement of sigma_yield_In(4K) - world-first data point.';
+  document.getElementById('bc-interp-B').textContent=interpB;
+
+  // Mode C
+  const Tsurvive=+document.getElementById('bc-T-survive').value;
+  const sigLim=+document.getElementById('bc-sigma-lim').value;
+  const alpha_eff=Math.abs((p.alpha_Sap-p.alpha_a_LN)*1e-6);
+  const aE_implied=sigLim/((300-Tsurvive));
+  document.getElementById('bc-interp-C').textContent=
+    'Survived to '+Tsurvive+' K with limit '+sigLim+' MPa.\n-> Implied ??E = '+(aE_implied*1e6).toFixed(3)+' MPa/K at current orientation.\n-> Theory predicts ??E = '+(alpha_eff*E_eff*1e6).toFixed(3)+' MPa/K\n-> Ratio (exp/theory) = '+(aE_implied/(alpha_eff*E_eff*1e6)).toFixed(2)+' - deviation indicates partial relaxation or ?(T) non-linearity.';
+}
+
+['bc-t-crit','bc-L','bc-sigma-post','bc-failure','bc-T-survive','bc-sigma-lim'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change',update);
+});
+
+// ================================================════════════
+// Report
+// ================================================════════════
+function updateReport(p,metric,sxx,syy,sxy,sfrac,starget,t_In,f){
+  var now=new Date().toISOString().slice(0,19).replace('T',' ');
+  var lines=[
+    'Generated: '+now,
+    '================================',
+    '',
+    'ORIENTATION',
+    '  theta (tilt from c-axis)  = '+p.theta+' deg',
+    '  phi   (in-plane rotation) = '+p.phi+' deg',
+    '',
+    'THERMAL PARAMETERS',
+    '  alpha_a LiNbO3  = '+p.alpha_a_LN+' x 10^-6/K',
+    '  alpha_c LiNbO3  = '+p.alpha_c_LN+' x 10^-6/K',
+    '  alpha Sapphire  = '+p.alpha_Sap+' x 10^-6/K',
+    '  dT (300K to 4K) = '+p.dT+' K',
+    '',
+    'STRESS RESULTS (Plane Stress, Full Constraint)',
+    '  sigma_xx        = '+fmt(sxx)+' MPa',
+    '  sigma_yy        = '+fmt(syy)+' MPa',
+    '  sigma_xy        = '+fmt(sxy)+' MPa',
+    '  sigma_metric    = '+fmt(metric)+' MPa',
+    '  vs Bond limit   = '+fmt(metric/23,1)+'x',
+    '  vs sigma_frac   = '+fmt(metric/sfrac,1)+'x',
+    '',
+    'LiNbO3 FRACTURE PARAMETERS',
+    '  K_IC            = '+p.kic+' MPa*m^0.5',
+    '  Defect size a   = '+p.defect_a+' um',
+    '  sigma_fracture  = '+fmt(sfrac)+' MPa',
+    '',
+    'IN-LAYER DESIGN (Partial Relaxation)',
+    '  sigma_target    = '+fmt(starget)+' MPa',
+    '  Required relief = '+fmt(f*100)+'%',
+    '  eps_f (input)   = '+(p.eps_f*100).toFixed(0)+'%',
+    '  Chip size L     = '+p.chipL+' mm',
+    '  Required t_In   = '+fmt(t_In)+' um',
+    '',
+    'REFERENCES',
+    '  Elastic const : Weis & Gaylord, Appl. Phys. A (1985)',
+    '  Bond limit    : Watanabe & Takigawa, Appl. Surf. Sci. (2023)',
+    '  K_IC          : Bhatt et al., Opt. Mater. (2012)',
+    '  Model         : Anisotropic plane stress, full constraint',
+    '================================'
+  ];
+  document.getElementById('report-body').innerHTML=
+    '<pre style="font-family:monospace;font-size:11px;line-height:1.9;color:var(--text);">'+
+    lines.join('\n')+
+    '</pre>';
+}
+
+document.getElementById('btn-print').addEventListener('click',()=>window.print());
+document.getElementById('btn-copy-csv').addEventListener('click',()=>{
+  const p=getP();
+  const{sxx,syy,sxy,metric}=computeStress(p.theta,p.phi,p);
+  const csv='theta,phi,alpha_a_LN,alpha_c_LN,alpha_Sap,dT,sigma_xx,sigma_yy,sigma_xy,sigma_metric\n'+p.theta+','+p.phi+','+p.alpha_a_LN+','+p.alpha_c_LN+','+p.alpha_Sap+','+p.dT+','+fmt(sxx)+','+fmt(syy)+','+fmt(sxy)+','+fmt(metric);
+  navigator.clipboard.writeText(csv).then(()=>alert('CSV copied to clipboard'));
+});
+
+// ================================================════════════
+// Navigation
+// ================================================════════════
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.page).classList.add('active');
+    var pg=tab.dataset.page;
+    if(pg==='page-heatmap'&&heatmapData){drawHeatmap(getP());}
+    if(pg==='page-critical'){updateCriticalPage(getP(),fractureMPa(getP()),computeStress(getP().theta,getP().phi,getP()).E_eff);}
+    if(pg==='page-substrate'){updateSubstratePage(getP());}
+    if(pg==='page-backcalc'){updateBackCalc(getP(),fractureMPa(getP()),computeStress(getP().theta,getP().phi,getP()).E_eff);}
+    if(pg==='page-report'){update();}
+  });
+});
+
+// ================================================════════════
+// Inputs
+// ================================================════════════
+document.getElementById('theta').addEventListener('input',e=>{document.getElementById('theta-val').textContent=e.target.value+'°';clearPreset();update();});
+document.getElementById('phi').addEventListener('input',e=>{document.getElementById('phi-val').textContent=e.target.value+'°';clearPreset();update();});
+function clearPreset(){document.querySelectorAll('#presets .preset-btn').forEach(b=>b.classList.remove('active'));}
+document.querySelectorAll('#presets .preset-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.getElementById('theta').value=btn.dataset.th;
+    document.getElementById('phi').value=btn.dataset.ph;
+    document.getElementById('theta-val').textContent=btn.dataset.th+'°';
+    document.getElementById('phi-val').textContent=btn.dataset.ph+'°';
+    clearPreset();btn.classList.add('active');update();
+  });
+});
+document.querySelectorAll('.param-field input,.param-field select').forEach(el=>el.addEventListener('change',update));
+document.getElementById('chart-tabs').querySelectorAll('.chart-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentChartTab=tab.dataset.tab;
+    update();
+  });
+});
+
+// ── Load Chart.js ──
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js';
+  s.integrity='sha512-Y51n9mtKTVBh3Jbx5pZSJNDDMyY+yGe77DGtBPzRlgsf/YLCh13kSZ3JmfHGzYFCmOndraf0sQgfM654b7dJ3w==';
+  s.crossOrigin='anonymous';
+  s.referrerPolicy='no-referrer';
+  s.onload=()=>{update();setTimeout(updateScAlN,200);};
+  document.head.appendChild(s);
+})();
+</script>
+
+<!-- ══ PAGE 8: About ══ -->
+<div id="page-about" class="page" style="grid-template-columns:1fr;">
+  <div class="panel">
+    <div class="panel-header"><div class="dot"></div><h2>About This Tool</h2></div>
+    <div class="panel-body">
+
+      <!-- Hero -->
+      <div style="background:linear-gradient(135deg,#0d1f35,#1a3a5c);border-radius:10px;padding:28px 32px;margin-bottom:22px;border:1px solid var(--accent);">
+        <div style="font-size:20px;font-weight:700;color:var(--accent);letter-spacing:.05em;margin-bottom:8px;">
+          LiNbO&#8323; / Sapphire Cryogenic Stress Calculator
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);letter-spacing:.08em;margin-bottom:16px;">
+          ANISOTROPIC THERMOELASTIC ANALYSIS &middot; V2.0 &middot; RESEARCH TOOL
+        </div>
+        <div style="font-size:13px;color:var(--text);line-height:1.8;max-width:780px;">
+          A specialized open-source calculator for designing cryogenic bonded structures
+          based on LiNbO&#8323;, LiTaO&#8323;, and ScAlN piezoelectric materials.
+          Computes full anisotropic thermoelastic stress tensors, identifies design limits,
+          and provides In-layer relaxation and ScAlN optimization guidance for
+          quantum device applications operating at 4 K.
+        </div>
+      </div>
+
+      <!-- 2-col layout -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
+
+        <!-- What this tool does -->
+        <div class="in-card" style="padding:20px;">
+          <div class="section-label" style="margin-bottom:12px;">What This Tool Does</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.9;">
+            <div style="margin-bottom:6px;">&#10003; Full anisotropic tensor stress calculation (all cut angles)</div>
+            <div style="margin-bottom:6px;">&#10003; Magic-cut non-existence proof (complete orientation scan)</div>
+            <div style="margin-bottom:6px;">&#10003; Critical temperature estimation for bond failure</div>
+            <div style="margin-bottom:6px;">&#10003; In-layer partial relaxation design (thickness &amp; method)</div>
+            <div style="margin-bottom:6px;">&#10003; Multi-substrate comparison (8 materials)</div>
+            <div style="margin-bottom:6px;">&#10003; Experimental back-calculation (theory &harr; experiment)</div>
+            <div style="margin-bottom:6px;">&#10003; ScAlN cryogenic optimizer (Sc% vs K&#178;, Q, FOM)</div>
+            <div>&#10003; Structured report export (ASCII + CSV)</div>
+          </div>
+        </div>
+
+        <!-- How it differs -->
+        <div class="in-card" style="padding:20px;">
+          <div class="section-label" style="margin-bottom:12px;">How It Differs from COMSOL / ANSYS</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.9;">
+            <div style="margin-bottom:6px;color:var(--accent);">&#9889; No installation &mdash; runs in any browser</div>
+            <div style="margin-bottom:6px;color:var(--accent);">&#9889; Free &mdash; no license required</div>
+            <div style="margin-bottom:6px;">Purpose-built for LiNbO&#8323;/Sapphire cryogenic design</div>
+            <div style="margin-bottom:6px;">Weis &amp; Gaylord (1985) elastic constants pre-loaded</div>
+            <div style="margin-bottom:6px;">Full orientation space scanned automatically</div>
+            <div style="margin-bottom:6px;">Design answer in seconds, not hours</div>
+            <div style="margin-bottom:6px;color:var(--text-dim);">Note: spatial FEM and crack propagation</div>
+            <div style="color:var(--text-dim);">require COMSOL as a complementary tool</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Research background -->
+      <div class="in-card" style="padding:20px;margin-bottom:18px;">
+        <div class="section-label" style="margin-bottom:12px;">Research Background &amp; Key Findings</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;font-size:11px;color:var(--text);">
+          <div>
+            <div style="color:var(--accent2);font-weight:700;margin-bottom:6px;">Finding 1</div>
+            <div style="line-height:1.7;">Magic-cut does <strong>not</strong> exist.<br>
+            Minimum stress is 545.7 MPa (X-cut),<br>
+            24x over the bond limit of 23 MPa.</div>
+          </div>
+          <div>
+            <div style="color:var(--accent2);font-weight:700;margin-bottom:6px;">Finding 2</div>
+            <div style="line-height:1.7;">ScAlN (Sc 36%) on Sapphire:<br>
+            sigma = 19.4 MPa &mdash; below bond limit.<br>
+            K&#178; = 193.6% at room temperature.</div>
+          </div>
+          <div>
+            <div style="color:var(--accent2);font-weight:700;margin-bottom:6px;">Finding 3</div>
+            <div style="line-height:1.7;">Optimal Sc% diverges:<br>
+            RT optimum = 36% (K&#178; max)<br>
+            4K optimum = 10&ndash;20% (K&#178;&times;Q max)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- References -->
+      <div class="in-card" style="padding:20px;margin-bottom:18px;">
+        <div class="section-label" style="margin-bottom:12px;">References &amp; Data Sources</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:2.0;font-family:'JetBrains Mono',monospace;">
+          <div>Elastic constants (LiNbO&#8323;) &nbsp;: Weis &amp; Gaylord, <em>Appl. Phys. A</em> 37, 191&ndash;203 (1985)</div>
+          <div>Bond limit 23 MPa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Watanabe &amp; Takigawa, <em>Appl. Surf. Sci.</em> (2023)</div>
+          <div>Fracture toughness K&#8331;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Bhatt et al., <em>Opt. Mater.</em> (2012)</div>
+          <div>ScAlN elastic constants &nbsp;&nbsp;&nbsp;&nbsp;: Zukauskaite et al., <em>J. Appl. Phys.</em> 114, 243516 (2013)</div>
+          <div>ScAlN piezo constants &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Ligl et al., <em>J. Appl. Phys.</em> 130, 045102 (2021)</div>
+          <div>Substrate CTE values &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Slack &amp; Bartram (1975), Okada &amp; Tokumaru (1984), Blakemore (1982)</div>
+          <div>Pyroelectric coefficient &nbsp;&nbsp;&nbsp;: Savage, <em>J. Appl. Phys.</em> 37, 3071 (1966)</div>
+          <div>Biaxial modulus formula &nbsp;&nbsp;&nbsp;&nbsp;: Freund &amp; Suresh, <em>Thin Film Materials</em> (2003)</div>
+        </div>
+      </div>
+
+      <!-- Consulting -->
+      <div style="background:linear-gradient(135deg,#1a2a1a,#0d1f0d);border-radius:10px;padding:24px 28px;border:1.5px solid var(--ok);margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;color:var(--ok);margin-bottom:10px;">
+          &#128222; Technical Consulting &amp; Custom Analysis
+        </div>
+        <div style="font-size:12px;color:var(--text);line-height:1.9;margin-bottom:16px;">
+          This tool covers the standard design space for LiNbO&#8323;/Sapphire and ScAlN systems.
+          For applications requiring custom material parameters, proprietary substrates,
+          multi-layer stack analysis, or integration with your experimental data,
+          consulting services are available.
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;font-size:11px;">
+          <div style="background:rgba(57,255,20,.07);border:1px solid var(--ok);border-radius:6px;padding:12px;">
+            <div style="color:var(--ok);font-weight:600;margin-bottom:6px;">We can help with</div>
+            <div style="color:var(--text);line-height:1.8;">
+              Custom material parameter input<br>
+              Proprietary substrate analysis<br>
+              Cryogenic bonding design review<br>
+              ScAlN process optimization guidance<br>
+              Interpretation of experimental results
+            </div>
+          </div>
+          <div style="background:rgba(57,255,20,.07);border:1px solid var(--ok);border-radius:6px;padding:12px;">
+            <div style="color:var(--ok);font-weight:600;margin-bottom:6px;">Typical clients</div>
+            <div style="color:var(--text);line-height:1.8;">
+              Quantum device research groups<br>
+              SAW / BAW filter manufacturers<br>
+              Cryogenic sensor developers<br>
+              University labs (piezoelectric MEMS)<br>
+              Semiconductor process engineers
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <a href="https://forms.gle/YnzHgewPydQYFfa99"
+             target="_blank" rel="noopener noreferrer"
+             style="display:inline-block;background:var(--ok);color:#000;font-weight:700;
+                    font-size:13px;padding:12px 36px;border-radius:6px;text-decoration:none;
+                    letter-spacing:.05em;">
+            &#128203; Submit Inquiry Form
+          </a>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:8px;">
+            Please describe your application and material system &middot; We will respond to serious inquiries
+          </div>
+        </div>
+      </div>
+
+      <!-- License & Citation -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="in-card" style="padding:16px;">
+          <div class="section-label" style="margin-bottom:10px;">License</div>
+          <div style="font-size:11px;color:var(--text);line-height:1.8;">
+            <div style="color:var(--accent);font-weight:600;margin-bottom:6px;">CC BY 4.0 (Creative Commons Attribution)</div>
+            <div>Free to use, share, and adapt for any purpose</div>
+            <div>including commercial use, provided credit is given.</div>
+            <div style="margin-top:8px;color:var(--text-dim);">
+              Attribution required: cite as<br>
+              "LiNbO&#8323;/Sapphire Cryogenic Stress Calculator v2.0"
+            </div>
+          </div>
+        </div>
+        <div class="in-card" style="padding:16px;">
+          <div class="section-label" style="margin-bottom:10px;">How to Cite</div>
+          <div style="font-size:10px;color:var(--text-dim);line-height:1.9;font-family:'JetBrains Mono',monospace;">
+            <div>LiNbO&#8323;/Sapphire Cryogenic Stress</div>
+            <div>Calculator v2.0 (2026).</div>
+            <div>Anisotropic thermoelastic analysis</div>
+            <div>of piezoelectric cryogenic bonding.</div>
+            <div style="margin-top:6px;color:var(--accent);">DOI: [to be assigned via Zenodo]</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- panel-body -->
+  </div><!-- panel -->
+</div><!-- page-about -->
+
+</body>
+</html>

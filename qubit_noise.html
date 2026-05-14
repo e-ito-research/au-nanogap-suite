@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qubit Noise Designer — Au Nanogap Design Suite</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f0f2f6;
+  color: #1a1a2e;
+  padding: clamp(10px, 3vw, 20px);
+}
+h1 {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: #fff8e1;
+  border: 1.5px solid #f4c830;
+  border-radius: 8px;
+  padding: clamp(8px, 2vw, 11px) clamp(10px, 3vw, 16px);
+  margin-bottom: 14px;
+  font-size: clamp(0.75rem, 2vw, 0.83rem);
+  line-height: 1.5;
+  max-width: 980px;
+  color: #5a4500;
+}
+
+/* 2-column desktop layout */
+.layout {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 14px;
+  max-width: 980px;
+}
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: clamp(14px, 2.5vw, 18px);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+}
+.card-title {
+  font-size: 0.78rem; font-weight: 700; color: #888;
+  text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 14px;
+}
+.srow { margin-bottom: clamp(10px, 2vw, 13px); }
+.srow-label {
+  display: flex; justify-content: space-between;
+  font-size: clamp(0.82rem, 2.2vw, 0.87rem);
+  margin-bottom: 3px;
+}
+.srow-label .val { color: #2c7be5; font-weight: 700; }
+input[type=range] { width: 100%; accent-color: #2c7be5; cursor: pointer; height: 20px; }
+.radio-group {
+  display: flex; gap: 18px;
+  font-size: clamp(0.82rem, 2.2vw, 0.87rem);
+  margin-bottom: clamp(10px, 2vw, 13px);
+}
+.radio-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+/* coupling_eff input */
+.num-input {
+  width: 90px; padding: 5px 8px;
+  border: 1.5px solid #dde; border-radius: 5px;
+  font-size: 0.88rem; outline: none;
+}
+.num-input:focus { border-color: #2c7be5; }
+
+/* Metric cards */
+.metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.mcard { background: #f6f8ff; border-radius: 8px; padding: clamp(7px, 2vw, 10px); text-align: center; }
+.mcard-label { font-size: clamp(0.65rem, 1.8vw, 0.72rem); color: #888; margin-bottom: 3px; }
+.mcard-val   { font-size: clamp(1rem, 3.5vw, 1.35rem); font-weight: 800; color: #1a1a2e; }
+.mcard.dual  .mcard-val { color: #2c7be5; }
+
+/* T1 row */
+.t1-row {
+  display: flex; align-items: center; gap: 8px;
+  background: #f0f6ff; border-radius: 8px;
+  padding: clamp(7px, 2vw, 9px) clamp(10px, 2.5vw, 12px);
+  margin-bottom: 12px;
+  font-size: clamp(0.8rem, 2vw, 0.85rem);
+  flex-wrap: wrap;
+}
+.t1-row input[type=number] {
+  width: 72px; padding: 4px 7px;
+  border: 1.5px solid #c5d8f8; border-radius: 5px;
+  font-size: 0.88rem; outline: none;
+}
+.t1-row input:focus { border-color: #2c7be5; }
+.t1-val { font-size: clamp(1rem, 3vw, 1.1rem); font-weight: 800; color: #2c7be5; min-width: 70px; }
+.t1-sep { color: #aaa; }
+
+/* Tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.tab {
+  padding: clamp(4px, 1.2vw, 5px) clamp(8px, 2vw, 13px);
+  border: 1.5px solid #dde;
+  background: #f8f9ff; border-radius: 6px; cursor: pointer;
+  font-size: clamp(0.72rem, 1.9vw, 0.8rem); font-weight: 500; color: #666;
+  white-space: nowrap;
+}
+.tab.active { background: #2c7be5; color: #fff; border-color: #2c7be5; }
+.tab:hover:not(.active) { background: #eef3ff; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 8px; font-size: clamp(0.72rem, 1.8vw, 0.78rem); color: #444; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+canvas { width: 100%; display: block; border-radius: 6px; }
+
+/* Optimizer */
+.optimizer { grid-column: 1 / -1; }
+.opt-top {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+  font-size: clamp(0.82rem, 2.2vw, 0.87rem);
+  margin-bottom: 10px;
+}
+.opt-top input[type=number] {
+  width: 85px; padding: 6px 9px;
+  border: 1.5px solid #dde; border-radius: 6px;
+  font-size: 0.9rem; outline: none;
+}
+.opt-top input:focus { border-color: #2c7be5; }
+.btn {
+  padding: clamp(6px, 1.5vw, 7px) clamp(12px, 3vw, 18px);
+  background: #2c7be5; color: #fff;
+  border: none; border-radius: 6px; cursor: pointer;
+  font-size: clamp(0.82rem, 2vw, 0.87rem); font-weight: 600;
+}
+.btn:hover { background: #1e68d1; }
+.btn-dl { background: #2ca85a; }
+.btn-dl:hover { background: #1f8a47; }
+#opt-result { font-size: clamp(0.82rem, 2vw, 0.87rem); line-height: 1.8; }
+.ok  { color: #1a7f37; font-weight: 600; }
+.ng  { color: #c0392b; font-weight: 600; }
+.rec { color: #2c7be5; font-weight: 700; }
+
+/* Physical model collapsible */
+.model-info {
+  max-width: 980px;
+  margin-top: 14px;
+}
+
+/* ── Mobile: 768px 未満 → 1カラム ── */
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .optimizer {
+    grid-column: 1;
+  }
+  .btn-dl {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .metrics {
+    gap: 6px;
+  }
+  .num-input {
+    width: 80px;
+  }
+}
+.model-info summary {
+  cursor: pointer;
+  font-size: 0.9rem; font-weight: 600; color: #1a1a2e;
+  list-style: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.model-info summary::before { content: '▶'; font-size: 0.7rem; color: #888; transition: transform 0.2s; }
+.model-info[open] summary::before { transform: rotate(90deg); }
+.model-content { margin-top: 14px; font-size: 0.85rem; line-height: 1.8; color: #444; }
+.model-content p { margin-bottom: 4px; }
+.code-block {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  background: #f5f7fa; border-radius: 6px;
+  padding: 10px 14px; margin: 6px 0 10px;
+  font-size: 0.82rem; line-height: 1.7; color: #2a2a2a;
+  border-left: 3px solid #2c7be5;
+}
+.model-content ul { margin-left: 20px; margin-top: 4px; }
+.model-content li { margin-bottom: 2px; }
+</style>
+</head>
+<body>
+<h1>Qubit Noise Designer</h1>
+
+<!-- Disclaimer -->
+<div class="disclaimer">
+  ⚠️ <strong>Disclaimer:</strong> The plasmon DIET model is calibrated against
+  de Graaf et al. (2018). The SAW phonon model (coupling_eff) is a theoretical
+  estimate — not yet experimentally verified. Use SAW predictions with caution.
+</div>
+
+<div class="layout">
+
+  <!-- Left: Design Parameters -->
+  <div class="card">
+    <div class="card-title">Design Parameters</div>
+
+    <div class="srow">
+      <div class="srow-label"><span>gap</span><span class="val"><span id="v-gap">1.5</span> nm</span></div>
+      <input type="range" id="gap" min="1.5" max="10" step="0.1" value="1.5">
+    </div>
+
+    <div class="srow">
+      <div class="srow-label"><span>Wavelength λ</span></div>
+      <div class="radio-group">
+        <label><input type="radio" name="lam" value="785"> 785 nm</label>
+        <label><input type="radio" name="lam" value="830" checked> 830 nm</label>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-label"><span>Exposure time t</span><span class="val"><span id="v-t">1.0</span> h</span></div>
+      <input type="range" id="t" min="0.5" max="4" step="0.1" value="1.0">
+    </div>
+
+    <div class="srow">
+      <div class="srow-label"><span>f_SAW</span><span class="val"><span id="v-f">8.0</span> GHz</span></div>
+      <input type="range" id="f" min="4" max="12" step="0.1" value="8.0">
+    </div>
+
+    <div class="srow">
+      <div class="srow-label"><span>coupling_eff (×10⁻⁵)</span></div>
+      <input type="number" id="coupling" class="num-input"
+             min="0.1" max="100" step="0.01" value="1.54">
+    </div>
+  </div>
+
+  <!-- Right: Noise Reduction + Graph -->
+  <div class="card">
+    <div class="card-title">Noise Reduction Factor  A₀ / Aeff</div>
+
+    <div class="metrics">
+      <div class="mcard">
+        <div class="mcard-label">Plasmon Only</div>
+        <div class="mcard-val" id="r-plasmon">—</div>
+      </div>
+      <div class="mcard">
+        <div class="mcard-label">SAW Only</div>
+        <div class="mcard-val" id="r-saw">—</div>
+        <div style="font-size:0.68rem;color:#bbb;margin-top:3px">※time-dependent</div>
+      </div>
+      <div class="mcard dual">
+        <div class="mcard-label">Dual Control</div>
+        <div class="mcard-val" id="r-dual">—</div>
+      </div>
+    </div>
+
+    <!-- T1 Improvement -->
+    <div class="t1-row">
+      <span>T1_base:</span>
+      <input type="number" id="t1-base" value="200" min="1" max="10000" step="10">
+      <span>μs</span>
+      <span class="t1-sep">→</span>
+      <span>T1_eff:</span>
+      <span class="t1-val" id="t1-eff">—</span>
+      <span>μs</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('gap',this)">Gap Dependence</button>
+      <button class="tab" onclick="switchTab('temp',this)">Temperature Dependence</button>
+      <button class="tab" onclick="switchTab('spec',this)">Wavelength Spectrum</button>
+    </div>
+
+    <!-- Legends (per tab) -->
+    <div id="legend-gap" class="legend">
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#4e7fff" stroke-width="2" stroke-dasharray="5,3"/></svg>
+        Plasmon 785nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#ff7f4e" stroke-width="2" stroke-dasharray="5,3"/></svg>
+        Plasmon 830nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#4e7fff" stroke-width="2.5"/></svg>
+        Dual 785nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#ff7f4e" stroke-width="2.5"/></svg>
+        Dual 830nm
+      </span>
+    </div>
+    <div id="legend-temp" class="legend" style="display:none">
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#4e7fff" stroke-width="2.5"/></svg>
+        gap=1.5nm (Dual)
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#ff7f4e" stroke-width="2.5"/></svg>
+        gap=3.0nm (Dual)
+      </span>
+    </div>
+    <div id="legend-spec" class="legend" style="display:none">
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#4e7fff" stroke-width="2.5"/></svg>
+        gap=1.5nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#2ca85a" stroke-width="2.5"/></svg>
+        gap=2.0nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#ff7f4e" stroke-width="2.5"/></svg>
+        gap=3.0nm
+      </span>
+      <span class="legend-item">
+        <svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4,3"/></svg>
+        LSPR 1100nm
+      </span>
+    </div>
+
+    <canvas id="graph" height="280"></canvas>
+  </div>
+
+  <!-- Optimal Design Finder -->
+  <div class="card optimizer">
+    <div class="card-title">Optimal Design Finder</div>
+    <div class="opt-top">
+      <span>Target reduction:</span>
+      <input type="number" id="target" value="10" min="1.01" max="10000" step="1">
+      <span>×</span>
+      <button class="btn" onclick="optimize()">Find</button>
+      <span style="color:#aaa;font-size:0.8rem">(using current t &amp; f_SAW)</span>
+      <button class="btn btn-dl" onclick="downloadCSV()" style="margin-left:auto">Download CSV</button>
+    </div>
+    <div id="opt-result"></div>
+  </div>
+
+</div><!-- .layout -->
+
+<!-- Physical Model & References -->
+<details class="card model-info">
+  <summary>Physical Model &amp; References</summary>
+  <div class="model-content">
+    <p><strong>Plasmon (DIET) model:</strong></p>
+    <div class="code-block">
+      A_eff/A_0 = exp(−k_des0 × |E_gap/E_0|² × t)<br>
+      |E_gap/E_0|² = |1/(ε(ω) + ε_m(1−Lz)/Lz)|² × (L/gap)^2.5 × 0.3<br>
+      ε_m = 2.25 (SiO₂),  Lz = 0.039 (cylinder AR=4),  L = 80 nm<br>
+      k_des0 calibrated: gap = 1.5 nm, t = 1 h → 10× reduction (de Graaf 2018)
+    </div>
+    <p><strong>SAW phonon model:</strong></p>
+    <div class="code-block">
+      A_ratio = 1 / (1 + coupling_eff × Q × M × t)<br>
+      M = exp(−(f_SAW − f_TLS)² / 2)<br>
+      Q = 65,000,  f_TLS = 8 GHz,  coupling_eff = user-defined (default 1.54×10⁻⁵)
+    </div>
+    <p><strong>Au Drude model:</strong></p>
+    <div class="code-block">
+      ε(ω) = ε_∞ − ω_p² / (ω(ω + iγ))<br>
+      ε_∞ = 9.0,  ω_p = 1.3697×10¹⁶ rad/s,  γ(300K) = 1.2288×10¹⁴ rad/s
+    </div>
+    <p><strong>References:</strong></p>
+    <ul>
+      <li>de Graaf et al. <em>Nature Commun.</em> 9, 1143 (2018) — plasmon DIET calibration</li>
+      <li>Gans theory (quasi-static approximation) — field enhancement model</li>
+      <li>Johnson &amp; Christy <em>Phys. Rev. B</em> 6, 4370 (1972) — Au optical constants</li>
+    </ul>
+  </div>
+</details>
+
+<!-- Footer -->
+<footer style="
+  max-width: 980px;
+  margin-top: 20px;
+  padding: 14px 4px;
+  border-top: 1px solid #dde;
+  color: #999;
+  font-size: 0.75rem;
+  line-height: 1.7;
+">
+  <div>v1.0 — 2026-05-08 | Au Nanogap Dual Control Design Tool</div>
+  <div style="margin-top: 4px;">
+    Based on: <em>Plasmonic Near-Field Control of 1/f Noise Amplitude
+    in Superconducting Qubits via Hot-Electron-Induced TLS Desorption</em>
+    (preprint in preparation)
+  </div>
+</footer>
+
+<script>
+// ── Physical constants ────────────────────────────────────────
+const C0  = 2.99792458e8;
+const WP  = 1.3697e16;
+const GD  = 1.2288e14;   // 300 K
+const EI  = 9.0;
+const EPS_M = 2.25;
+const LZ  = 0.039;
+const CLZ = EPS_M * (1 - LZ) / LZ;   // ≈ 55.44
+const Q_SAW = 65000;
+const F_TLS = 8.0;
+
+// coupling_eff from input (live)
+function getCoupling() {
+  const v = parseFloat(document.getElementById('coupling').value);
+  return (isFinite(v) && v > 0) ? v * 1e-5 : 1.54e-5;
+}
+
+// Temperature → gD interpolation (log-log linear)
+const TEMP_PTS = [
+  { logT: Math.log10(0.01), logS: Math.log10(0.020) },
+  { logT: Math.log10(4),    logS: Math.log10(0.050) },
+  { logT: Math.log10(77),   logS: Math.log10(0.507) },
+  { logT: Math.log10(300),  logS: Math.log10(1.000) },
+];
+function gdAtT(T_K) {
+  const logT = Math.log10(Math.max(T_K, 1e-4));
+  if (logT <= TEMP_PTS[0].logT) return GD * Math.pow(10, TEMP_PTS[0].logS);
+  if (logT >= TEMP_PTS[TEMP_PTS.length-1].logT) return GD;
+  for (let i = 0; i < TEMP_PTS.length - 1; i++) {
+    if (logT >= TEMP_PTS[i].logT && logT <= TEMP_PTS[i+1].logT) {
+      const frac = (logT - TEMP_PTS[i].logT) / (TEMP_PTS[i+1].logT - TEMP_PTS[i].logT);
+      return GD * Math.pow(10, TEMP_PTS[i].logS + frac * (TEMP_PTS[i+1].logS - TEMP_PTS[i].logS));
+    }
+  }
+  return GD;
+}
+
+// ── Drude permittivity ────────────────────────────────────────
+function epsReGD(omega, gd) { return EI - WP*WP / (omega*omega + gd*gd); }
+function epsImGD(omega, gd) { return WP*WP*gd / (omega*(omega*omega + gd*gd)); }
+
+function eGapFull(gap_nm, lam_nm, gd) {
+  const omega = 2 * Math.PI * C0 / (lam_nm * 1e-9);
+  const re = epsReGD(omega, gd) + CLZ;
+  const im = epsImGD(omega, gd);
+  return (1.0 / (re*re + im*im)) * Math.pow(80.0 / gap_nm, 2.5) * 0.3;
+}
+function eGap(gap_nm, lam_nm) { return eGapFull(gap_nm, lam_nm, GD); }
+
+// k_des0: calibrated at 300K, gap=1.5nm, lam=785nm → 10× reduction (de Graaf 2018)
+const E_CAL  = eGap(1.5, 785);
+const K_DES0 = Math.log(10) / E_CAL;
+
+// ── Reduction factors ─────────────────────────────────────────
+function rPlasmon(gap_nm, lam_nm, t_h) {
+  return Math.exp(K_DES0 * eGap(gap_nm, lam_nm) * t_h);
+}
+function rPlasmonT(gap_nm, lam_nm, gd, t_h) {
+  return Math.exp(K_DES0 * eGapFull(gap_nm, lam_nm, gd) * t_h);
+}
+function rSAW(f_ghz, t_h) {
+  const M = Math.exp(-Math.pow(f_ghz - F_TLS, 2) / 2.0);
+  return 1.0 + getCoupling() * Q_SAW * M * t_h;
+}
+function rDual(gap_nm, lam_nm, f_ghz, t_h) {
+  return rPlasmon(gap_nm, lam_nm, t_h) * rSAW(f_ghz, t_h);
+}
+
+function fmt(R) {
+  if (!isFinite(R) || R > 1e9) return '>10⁹×';
+  if (R >= 1e6)  return (R/1e6).toFixed(2) + 'M×';
+  if (R >= 1000) return (R/1000).toFixed(2) + 'k×';
+  if (R >= 10)   return R.toFixed(1) + '×';
+  return R.toFixed(3) + '×';
+}
+
+// ── Canvas setup ──────────────────────────────────────────────
+function setupCanvas() {
+  const canvas = document.getElementById('graph');
+  const dpr = window.devicePixelRatio || 1;
+  const H = 280;
+  canvas.style.height = H + 'px';
+  const W = canvas.offsetWidth;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, W, H };
+}
+
+function drawLogYGrid(ctx, PAD, pw, ph, log_min, log_max) {
+  for (let lv = Math.floor(log_min); lv <= log_max; lv++) {
+    const y = PAD.top + (1 - (lv - log_min) / (log_max - log_min)) * ph;
+    if (y < PAD.top - 1 || y > PAD.top + ph + 1) continue;
+    ctx.strokeStyle = lv === 0 ? '#ccc' : '#e4e8f4';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + pw, y); ctx.stroke();
+    const R = Math.pow(10, lv);
+    const label = R >= 1e6 ? (R/1e6)+'M×' : R >= 1000 ? (R/1000)+'k×' : R+'×';
+    ctx.fillStyle = '#888'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(label, PAD.left - 5, y + 3.5);
+  }
+}
+
+// ── Graph 1: Gap Dependence ───────────────────────────────────
+function drawGapGraph(gap_cur, f_cur, t_cur) {
+  const { ctx, W, H } = setupCanvas();
+  const PAD = { top: 16, right: 16, bottom: 38, left: 58 };
+  const pw = W - PAD.left - PAD.right;
+  const ph = H - PAD.top  - PAD.bottom;
+
+  const N = 300;
+  const gaps = Array.from({length: N}, (_, i) => 1.5 + i * 8.5 / (N-1));
+  let maxR = 1;
+  [785, 830].forEach(lam => gaps.forEach(g => {
+    const r = rDual(g, lam, f_cur, t_cur);
+    if (isFinite(r) && r > maxR) maxR = r;
+  }));
+  const log_max = Math.min(Math.ceil(Math.log10(maxR) + 0.4), 9);
+
+  function xPx(g) { return PAD.left + (g - 1.5) / 8.5 * pw; }
+  function yPx(R) {
+    if (!isFinite(R) || R <= 0) return PAD.top;
+    return PAD.top + (1 - Math.max(0, Math.min(log_max, Math.log10(R))) / log_max) * ph;
+  }
+
+  ctx.fillStyle = '#f9faff';
+  ctx.fillRect(PAD.left, PAD.top, pw, ph);
+  drawLogYGrid(ctx, PAD, pw, ph, 0, log_max);
+
+  [2, 4, 6, 8, 10].forEach(g => {
+    ctx.strokeStyle = '#e4e8f4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(xPx(g), PAD.top); ctx.lineTo(xPx(g), PAD.top+ph); ctx.stroke();
+  });
+
+  const curves = [
+    { lam:785, dual:false, color:'#4e7fff', lw:1.4, dash:[5,3] },
+    { lam:830, dual:false, color:'#ff7f4e', lw:1.4, dash:[5,3] },
+    { lam:785, dual:true,  color:'#4e7fff', lw:2.4, dash:[] },
+    { lam:830, dual:true,  color:'#ff7f4e', lw:2.4, dash:[] },
+  ];
+  curves.forEach(cv => {
+    ctx.strokeStyle = cv.color; ctx.lineWidth = cv.lw; ctx.setLineDash(cv.dash);
+    ctx.beginPath();
+    gaps.forEach((g, i) => {
+      const R = cv.dual ? rDual(g, cv.lam, f_cur, t_cur) : rPlasmon(g, cv.lam, t_cur);
+      i === 0 ? ctx.moveTo(xPx(g), yPx(R)) : ctx.lineTo(xPx(g), yPx(R));
+    });
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1.5; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(xPx(gap_cur), PAD.top); ctx.lineTo(xPx(gap_cur), PAD.top+ph); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#555'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  [2,4,6,8,10].forEach(g => ctx.fillText(g+' nm', xPx(g), PAD.top+ph+16));
+  ctx.fillText('gap (nm)', PAD.left+pw/2, PAD.top+ph+30);
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.strokeRect(PAD.left, PAD.top, pw, ph);
+}
+
+// ── Graph 2: Temperature Dependence ──────────────────────────
+function drawTempGraph(lam_cur, f_cur, t_cur) {
+  const { ctx, W, H } = setupCanvas();
+  const PAD = { top: 16, right: 16, bottom: 42, left: 58 };
+  const pw = W - PAD.left - PAD.right;
+  const ph = H - PAD.top  - PAD.bottom;
+
+  const logT_min = -2.0, logT_max = 2.48;
+  const N = 200;
+  const logTs = Array.from({length: N}, (_, i) => logT_min + i*(logT_max-logT_min)/(N-1));
+
+  function xPx(logT) { return PAD.left + (logT - logT_min) / (logT_max - logT_min) * pw; }
+
+  let maxR = 1;
+  [1.5, 3.0].forEach(g => logTs.forEach(lt => {
+    const r = rPlasmonT(g, lam_cur, gdAtT(Math.pow(10,lt)), t_cur) * rSAW(f_cur, t_cur);
+    if (isFinite(r) && r > maxR) maxR = r;
+  }));
+  const log_max = Math.min(Math.ceil(Math.log10(maxR) + 0.4), 9);
+
+  function yPx(R) {
+    if (!isFinite(R) || R <= 0) return PAD.top;
+    return PAD.top + (1 - Math.max(0, Math.min(log_max, Math.log10(R))) / log_max) * ph;
+  }
+
+  ctx.fillStyle = '#f9faff';
+  ctx.fillRect(PAD.left, PAD.top, pw, ph);
+  drawLogYGrid(ctx, PAD, pw, ph, 0, log_max);
+
+  const tempLabels = [{T:0.01,label:'10mK'},{T:4,label:'4K'},{T:77,label:'77K'},{T:300,label:'300K'}];
+  tempLabels.forEach(({T, label}) => {
+    const x = xPx(Math.log10(T));
+    ctx.strokeStyle = '#e4e8f4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top+ph); ctx.stroke();
+    ctx.fillStyle = '#555'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(label, x, PAD.top+ph+14);
+  });
+
+  [{gap:1.5, color:'#4e7fff'}, {gap:3.0, color:'#ff7f4e'}].forEach(cv => {
+    ctx.strokeStyle = cv.color; ctx.lineWidth = 2.4; ctx.setLineDash([]);
+    ctx.beginPath();
+    logTs.forEach((lt, i) => {
+      const R = rPlasmonT(cv.gap, lam_cur, gdAtT(Math.pow(10,lt)), t_cur) * rSAW(f_cur, t_cur);
+      i === 0 ? ctx.moveTo(xPx(lt), yPx(R)) : ctx.lineTo(xPx(lt), yPx(R));
+    });
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = '#555'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Temperature (K)', PAD.left+pw/2, PAD.top+ph+30);
+
+  // Annotation
+  const ann = 'Temperature effect <5% — room temp is sufficient';
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  const tw = ctx.measureText(ann).width;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillRect(PAD.left+6, PAD.top+6, tw+12, 20);
+  ctx.fillStyle = '#888';
+  ctx.fillText(ann, PAD.left+12, PAD.top+20);
+
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.strokeRect(PAD.left, PAD.top, pw, ph);
+}
+
+// ── Graph 3: Wavelength Spectrum ──────────────────────────────
+function drawSpecGraph(gap_cur, f_cur, t_cur) {
+  const { ctx, W, H } = setupCanvas();
+  const PAD = { top: 16, right: 16, bottom: 38, left: 58 };
+  const pw = W - PAD.left - PAD.right;
+  const ph = H - PAD.top  - PAD.bottom;
+
+  const lam_min = 633, lam_max = 1150;
+  const N = 300;
+  const lams = Array.from({length: N}, (_, i) => lam_min + i*(lam_max-lam_min)/(N-1));
+  const log_max = 3;  // Y-axis clipped at 1000× (display only)
+
+  function xPx(lam) { return PAD.left + (lam - lam_min) / (lam_max - lam_min) * pw; }
+  function yPx(R) {
+    if (!isFinite(R) || R <= 0) return PAD.top;
+    return PAD.top + (1 - Math.max(0, Math.min(log_max, Math.log10(R))) / log_max) * ph;
+  }
+
+  ctx.fillStyle = '#f9faff';
+  ctx.fillRect(PAD.left, PAD.top, pw, ph);
+  drawLogYGrid(ctx, PAD, pw, ph, 0, log_max);
+
+  [700, 800, 900, 1000, 1100].forEach(lam => {
+    const x = xPx(lam);
+    ctx.strokeStyle = '#e4e8f4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top+ph); ctx.stroke();
+    ctx.fillStyle = '#555'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(lam+'nm', x, PAD.top+ph+16);
+  });
+
+  // LSPR line
+  const xLSPR = xPx(1100);
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(xLSPR, PAD.top); ctx.lineTo(xLSPR, PAD.top+ph); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#999'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText('LSPR', xLSPR-3, PAD.top+14);
+
+  [{gap:1.5,color:'#4e7fff'},{gap:2.0,color:'#2ca85a'},{gap:3.0,color:'#ff7f4e'}].forEach(cv => {
+    ctx.strokeStyle = cv.color; ctx.lineWidth = 2.2; ctx.setLineDash([]);
+    ctx.beginPath();
+    let first = true;
+    lams.forEach(lam => {
+      const R = rDual(cv.gap, lam, f_cur, t_cur);
+      if (!isFinite(R) || R > Math.pow(10, log_max) * 2) { first = true; return; }
+      first ? ctx.moveTo(xPx(lam), yPx(R)) : ctx.lineTo(xPx(lam), yPx(R));
+      first = false;
+    });
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = '#555'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Wavelength (nm)', PAD.left+pw/2, PAD.top+ph+30);
+
+  // Annotation
+  const ann = 'Warning: divergence near LSPR (outside model validity)';
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  const tw = ctx.measureText(ann).width;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillRect(PAD.left+6, PAD.top+6, tw+12, 20);
+  ctx.fillStyle = '#c0392b';
+  ctx.fillText(ann, PAD.left+12, PAD.top+20);
+
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.strokeRect(PAD.left, PAD.top, pw, ph);
+}
+
+// ── Tab switching ─────────────────────────────────────────────
+let activeTab = 'gap';
+function switchTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['gap','temp','spec'].forEach(t => {
+    document.getElementById('legend-'+t).style.display = t === tab ? '' : 'none';
+  });
+  redraw();
+}
+
+// ── UI update ─────────────────────────────────────────────────
+function getParams() {
+  return {
+    gap: parseFloat(document.getElementById('gap').value),
+    lam: parseInt(document.querySelector('input[name="lam"]:checked').value),
+    t:   parseFloat(document.getElementById('t').value),
+    f:   parseFloat(document.getElementById('f').value),
+  };
+}
+
+function redraw() {
+  const { gap, lam, t, f } = getParams();
+  if      (activeTab === 'gap')  drawGapGraph(gap, f, t);
+  else if (activeTab === 'temp') drawTempGraph(lam, f, t);
+  else                           drawSpecGraph(gap, f, t);
+}
+
+function update() {
+  const { gap, lam, t, f } = getParams();
+  document.getElementById('v-gap').textContent = gap.toFixed(1);
+  document.getElementById('v-t').textContent   = t.toFixed(1);
+  document.getElementById('v-f').textContent   = f.toFixed(1);
+
+  const rP = rPlasmon(gap, lam, t);
+  const rS = rSAW(f, t);
+  const rD = rP * rS;
+
+  document.getElementById('r-plasmon').textContent = fmt(rP);
+  document.getElementById('r-saw').textContent     = fmt(rS);
+  document.getElementById('r-dual').textContent    = fmt(rD);
+
+  const t1b = parseFloat(document.getElementById('t1-base').value);
+  const t1e = rD * t1b;
+  document.getElementById('t1-eff').textContent =
+    !isFinite(t1e) ? '—' :
+    t1e >= 1e6 ? (t1e/1e6).toFixed(2)+'M' :
+    t1e >= 1000 ? (t1e/1000).toFixed(1)+'k' :
+    t1e.toFixed(1);
+
+  redraw();
+}
+
+// ── Optimal Design Finder ─────────────────────────────────────
+function optimize() {
+  const target = parseFloat(document.getElementById('target').value);
+  const { t, f } = getParams();
+  const div = document.getElementById('opt-result');
+
+  if (!isFinite(target) || target <= 1) {
+    div.innerHTML = '<span class="ng">Enter a target reduction factor &gt; 1.</span>';
+    return;
+  }
+  const lams = [785, 830];
+  const results = lams.map(lam => {
+    const maxR = rDual(1.5, lam, f, t);
+    if (maxR < target) return { lam, ok: false, maxR };
+    let lo = 1.5, hi = 10.0;
+    for (let i = 0; i < 64; i++) {
+      const mid = (lo + hi) / 2;
+      rDual(mid, lam, f, t) >= target ? (lo = mid) : (hi = mid);
+    }
+    return { lam, ok: true, gap_max: lo, maxR };
+  });
+
+  let html = '';
+  results.forEach(r => {
+    if (!r.ok)
+      html += `<div class="ng">λ=${r.lam}nm: even at gap=1.5nm only ${fmt(r.maxR)} — target not reached</div>`;
+    else
+      html += `<div class="ok">λ=${r.lam}nm: achievable at gap ≤ <strong>${r.gap_max.toFixed(2)} nm</strong> (${fmt(r.maxR)} at gap=1.5nm)</div>`;
+  });
+  const ok = results.filter(r => r.ok);
+  if (ok.length > 0) {
+    const best = ok.reduce((a,b) => a.gap_max > b.gap_max ? a : b);
+    html += `<div style="margin-top:10px" class="rec">→ Recommended: λ=${best.lam}nm &nbsp;|&nbsp; gap ≤ ${best.gap_max.toFixed(2)} nm (least tight fabrication requirement)</div>`;
+  } else {
+    html += `<div style="margin-top:10px" class="ng">→ Increase t or tune f_SAW closer to 8 GHz.</div>`;
+  }
+  div.innerHTML = html;
+}
+
+// ── CSV Download ──────────────────────────────────────────────
+function downloadCSV() {
+  const { gap, lam, t, f } = getParams();
+  const t1b = parseFloat(document.getElementById('t1-base').value) || 200;
+
+  const gapArr = [];
+  for (let g = 1.5; g <= 10.01; g += 0.5) gapArr.push(Math.round(g * 10) / 10);
+
+  const header = 'gap_nm,E_gap,reduction_plasmon,reduction_saw,reduction_dual,T1_eff_us\n';
+  const rows = gapArr.map(g => {
+    const eg = eGap(g, lam);
+    const rp = rPlasmon(g, lam, t);
+    const rs = rSAW(f, t);
+    const rd = rp * rs;
+    const t1e = rd * t1b;
+    return [
+      g.toFixed(1),
+      eg.toFixed(6),
+      rp.toFixed(4),
+      rs.toFixed(4),
+      rd.toFixed(4),
+      t1e.toFixed(2)
+    ].join(',');
+  });
+
+  const csv = header + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `au_nanogap_design_${gap.toFixed(1)}nm_${lam}nm.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+['gap','t','f'].forEach(id => document.getElementById(id).addEventListener('input', update));
+document.querySelectorAll('input[name="lam"]').forEach(el => el.addEventListener('change', update));
+document.getElementById('t1-base').addEventListener('input', update);
+document.getElementById('coupling').addEventListener('input', update);
+window.addEventListener('resize', redraw);
+update();
+</script>
+</body>
+</html>

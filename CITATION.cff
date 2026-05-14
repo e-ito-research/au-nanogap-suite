@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Research Design Tools for Quantum Devices"
+version: 1.0.0
+date-released: "2026-05-14"
+license: CC-BY-4.0
+url: "https://e-ito-research.github.io/au-nanogap-suite/"
+repository-code: "https://github.com/e-ito-research/au-nanogap-suite"
+abstract: >
+  Browser-based calculators for quantum device design.
+  Includes Au nanogap detector optimizer, qubit noise
+  designer, and LiNbO3 cryogenic stress calculator.
+authors:
+  - alias: e.ito.research
+keywords:
+  - quantum device
+  - Au nanogap
+  - LiNbO3
+  - cryogenic bonding
+  - ScAlN
+  - piezoelectric
