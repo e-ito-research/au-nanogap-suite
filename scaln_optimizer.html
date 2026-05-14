@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta name="referrer" content="no-referrer">
+<title>ScAlN Optimizer -- Au Nanogap Suite</title>
+<style>
+:root{--bg:#07090f;--surface:#0d1220;--panel:#111926;--border:#1c2d42;--acc:#00e5ff;--acc2:#ff6b35;--acc3:#50fa7b;--warn:#ffc946;--danger:#ff4466;--purple:#c084fc;--text:#d8e8f0;--muted:#4e6580;--mono:'JetBrains Mono','Courier New',monospace;--r:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
+header{background:linear-gradient(135deg,#0a1628 0%,#06101e 100%);border-bottom:1px solid var(--border);padding:clamp(10px,2vw,16px) clamp(12px,3vw,24px);position:sticky;top:0;z-index:100;}
+header h1{font-size:clamp(.9rem,2.5vw,1.15rem);font-weight:700;color:var(--acc);letter-spacing:.3px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
+header p{color:var(--muted);font-size:clamp(.65rem,1.8vw,.78rem);margin-top:3px;}
+.badge{display:inline-block;font-size:.58rem;padding:2px 7px;border-radius:3px;font-weight:700;letter-spacing:.5px;white-space:nowrap;}
+.b-ok{background:#081e10;color:var(--acc3);border:1px solid #163a22;}
+.b-warn{background:#1e1400;color:var(--warn);border:1px solid #4a3500;}
+.b-lit{background:#080d20;color:#70b8ff;border:1px solid #1a3460;}
+.layout{display:grid;grid-template-columns:clamp(240px,28vw,320px) 1fr;min-height:calc(100vh - 56px);}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:clamp(12px,2vw,18px) clamp(10px,2vw,16px);overflow-y:auto;}
+@media(max-width:768px){.sidebar{border-right:none;border-bottom:1px solid var(--border);}}
+.sec{font-size:.6rem;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin:clamp(12px,2vw,18px) 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.sec:first-of-type{margin-top:0;}
+.param-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px;}
+.param-row label{font-size:clamp(.7rem,1.8vw,.78rem);color:var(--muted);flex:1;min-width:0;}
+.param-row input[type=range]{width:clamp(60px,10vw,80px);accent-color:var(--acc);cursor:pointer;touch-action:manipulation;}
+.pval{font-family:var(--mono);font-size:clamp(.68rem,1.8vw,.76rem);color:var(--acc);text-align:right;min-width:clamp(60px,12vw,90px);white-space:nowrap;}
+.main{padding:clamp(12px,2.5vw,20px);overflow-y:auto;}
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;}
+.card .lbl{font-size:clamp(.6rem,1.5vw,.66rem);color:var(--muted);letter-spacing:.3px;}
+.card .v{font-family:var(--mono);font-size:clamp(.9rem,2.5vw,1.1rem);font-weight:700;margin:3px 0 2px;}
+.card .u{font-size:clamp(.6rem,1.5vw,.66rem);color:var(--muted);}
+.ca{color:var(--acc);}.cb{color:var(--acc2);}.cc{color:var(--acc3);}.cw{color:var(--warn);}.cd{color:var(--danger);}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:clamp(.62rem,1.5vw,.7rem);font-weight:700;letter-spacing:.5px;}
+.pill-ok{background:#0a2416;color:var(--acc3);border:1px solid #1a4828;}
+.pill-fail{background:#200a10;color:var(--danger);border:1px solid #5c1a28;}
+.window-bar{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:10px;flex-wrap:wrap;}
+.window-label{font-size:clamp(.65rem,1.6vw,.73rem);color:var(--muted);white-space:nowrap;}
+.window-val{font-family:var(--mono);font-size:clamp(.78rem,2vw,.9rem);color:var(--acc);font-weight:700;}
+.alert{border-radius:var(--r);padding:10px 13px;font-size:clamp(.68rem,1.8vw,.76rem);margin-bottom:12px;line-height:1.65;}
+.ao{background:#060e08;border:1px solid #153020;color:var(--acc3);}
+.aw{background:#150e00;border:1px solid #3d2c00;color:var(--warn);}
+.ae{background:#140408;border:1px solid #401020;color:var(--danger);}
+.ai{background:#040e1c;border:1px solid #102840;color:#70b8ff;}
+.cbox{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px;}
+.ctitle{font-size:clamp(.63rem,1.6vw,.7rem);color:var(--muted);margin-bottom:8px;letter-spacing:.4px;}
+.chart-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+canvas{display:block;max-width:100%;height:auto;}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);}
+table.dt{width:100%;border-collapse:collapse;font-size:clamp(.62rem,1.6vw,.72rem);font-family:var(--mono);min-width:500px;}
+table.dt th{background:#0a1624;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
+table.dt th:first-child{text-align:left;}
+table.dt td{padding:5px 10px;border-bottom:1px solid #111e30;text-align:right;white-space:nowrap;}
+table.dt td:first-child{text-align:left;color:var(--muted);}
+table.dt tr:hover td{background:#0e1c2c;}
+.tok{color:var(--acc3)!important;}.twarn{color:var(--warn)!important;}.tred{color:var(--danger)!important;}.tacc{color:var(--acc)!important;}
+.ref{font-size:clamp(.6rem,1.5vw,.66rem);color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;line-height:1.85;}
+</style>
+</head>
+<body>
+<header>
+  <h1>ScAlN Buffer Layer Optimizer
+    <span class="badge b-ok">CALIBRATED</span>
+    <span class="badge b-lit">Weis &amp; Gaylord 1985 | Moser 2023</span>
+    <span class="badge b-warn">sigma_limit: Watanabe 2023</span>
+  </h1>
+  <p>ScAlN interlayer design for LiNbO3/Sapphire cryogenic bonding -- optimal Sc% at room temp and 4K | v1.0 2026-05</p>
+</header>
+<div class="layout">
+<div class="sidebar">
+  <div class="sec">Sc% Range</div>
+  <div class="param-row"><label>Sc content</label><input type="range" id="scPct" min="0" max="50" step="1" value="36" aria-label="Sc content percent"><span class="pval"><span id="scPctd">36</span>%</span></div>
+  <div class="sec">Temperature</div>
+  <div class="param-row"><label>Bonding temp T_bond</label><input type="range" id="Tbond" min="200" max="500" step="10" value="300" aria-label="Bonding temperature"><span class="pval"><span id="Tbondd">300</span> K</span></div>
+  <div class="param-row"><label>Operating temp T_op</label><input type="range" id="Top" min="4" max="100" step="2" value="4" aria-label="Operating temperature"><span class="pval"><span id="Topd">4</span> K</span></div>
+  <div class="sec">Bond Limit</div>
+  <div class="param-row"><label>sigma_limit</label><input type="range" id="sigLim" min="5" max="50" step="1" value="23" aria-label="Bond stress limit"><span class="pval"><span id="sigLimd">23</span> MPa</span></div>
+  <div class="sec">ScAlN Material Model</div>
+  <div class="param-row"><label>E_AlN (GPa)</label><span class="pval" style="color:var(--muted)">296</span></div>
+  <div class="param-row"><label>E_Sc36% (GPa)</label><span class="pval" style="color:var(--muted)">175</span></div>
+  <div class="param-row"><label>alpha_AlN (ppm/K)</label><span class="pval" style="color:var(--muted)">4.2</span></div>
+  <div class="param-row"><label>alpha_ScN (ppm/K)</label><span class="pval" style="color:var(--muted)">10.0</span></div>
+  <div class="param-row"><label>alpha_Sap (ppm/K)</label><input type="range" id="alphaSap" min="4" max="7" step="0.1" value="5.0" aria-label="Sapphire CTE"><span class="pval"><span id="alphaSapd">5.0</span> ppm/K</span></div>
+  <div class="sec">References</div>
+  <div class="ref">ScAlN elastic: Moser et al., Appl. Phys. Lett. 2023<br>ScAlN CTE: linear interp AlN/ScN<br>AlN baseline: Davydov (2002)<br>Bond limit: Watanabe &amp; Takigawa,<br>Appl. Surf. Sci. (2023) -- 23 MPa<br>LiNbO3: Weis &amp; Gaylord (1985)</div>
+</div>
+<div class="main">
+  <div class="rg">
+    <div class="card"><div class="lbl">Current Sc%</div><div class="v ca" id="scDisplay">36%</div><div class="u">selected</div></div>
+    <div class="card"><div class="lbl">sigma at T_bond</div><div class="v" id="sigBond">--</div><div class="u">MPa</div></div>
+    <div class="card"><div class="lbl">sigma at T_op</div><div class="v" id="sigOp">--</div><div class="u">MPa</div></div>
+    <div class="card"><div class="lbl">Bond status</div><div class="lbl" id="bondStatus">--</div></div>
+    <div class="card"><div class="lbl">Op. status</div><div class="lbl" id="opStatus">--</div></div>
+    <div class="card"><div class="lbl">4K optimal window</div><div class="v cc" id="optWindow">--</div><div class="u">Sc%</div></div>
+  </div>
+  <div class="window-bar">
+    <span class="window-label">Room-temp bond optimal:</span><span class="window-val" id="rtWindow">--</span>
+    <span class="window-label" style="margin-left:16px;">4K operation optimal:</span><span class="window-val" id="crWindow">--</span>
+    <span class="window-label" style="margin-left:16px;">Dual-optimal:</span><span class="window-val" id="dualWindow">--</span>
+  </div>
+  <div class="alert" id="mainAlert"></div>
+  <div class="cbox"><div class="ctitle">sigma (MPa) vs Sc% -- at T_bond and T_op | Bond limit shown</div><div class="chart-wrap"><canvas id="scChart" height="200"></canvas></div></div>
+  <div class="cbox"><div class="ctitle">sigma (MPa) vs Temperature -- at selected Sc% | Bond limit shown</div><div class="chart-wrap"><canvas id="tChart" height="180"></canvas></div></div>
+  <div class="cbox">
+    <div class="ctitle">Full Sc% table</div>
+    <div class="tscroll"><table class="dt"><thead><tr><th>Sc%</th><th>alpha (ppm/K)</th><th>E (GPa)</th><th>sigma(T_bond) MPa</th><th>bond OK?</th><th>sigma(T_op) MPa</th><th>op OK?</th><th>dual OK?</th></tr></thead><tbody id="scTable"></tbody></table></div>
+  </div>
+  <div class="alert ai" id="discoveryBox"></div>
+</div>
+</div>
+<script>
+function clamp(v,lo,hi){const n=parseFloat(v);return isFinite(n)?Math.max(lo,Math.min(hi,n)):lo;}
+function safeText(el,s){if(el)el.textContent=String(s);}
+function scalnProps(sc){const alpha=(4.2+(10.0-4.2)*sc/100)*1e-6;const E=Math.max(80e9,(296-(296-175)*sc/36)*1e9);return{alpha,E,M:E/0.78};}
+function sigma(sc,T_K,aSap,Tbond){const{M,alpha}=scalnProps(sc);const DT=Math.abs(Tbond-T_K);return M*Math.abs(alpha-aSap*1e-6)*DT/1e6;}
+function findWindow(cond,arr){const ok=arr.filter(cond);if(!ok.length)return'None';return ok[0]+'-'+ok[ok.length-1]+'%';}
+function drawChart(id,xs,series,xl,yl,refs){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=Math.max(300,canvas.parentElement.clientWidth-2);const H=canvas.height;
+  canvas.width=W;canvas.style.width=W+'px';
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  const P={t:10,r:20,b:32,l:54},cw=W-P.l-P.r,ch=H-P.t-P.b;
+  const allY=series.flatMap(s=>s.y).concat((refs||[]).map(r=>r.y)).filter(isFinite);
+  if(!allY.length||!xs.length)return;
+  const xMin=xs[0],xMax=xs[xs.length-1];
+  let yMin=Math.min(...allY),yMax=Math.max(...allY);
+  const yp=(yMax-yMin)*0.1||1;yMin=Math.max(0,yMin-yp);yMax+=yp;
+  if(!isFinite(yMin)||!isFinite(yMax)||yMin===yMax)return;
+  const px=x=>{const v=P.l+(x-xMin)/(xMax-xMin)*cw;return isFinite(v)?v:P.l;};
+  const py=y=>{const v=P.t+ch-(y-yMin)/(yMax-yMin)*ch;return isFinite(v)?Math.max(P.t,Math.min(P.t+ch,v)):P.t+ch;};
+  ctx.fillStyle='#0d1624';ctx.fillRect(P.l,P.t,cw,ch);
+  ctx.strokeStyle='#1a2840';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const yg=yMin+(yMax-yMin)*i/4;ctx.beginPath();ctx.moveTo(P.l,py(yg));ctx.lineTo(P.l+cw,py(yg));ctx.stroke();ctx.fillStyle='#4e6580';ctx.font='9px Courier New';ctx.textAlign='right';ctx.fillText(yg>=100?yg.toFixed(0):yg.toFixed(1),P.l-4,py(yg)+3);}
+  ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';
+  const nX=Math.min(6,xs.length);for(let i=0;i<=nX;i++){const xg=xMin+(xMax-xMin)*i/nX;ctx.fillText(xg>=10?xg.toFixed(0):xg.toFixed(1),px(xg),P.t+ch+14);}
+  if(xl){ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.fillText(xl,P.l+cw/2,H-2);}
+  if(yl){ctx.save();ctx.translate(11,P.t+ch/2);ctx.rotate(-Math.PI/2);ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.fillText(yl,0,0);ctx.restore();}
+  (refs||[]).forEach(r=>{if(!isFinite(r.y))return;ctx.setLineDash([4,4]);ctx.strokeStyle=r.color||'#ff4466';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.l,py(r.y));ctx.lineTo(P.l+cw,py(r.y));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=r.color||'#ff4466';ctx.font='8px Segoe UI';ctx.textAlign='left';ctx.fillText(r.label||'',P.l+3,py(r.y)-3);});
+  series.forEach(s=>{ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.w||2;ctx.setLineDash(s.dash||[]);let st=true;s.y.forEach((yv,i)=>{if(!isFinite(yv)||!isFinite(xs[i]))return;if(st){ctx.moveTo(px(xs[i]),py(yv));st=false;}else ctx.lineTo(px(xs[i]),py(yv));});ctx.stroke();ctx.setLineDash([]);});
+  let li=0;series.filter(s=>s.label).forEach(s=>{ctx.setLineDash(s.dash||[]);ctx.strokeStyle=s.color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W-130,P.t+12+li*16);ctx.lineTo(W-112,P.t+12+li*16);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=s.color;ctx.font='9px Segoe UI';ctx.textAlign='left';ctx.fillText(s.label,W-108,P.t+16+li*16);li++;});
+}
+function update(){
+  const sc=clamp(document.getElementById('scPct').value,0,50);
+  const Tbond=clamp(document.getElementById('Tbond').value,200,500);
+  const Top=clamp(document.getElementById('Top').value,4,100);
+  const sigLim=clamp(document.getElementById('sigLim').value,5,50);
+  const aSap=clamp(document.getElementById('alphaSap').value,4,7);
+  safeText(document.getElementById('scPctd'),sc);
+  safeText(document.getElementById('Tbondd'),Tbond);
+  safeText(document.getElementById('Topd'),Top);
+  safeText(document.getElementById('sigLimd'),sigLim);
+  safeText(document.getElementById('alphaSapd'),aSap.toFixed(1));
+  const sB=sigma(sc,Tbond,aSap,Tbond),sO=sigma(sc,Top,aSap,Tbond);
+  const okB=sB<=sigLim,okO=sO<=sigLim;
+  safeText(document.getElementById('scDisplay'),sc+'%');
+  const sBEl=document.getElementById('sigBond');safeText(sBEl,sB.toFixed(2));sBEl.className='v '+(okB?'cc':'cd');
+  const sOEl=document.getElementById('sigOp');safeText(sOEl,sO.toFixed(2));sOEl.className='v '+(okO?'cc':'cd');
+  const bsEl=document.getElementById('bondStatus');bsEl.innerHTML='';const bp=document.createElement('span');bp.className=okB?'pill pill-ok':'pill pill-fail';bp.textContent=okB?'BOND OK':'BOND FAIL';bsEl.appendChild(bp);
+  const osEl=document.getElementById('opStatus');osEl.innerHTML='';const op=document.createElement('span');op.className=okO?'pill pill-ok':'pill pill-fail';op.textContent=okO?'OP OK':'OP FAIL';osEl.appendChild(op);
+  const scArr=Array.from({length:51},(_,i)=>i);
+  const rtOk=s=>sigma(s,Tbond,aSap,Tbond)<=sigLim;
+  const crOk=s=>sigma(s,Top,aSap,Tbond)<=sigLim;
+  const dOk=s=>rtOk(s)&&crOk(s);
+  safeText(document.getElementById('rtWindow'),findWindow(rtOk,scArr));
+  safeText(document.getElementById('crWindow'),findWindow(crOk,scArr));
+  safeText(document.getElementById('dualWindow'),findWindow(dOk,scArr));
+  const crSc=scArr.filter(crOk);safeText(document.getElementById('optWindow'),crSc.length?crSc[0]+'-'+crSc[crSc.length-1]:'None');
+  const aEl=document.getElementById('mainAlert');
+  if(dOk(sc)){aEl.className='alert ao';aEl.textContent='Sc='+sc+'% satisfies BOTH bonding and operation. sigma(T_bond)='+sB.toFixed(2)+' MPa, sigma(T_op)='+sO.toFixed(2)+' MPa, limit='+sigLim+' MPa.';}
+  else if(okB&&!okO){aEl.className='alert aw';aEl.textContent='Sc='+sc+'% bonds OK but FAILS at T_op='+Top+'K. sigma(T_op)='+sO.toFixed(2)+' MPa > limit '+sigLim+' MPa. Dual-optimal: '+findWindow(dOk,scArr)+'.';}
+  else{aEl.className='alert ae';aEl.textContent='Sc='+sc+'% FAILS at bonding: sigma='+sB.toFixed(2)+' MPa > limit '+sigLim+' MPa.';}
+  const scXs=Array.from({length:51},(_,i)=>i);
+  drawChart('scChart',scXs,[{y:scXs.map(s=>sigma(s,Tbond,aSap,Tbond)),color:'#00e5ff',label:'sigma(T_bond='+Tbond+'K)',w:2},{y:scXs.map(s=>sigma(s,Top,aSap,Tbond)),color:'#ff6b35',label:'sigma(T_op='+Top+'K)',w:2}],'Sc content (%)','sigma (MPa)',[{y:sigLim,color:'#ff4466',label:'Limit '+sigLim+' MPa'}]);
+  const tXs=Array.from({length:100},(_,i)=>4+i*(Tbond-4)/99);
+  drawChart('tChart',tXs,[{y:tXs.map(T=>sigma(sc,T,aSap,Tbond)),color:'#c084fc',label:'sigma(Sc='+sc+'%)',w:2}],'Temperature (K)','sigma (MPa)',[{y:sigLim,color:'#ff4466',label:'Limit '+sigLim+' MPa'}]);
+  let tb='';scArr.forEach(s=>{if(s%2!==0&&s!==sc)return;const{alpha,E}=scalnProps(s);const sB2=sigma(s,Tbond,aSap,Tbond),sO2=sigma(s,Top,aSap,Tbond);const bOk=sB2<=sigLim,oOk=sO2<=sigLim,dOk2=bOk&&oOk;const hl=s===sc?' style="background:#111e30"':'';tb+='<tr'+hl+'><td class="tacc">'+s+(s===sc?' *':'')+'</td><td>'+(alpha*1e6).toFixed(2)+'</td><td>'+(E/1e9).toFixed(0)+'</td><td class="'+(bOk?'tok':'tred')+'">'+sB2.toFixed(2)+'</td><td class="'+(bOk?'tok':'tred')+'">'+(bOk?'OK':'FAIL')+'</td><td class="'+(oOk?'tok':'tred')+'">'+sO2.toFixed(2)+'</td><td class="'+(oOk?'tok':'tred')+'">'+(oOk?'OK':'FAIL')+'</td><td class="'+(dOk2?'tok':'twarn')+'">'+(dOk2?'DUAL':'--')+'</td></tr>';});
+  document.getElementById('scTable').innerHTML=tb;
+  const dEl=document.getElementById('discoveryBox');const dualSc=scArr.filter(dOk);
+  dEl.textContent='Key finding: Room-temp bonding optimal: '+findWindow(rtOk,scArr)+'. 4K operation optimal: '+findWindow(crOk,scArr)+'. Dual-optimal: '+(dualSc.length?dualSc[0]+'-'+dualSc[dualSc.length-1]+'%':'None')+'. This quantifies the Sc% design gap between bonding and cryogenic operation (2026-05).';
+}
+let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(update,80);});
+['scPct','Tbond','Top','sigLim','alphaSap'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',update);});
+update();
+</script>
+</body>
+</html>

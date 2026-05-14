@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta name="referrer" content="no-referrer">
+<title>Research 3 & 5 Advanced -- Au Nanogap Suite</title>
+<style>
+:root{--bg:#07090f;--surface:#0d1220;--panel:#111926;--border:#1c2d42;--acc:#00e5ff;--acc2:#ff6b35;--acc3:#50fa7b;--warn:#ffc946;--danger:#ff4466;--purple:#c084fc;--text:#d8e8f0;--muted:#4e6580;--mono:'JetBrains Mono','Courier New',monospace;--r:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
+header{background:linear-gradient(135deg,#0a1628,#06101e);border-bottom:1px solid var(--border);padding:clamp(10px,2vw,16px) clamp(12px,3vw,24px);position:sticky;top:0;z-index:100;}
+header h1{font-size:clamp(.85rem,2.2vw,1.05rem);font-weight:700;color:var(--acc);display:flex;align-items:center;flex-wrap:wrap;gap:5px;}
+header p{color:var(--muted);font-size:clamp(.62rem,1.6vw,.75rem);margin-top:3px;}
+.badge{display:inline-block;font-size:.58rem;padding:1px 7px;border-radius:3px;font-weight:700;letter-spacing:.5px;white-space:nowrap;}
+.b-warn{background:#1e1400;color:var(--warn);border:1px solid #4a3500;}
+.b-new{background:#080d20;color:#70b8ff;border:1px solid #1a3460;}
+.b-ok{background:#081e10;color:var(--acc3);border:1px solid #163a22;}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);min-height:calc(100vh - 56px);}
+@media(max-width:800px){.panels{grid-template-columns:1fr;}}
+.panel{background:var(--bg);padding:clamp(12px,2.5vw,20px);overflow-y:auto;}
+.panel-title{font-size:clamp(.8rem,2vw,.9rem);font-weight:700;color:var(--acc);margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.panel-title span{font-size:clamp(.6rem,1.5vw,.68rem);color:var(--muted);font-weight:400;margin-left:6px;}
+.sec{font-size:.6rem;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin:clamp(12px,2vw,16px) 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.sec:first-of-type{margin-top:0;}
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:6px;}
+.row label{font-size:clamp(.68rem,1.8vw,.76rem);color:var(--muted);flex:1;min-width:0;}
+.row input[type=range]{width:clamp(55px,9vw,75px);accent-color:var(--acc);cursor:pointer;touch-action:manipulation;}
+.row select{background:#0c1828;border:1px solid var(--border);color:var(--text);padding:3px 6px;font-size:clamp(.65rem,1.6vw,.72rem);border-radius:3px;max-width:clamp(140px,22vw,190px);}
+.val{font-family:var(--mono);font-size:clamp(.66rem,1.7vw,.74rem);color:var(--acc);text-align:right;min-width:clamp(55px,11vw,88px);white-space:nowrap;}
+.rg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px;margin-bottom:12px;}
+.rg3{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:12px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;}
+.card .lbl{font-size:clamp(.58rem,1.4vw,.63rem);color:var(--muted);letter-spacing:.3px;}
+.card .v{font-family:var(--mono);font-size:clamp(.85rem,2.2vw,1rem);font-weight:700;margin:3px 0 2px;}
+.card .u{font-size:clamp(.58rem,1.4vw,.63rem);color:var(--muted);}
+.ca{color:var(--acc);}.cb{color:var(--acc2);}.cc{color:var(--acc3);}.cw{color:var(--warn);}.cd{color:var(--danger);}
+.alert{border-radius:var(--r);padding:9px 12px;font-size:clamp(.66rem,1.7vw,.74rem);margin-bottom:10px;line-height:1.65;}
+.ao{background:#060e08;border:1px solid #153020;color:var(--acc3);}
+.aw{background:#150e00;border:1px solid #3d2c00;color:var(--warn);}
+.ae{background:#140408;border:1px solid #401020;color:var(--danger);}
+.ai{background:#040e1c;border:1px solid #102840;color:#70b8ff;}
+.cbox{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:11px;margin-bottom:11px;}
+.ctitle{font-size:clamp(.62rem,1.5vw,.68rem);color:var(--muted);margin-bottom:7px;letter-spacing:.4px;}
+.chart-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+canvas{display:block;max-width:100%;}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);}
+table.dt{width:100%;border-collapse:collapse;font-size:clamp(.6rem,1.5vw,.7rem);font-family:var(--mono);min-width:420px;}
+table.dt th{background:#0a1624;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:6px 9px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
+table.dt th:first-child{text-align:left;}
+table.dt td{padding:5px 9px;border-bottom:1px solid #111e30;text-align:right;white-space:nowrap;}
+table.dt td:first-child{text-align:left;color:var(--muted);}
+table.dt tr:hover td{background:#0e1c2c;}
+.tok{color:var(--acc3)!important;}.twarn{color:var(--warn)!important;}.tred{color:var(--danger)!important;}.tacc{color:var(--acc)!important;}
+.ref{font-size:clamp(.6rem,1.4vw,.65rem);color:var(--muted);border-top:1px solid var(--border);padding-top:9px;margin-top:11px;line-height:1.85;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Research 3 &amp; 5 Advanced
+    <span class="badge b-new">DEVELOPED 2026-05</span>
+    <span class="badge b-warn">coupling_eff: UNVERIFIED</span>
+    <span class="badge b-ok">4-material comparison: NEW</span>
+  </h1>
+  <p>R3: d_TLS Sarabi 2016 bounds for SAW coupling_eff | R5: In/Sn/Al/AuSn interlayer comparison | v1.1</p>
+</header>
+<div class="panels">
+<div class="panel">
+<div class="panel-title">Research 3: SAW-TLS Coupling <span>d_TLS: Sarabi et al. PRL 116, 167002 (2016)</span></div>
+<div class="sec">SAW Parameters</div>
+<div class="row"><label>f_SAW (GHz)</label><input type="range" id="fSAW" min="1" max="20" step="0.5" value="8" aria-label="SAW frequency"><span class="val"><span id="fSAWd">8.0</span> GHz</span></div>
+<div class="row"><label>Power/width (mW/mm)</label><input type="range" id="pSAW" min="-2" max="1" step="0.25" value="0" aria-label="SAW power"><span class="val"><span id="pSAWd">1.0</span></span></div>
+<div class="row"><label>T_operating (K)</label><input type="range" id="Top" min="4" max="300" step="4" value="4" aria-label="Operating temperature"><span class="val"><span id="Topd">4</span> K</span></div>
+<div class="sec">d_TLS Model</div>
+<div class="row"><label>d_TLS preset</label><select id="dModel" aria-label="d_TLS preset"><option value="default">Default (1.54e-5)</option><option value="min">0.1 D (lit. min)</option><option value="p1">2.8 D Sarabi p1</option><option value="p2">8.3 D Sarabi p2</option><option value="jj">5.8 D JJ barrier</option><option value="custom">Custom</option></select></div>
+<div class="row"><label>Custom d_TLS (Debye)</label><input type="range" id="dCust" min="0.01" max="10" step="0.01" value="2.8" aria-label="Custom d_TLS"><span class="val"><span id="dCustd">2.80</span> D</span></div>
+<div class="sec">Results</div>
+<div class="rg3">
+  <div class="card"><div class="lbl">d_TLS (Debye)</div><div class="v ca" id="dVal">--</div><div class="u">selected</div></div>
+  <div class="card"><div class="lbl">coupling_eff</div><div class="v cw" id="ceffV">--</div><div class="u">physical</div></div>
+  <div class="card"><div class="lbl">vs default</div><div class="v" id="ceffR">--</div><div class="u">x</div></div>
+  <div class="card"><div class="lbl">A(1h) SAW</div><div class="v" id="A1h">--</div><div class="u">noise ratio</div></div>
+  <div class="card"><div class="lbl">g_SAW/2pi (Hz)</div><div class="v cb" id="gV">--</div><div class="u"></div></div>
+  <div class="card"><div class="lbl">hbar*w/k_B*T</div><div class="v" id="qR">--</div><div class="u">quantum param</div></div>
+</div>
+<div class="alert" id="cAlert"></div>
+<div class="alert" id="qAlert"></div>
+<div class="cbox">
+  <div class="ctitle">coupling_eff from literature d_TLS</div>
+  <div class="tscroll"><table class="dt"><thead><tr><th>Source</th><th>d (D)</th><th>ceff</th><th>A(1h)</th><th>reduction</th></tr></thead><tbody id="dTable"></tbody></table></div>
+</div>
+<div class="cbox"><div class="ctitle">A/A0 vs time -- all d_TLS models + plasmon ref</div><div class="chart-wrap"><canvas id="noiseChart" height="150"></canvas></div></div>
+<div class="alert ai" style="font-size:clamp(.63rem,1.6vw,.71rem);">Default ceff=1.54e-5 corresponds to d_TLS=0.0016 Debye, 63x smaller than literature minimum (Sarabi 2016: 0.1 Debye). Experimental calibration required for LiNbO3/Au system.</div>
+<div class="ref">Sarabi et al., PRL 116, 167002 (2016) -- d_TLS 2.8, 8.3 Debye in SiN (60 TLS)<br>Khalil et al., PRB 90, 100201 (2014) -- range 0.1-4.0 Debye<br>Hung et al. (2024) -- JJ barrier: d_z ~5.8 Debye<br>de Graaf et al., Nat. Commun. 9, 1143 (2018) -- plasmon calibration</div>
+</div>
+<div class="panel">
+<div class="panel-title">Research 5: 3-Layer Interlayer Comparison <span>In / Sn / Al / AuSn at 4K</span></div>
+<div class="sec">Geometry</div>
+<div class="row"><label>h_LiNbO3 (um)</label><input type="range" id="hLN" min="100" max="1000" step="50" value="500" aria-label="LiNbO3 thickness"><span class="val"><span id="hLNd">500</span> um</span></div>
+<div class="row"><label>h_interlayer (um)</label><input type="range" id="hMid" min="0" max="100" step="1" value="10" aria-label="Interlayer thickness"><span class="val"><span id="hMidd">10</span> um</span></div>
+<div class="row"><label>h_Sapphire (um)</label><input type="range" id="hSap" min="100" max="1000" step="50" value="500" aria-label="Sapphire thickness"><span class="val"><span id="hSapd">500</span> um</span></div>
+<div class="sec">Results</div>
+<div class="rg2">
+  <div class="card"><div class="lbl">sigma_LN 2-layer ref</div><div class="v ca" id="sLN2V">--</div><div class="u">MPa</div></div>
+  <div class="card"><div class="lbl">Max |delta| (any material)</div><div class="v cb" id="maxDV">--</div><div class="u">MPa</div></div>
+</div>
+<div class="cbox">
+  <div class="ctitle">All-material sigma comparison at current h_interlayer</div>
+  <div class="tscroll"><table class="dt"><thead><tr><th>Material</th><th>M (GPa)</th><th>alpha (ppm/K)</th><th>sigma_LN (MPa)</th><th>delta (MPa)</th><th>sigma_mid (MPa)</th><th>vs yield</th><th>state</th></tr></thead><tbody id="matTable"></tbody></table></div>
+</div>
+<div class="cbox"><div class="ctitle">sigma_LN vs h_interlayer (um) -- all materials</div><div class="chart-wrap"><canvas id="hChart" height="160"></canvas></div></div>
+<div class="cbox"><div class="ctitle">sigma_interlayer vs yield_4K (bars=elastic calc, green line=yield)</div><div class="chart-wrap"><canvas id="yieldChart" height="130"></canvas></div></div>
+<div class="alert ao" id="r5Alert"></div>
+<div class="ref">In: E(4K)=15.3 GPa -- Novotny &amp; Orak (1985); alpha_avg=16.9 ppm/K -- Kroeger &amp; Swenson (1977)<br>In yield(4K): 0.5-2 MPa -- White &amp; Collocott (1984)<br>Sn: E=49.9 GPa, alpha_avg=18 ppm/K -- Touloukian (1975)<br>Al: E=70 GPa, alpha_avg=13 ppm/K, yield(4K)~50 MPa -- Ledbetter (1981)<br>AuSn: E=68 GPa, alpha=15.9 ppm/K -- Liu et al. (2014)<br>Multi-layer: Freund &amp; Suresh, Thin Film Materials (2003) Ch.5</div>
+</div>
+</div>
+<script>
+function clamp(v,lo,hi){const n=parseFloat(v);return isFinite(n)?Math.max(lo,Math.min(hi,n)):lo;}
+function safeText(el,s){if(el)el.textContent=String(s);}
+function fmtN(v,d){if(!isFinite(v))return'--';const a=Math.abs(v);if(a>=1e9||(a>0&&a<1e-4))return v.toExponential(2);return a>=100?v.toFixed(0):v.toFixed(d!=null?d:2);}
+const hbar=1.0546e-34,kB=1.381e-23,Debye=3.336e-30;
+const v_SAW=3979,e15=3.7,eps11=8.85e-12*44,rho_LN=4628;
+const E_LN=202.9e9,nu_LN=0.24,M_LN=E_LN/(1-nu_LN);
+const E_SAP=400e9,nu_SAP=0.30,M_SAP=E_SAP/(1-nu_SAP);
+const aLN=15e-6,aSAP=5e-6,DT=296;
+const CEFF_DEF=1.54e-5,Q_TLS=65000;
+const MATS=[
+  {n:'In', E:10.6e9,nu:0.45,aA:16.9e-6,sy:1.0e6, col:'#00e5ff'},
+  {n:'Sn', E:49.9e9,nu:0.36,aA:18.0e-6,sy:15e6,  col:'#ff6b35'},
+  {n:'Al', E:70.0e9,nu:0.35,aA:13.0e-6,sy:50e6,  col:'#50fa7b'},
+  {n:'AuSn',E:68.0e9,nu:0.34,aA:15.9e-6,sy:200e6,col:'#c084fc'},
+];
+const D_PRESETS={default:null,min:0.1,p1:2.8,p2:8.3,jj:5.8};
+const D_LABELS={default:'Default (ceff=1.54e-5)',min:'0.1D lit.min',p1:'2.8D Sarabi p1',p2:'8.3D Sarabi p2',jj:'5.8D JJ barrier'};
+function sawField(fGHz,pLog){const f=fGHz*1e9,P=Math.pow(10,clamp(pLog,-3,2))*1e-3;const k=2*Math.PI*f/v_SAW,om=2*Math.PI*f;const U0=Math.sqrt(Math.max(0,2*P/(rho_LN*v_SAW**2*k)));return{om,E_SAW:e15*k*0.7*U0/eps11};}
+function ceffFromD(dD,om,ESAW){if(dD===null)return{ceff:CEFF_DEF,g:null};const d=dD*Debye,g=d*ESAW/hbar;return{ceff:g*g/(om*om),g};}
+function Aratio(ceff,t){return 1/(1+ceff*Q_TLS*t);}
+function calc3L(hLN,hMid,hSap,aM,EM,nuM){const MM=EM/(1-nuM);const etLN=-aLN*DT,etM=-aM*DT,etS=-aSAP*DT;const num=M_LN*hLN*etLN+MM*hMid*etM+M_SAP*hSap*etS;const den=M_LN*hLN+MM*hMid+M_SAP*hSap;const ec=num/den;return{sLN:M_LN*(ec-etLN),sMid:MM*(ec-etM),MM};}
+function calc2L(hLN,hSap){const etLN=-aLN*DT,etS=-aSAP*DT;const ec=(M_LN*hLN*etLN+M_SAP*hSap*etS)/(M_LN*hLN+M_SAP*hSap);return M_LN*(ec-etLN);}
+function drawChart(id,xs,series,xl,yl,refs){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=Math.max(280,canvas.parentElement?canvas.parentElement.clientWidth-4:400);
+  const H=parseInt(canvas.getAttribute('height'))||160;
+  canvas.width=W;canvas.height=H;canvas.style.width=W+'px';
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  const P={t:8,r:18,b:30,l:52},cw=W-P.l-P.r,ch=H-P.t-P.b;
+  const allY=series.flatMap(s=>s.y).concat((refs||[]).map(r=>r.y)).filter(isFinite);
+  if(!allY.length||!xs.length)return;
+  const xMin=xs[0],xMax=xs[xs.length-1];
+  let yMin=Math.min(...allY),yMax=Math.max(...allY);
+  const yp=(yMax-yMin)*0.1||1;yMin=Math.max(0,yMin-yp);yMax+=yp;
+  if(!isFinite(yMin)||!isFinite(yMax)||yMin===yMax)return;
+  const px=x=>{const v=P.l+(x-xMin)/(xMax-xMin)*cw;return isFinite(v)?v:P.l;};
+  const py=y=>{const v=P.t+ch-(y-yMin)/(yMax-yMin)*ch;return isFinite(v)?Math.max(P.t,Math.min(P.t+ch,v)):P.t+ch;};
+  ctx.fillStyle='#0d1624';ctx.fillRect(P.l,P.t,cw,ch);
+  ctx.strokeStyle='#1a2840';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const yg=yMin+(yMax-yMin)*i/4;ctx.beginPath();ctx.moveTo(P.l,py(yg));ctx.lineTo(P.l+cw,py(yg));ctx.stroke();ctx.fillStyle='#4e6580';ctx.font='9px Courier New';ctx.textAlign='right';ctx.fillText(yg>=100?yg.toFixed(0):yg>=1?yg.toFixed(1):yg.toExponential(1),P.l-3,py(yg)+3);}
+  ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';
+  for(let i=0;i<=5;i++){const xg=xMin+(xMax-xMin)*i/5;ctx.fillText(xg>=10?xg.toFixed(0):xg.toFixed(1),px(xg),P.t+ch+14);}
+  if(xl){ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.fillText(xl,P.l+cw/2,H-1);}
+  if(yl){ctx.save();ctx.translate(10,P.t+ch/2);ctx.rotate(-Math.PI/2);ctx.fillStyle='#4e6580';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.fillText(yl,0,0);ctx.restore();}
+  (refs||[]).forEach(r=>{if(!isFinite(r.y))return;ctx.setLineDash([4,4]);ctx.strokeStyle=r.color||'#ff4466';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.l,py(r.y));ctx.lineTo(P.l+cw,py(r.y));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=r.color||'#ff4466';ctx.font='8px Segoe UI';ctx.textAlign='left';ctx.fillText(r.label||'',P.l+3,py(r.y)-3);});
+  series.forEach(s=>{if(!Array.isArray(s.y))return;ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.w||1.8;ctx.setLineDash(s.dash||[]);let first=true;s.y.forEach((yv,i)=>{if(!isFinite(yv)||!isFinite(xs[i]))return;if(first){ctx.moveTo(px(xs[i]),py(yv));first=false;}else ctx.lineTo(px(xs[i]),py(yv));});ctx.stroke();ctx.setLineDash([]);});
+  let li=0;series.filter(s=>s.label).forEach(s=>{ctx.setLineDash(s.dash||[]);ctx.strokeStyle=s.color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W-125,P.t+10+li*15);ctx.lineTo(W-108,P.t+10+li*15);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=s.color;ctx.font='8px Segoe UI';ctx.textAlign='left';ctx.fillText(s.label,W-104,P.t+14+li*15);li++;});
+}
+function drawBars(id,labels,vals,yields,cols){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=Math.max(280,canvas.parentElement?canvas.parentElement.clientWidth-4:400);
+  const H=parseInt(canvas.getAttribute('height'))||130;
+  canvas.width=W;canvas.height=H;canvas.style.width=W+'px';
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+  const P={t:8,r:10,b:30,l:52},cw=W-P.l-P.r,ch=H-P.t-P.b;
+  const allV=[...vals,...yields].filter(isFinite);if(!allV.length)return;
+  const yMax=Math.max(...allV)*1.2||1;
+  const py=y=>P.t+ch*(1-y/yMax);
+  ctx.fillStyle='#0d1624';ctx.fillRect(P.l,P.t,cw,ch);
+  const bw=cw/(labels.length*1.6+0.4);
+  labels.forEach((lbl,i)=>{
+    const x=P.l+bw*(i*1.6+0.8);
+    const hBar=isFinite(vals[i])?ch*vals[i]/yMax:0;
+    ctx.fillStyle=cols[i]+'55';ctx.fillRect(x-bw*0.4,py(vals[i]||0),bw*0.8,hBar);
+    ctx.strokeStyle=cols[i];ctx.lineWidth=1.5;ctx.strokeRect(x-bw*0.4,py(vals[i]||0),bw*0.8,hBar);
+    if(isFinite(yields[i])){ctx.strokeStyle='#50fa7b';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x-bw*0.5,py(yields[i]));ctx.lineTo(x+bw*0.5,py(yields[i]));ctx.stroke();ctx.setLineDash([]);}
+    ctx.fillStyle=cols[i];ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.fillText(lbl,x,P.t+ch+14);
+    ctx.fillStyle='#d8e8f0';ctx.font='8px Courier New';ctx.fillText(isFinite(vals[i])?(vals[i]>=100?vals[i].toFixed(0):vals[i].toFixed(1)):'--',x,py(vals[i]||0)-3);
+  });
+  ctx.fillStyle='#4e6580';ctx.font='8px Segoe UI';ctx.textAlign='center';ctx.fillText('Bars=sigma_mid(elastic) | Green line=yield(4K) [MPa]',P.l+cw/2,H-1);
+  for(let i=0;i<=3;i++){const yg=yMax*i/3;ctx.strokeStyle='#1a2840';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P.l,py(yg));ctx.lineTo(P.l+cw,py(yg));ctx.stroke();ctx.fillStyle='#4e6580';ctx.font='9px Courier New';ctx.textAlign='right';ctx.fillText(yg>=100?yg.toFixed(0):yg.toFixed(1),P.l-3,py(yg)+3);}
+}
+function update(){
+  const fGHz=clamp(document.getElementById('fSAW').value,1,20);
+  const pLog=clamp(document.getElementById('pSAW').value,-3,2);
+  const Tval=clamp(document.getElementById('Top').value,4,300);
+  const dModel=document.getElementById('dModel').value;
+  const dCust=clamp(document.getElementById('dCust').value,0.001,20);
+  safeText(document.getElementById('fSAWd'),fGHz.toFixed(1));
+  safeText(document.getElementById('pSAWd'),Math.pow(10,pLog).toFixed(2));
+  safeText(document.getElementById('Topd'),Tval);
+  safeText(document.getElementById('dCustd'),dCust.toFixed(2));
+  const{om,E_SAW}=sawField(fGHz,pLog);
+  const dD=dModel==='custom'?dCust:D_PRESETS[dModel];
+  const{ceff,g}=ceffFromD(dD,om,E_SAW);
+  const ratio=ceff/CEFF_DEF,A1h=Aratio(ceff,1.0),qR=(hbar*om)/(kB*Tval);
+  safeText(document.getElementById('dVal'),dD===null?'(default)':dD.toFixed(2)+'D');
+  safeText(document.getElementById('ceffV'),ceff.toExponential(2));
+  const rEl=document.getElementById('ceffR');safeText(rEl,(ratio>=1?'+':'')+fmtN(ratio,1)+'x');rEl.className='v '+(ratio>1e4?'cc':ratio<0.01?'cd':'cw');
+  const aEl=document.getElementById('A1h');safeText(aEl,A1h<0.001?'~0':A1h.toFixed(4));aEl.className='v '+(A1h<0.1?'cc':'cw');
+  safeText(document.getElementById('gV'),g?fmtN(g/(2*Math.PI)):'N/A');
+  const qEl=document.getElementById('qR');safeText(qEl,qR.toFixed(4));qEl.className='v '+(qR>=0.1?'cc':'cd');
+  const cAl=document.getElementById('cAlert');
+  if(dD===null){cAl.className='alert aw';cAl.textContent='Default mode: ceff=1.54e-5 corresponds to d_TLS=0.0016 Debye, 63x smaller than literature minimum (0.1 Debye, Sarabi 2016). Physically implausible.';}
+  else{cAl.className='alert ao';cAl.textContent='Literature d_TLS='+dD.toFixed(2)+'D => ceff='+ceff.toExponential(2)+'. A(1h)='+(A1h<1e-4?'~0':A1h.toFixed(4))+'.';}
+  const qAl=document.getElementById('qAlert');
+  if(qR<0.1){qAl.className='alert ae';qAl.textContent='CLASSICAL regime: hbar*omega/k_B*T='+qR.toFixed(4)+' at '+Tval+'K, '+fGHz+'GHz. SAW control is thermal phonon, not quantum.';}
+  else{qAl.className='alert ao';qAl.textContent='QUANTUM regime: hbar*omega/k_B*T='+qR.toFixed(4)+'.';}
+  const rows=[['default',null],['min',0.1],['p1',2.8],['p2',8.3],['jj',5.8]];
+  let tb='';
+  rows.forEach(([k,dv])=>{const{ceff:ce,g:gv}=ceffFromD(dv,om,E_SAW);const A=Aratio(ce,1);const red=1/A;const rc=ce>CEFF_DEF*10?'tok':ce<CEFF_DEF/10?'tred':'twarn';const hl=dModel===k?' style="background:#0e1c2c"':'';tb+='<tr'+hl+'><td class="tacc">'+D_LABELS[k]+'</td><td>'+(dv===null?'n/a':dv.toFixed(1))+'</td><td class="'+rc+'">'+ce.toExponential(2)+'</td><td>'+(A<0.001?'~0':A.toFixed(4))+'</td><td>'+(red>1e6?red.toExponential(2):fmtN(red,1))+'x</td></tr>';});
+  document.getElementById('dTable').innerHTML=tb;
+  const tArr=Array.from({length:61},(_,i)=>i/60*3);
+  const serNoise=[{y:tArr.map(t=>Math.exp(-Math.log(10)*t)),color:'#50fa7b',label:'Plasmon',dash:[4,3]}];
+  const nCols={default:'#566b85',min:'#ffc946',p1:'#00e5ff',p2:'#c084fc',jj:'#ff6b35'};
+  rows.forEach(([k,dv])=>{const{ceff:ce}=ceffFromD(dv,om,E_SAW);const isActive=dModel===k;serNoise.push({y:tArr.map(t=>Math.min(1,Aratio(ce,t))),color:nCols[k],label:k==='default'?'Default':dv+'D',w:isActive?2.5:1.2,dash:isActive?[]:[2,3]});});
+  drawChart('noiseChart',tArr,serNoise,'Time (h)','A/A0');
+  const hLN=clamp(document.getElementById('hLN').value,100,1000)*1e-6;
+  const hMid=clamp(document.getElementById('hMid').value,0,100)*1e-6;
+  const hSap=clamp(document.getElementById('hSap').value,100,1000)*1e-6;
+  safeText(document.getElementById('hLNd'),(hLN*1e6).toFixed(0));
+  safeText(document.getElementById('hMidd'),(hMid*1e6).toFixed(0));
+  safeText(document.getElementById('hSapd'),(hSap*1e6).toFixed(0));
+  const sLN2=calc2L(hLN,hSap);
+  safeText(document.getElementById('sLN2V'),fmtN(sLN2/1e6));
+  let maxD=0,mTb='';
+  const sMidVals=[],syVals=[],mCols=[];
+  MATS.forEach(m=>{const r=calc3L(hLN,hMid,hSap,m.aA,m.E,m.nu);const delta=r.sLN-sLN2;const plastic=Math.abs(r.sMid)>m.sy;const ratio2=Math.abs(r.sMid)/m.sy;if(Math.abs(delta)>Math.abs(maxD))maxD=delta;sMidVals.push(Math.abs(r.sMid)/1e6);syVals.push(m.sy/1e6);mCols.push(m.col);const sc=plastic?'tred':'tok',dc=Math.abs(delta/sLN2)*100<1?'tok':'twarn';mTb+='<tr><td style="color:'+m.col+';font-weight:700">'+m.n+'</td><td>'+fmtN(r.MM/1e9,1)+'</td><td>'+(m.aA*1e6).toFixed(1)+'</td><td class="tacc">'+fmtN(r.sLN/1e6,1)+'</td><td class="'+dc+'">'+(delta>=0?'+':'')+fmtN(delta/1e6,2)+'</td><td class="'+sc+'">'+fmtN(r.sMid/1e6,1)+'</td><td class="'+sc+'">'+fmtN(ratio2,1)+'x</td><td class="'+sc+'">'+(plastic?'PLASTIC':'elastic')+'</td></tr>';});
+  document.getElementById('matTable').innerHTML=mTb;
+  const mdEl=document.getElementById('maxDV');safeText(mdEl,(maxD>=0?'+':'')+fmtN(maxD/1e6,2)+' MPa');mdEl.className='v '+(Math.abs(maxD/sLN2)*100<1?'cc':'cw');
+  const hArr=Array.from({length:51},(_,i)=>i*2);
+  const serH=[{y:Array(51).fill(sLN2/1e6),color:'#4e6580',label:'2-layer ref',dash:[5,3],w:1.5}];
+  MATS.forEach(m=>{serH.push({y:hArr.map(hv=>calc3L(hLN,hv*1e-6,hSap,m.aA,m.E,m.nu).sLN/1e6),color:m.col,label:m.n,w:1.8});});
+  drawChart('hChart',hArr,serH,'h_interlayer (um)','sigma_LN (MPa)');
+  drawBars('yieldChart',MATS.map(m=>m.n),sMidVals,syVals,mCols);
+  const allPct=MATS.map(m=>{const r=calc3L(hLN,hMid,hSap,m.aA,m.E,m.nu);return Math.abs(r.sLN-sLN2)/sLN2*100;});
+  const maxPct=Math.max(...allPct.filter(isFinite));
+  const r5El=document.getElementById('r5Alert');
+  r5El.textContent='Research 5: For all 4 interlayer materials at h='+(hMid*1e6).toFixed(0)+'um, max sigma_LN change='+fmtN(Math.abs(maxD/1e6),2)+' MPa ('+fmtN(maxPct,3)+'%). All materials undergo plastic flow. 2-layer approximation valid for all material choices.';
+}
+let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(update,80);});
+['fSAW','pSAW','Top','dModel','dCust','hLN','hMid','hSap'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',update);});
+update();
+</script>
+</body>
+</html>

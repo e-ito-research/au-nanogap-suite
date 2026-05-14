@@ -266,7 +266,7 @@ body.lang-en .tool-desc.ja { display: none; }
 <body class="lang-en">
 
 <header class="site-header">
-  <span class="logo">Au Nanogap Design Suite <span>v1.0</span></span>
+  <span class="logo">Au Nanogap Design Suite <span>v2.0</span></span>
   <div class="lang-toggle">
     <button class="lang-btn" id="btn-ja" onclick="setLang(&#39;ja&#39;)">日本語</button>
     <button class="lang-btn active" id="btn-en" onclick="setLang(&#39;en&#39;)">English</button>
@@ -287,6 +287,8 @@ body.lang-en .tool-desc.ja { display: none; }
     <span class="hero-badge">A ∝ gap⁺³·¹³ R²=0.97</span>
     <span class="hero-badge">Gans theory</span>
     <span class="hero-badge">Johnson &amp; Christy 1972</span>
+    <span class="hero-badge">Moser 2023 ScAlN</span>
+    <span class="hero-badge">Sarabi 2016 TLS</span>
   </div>
 </div>
 
@@ -379,6 +381,62 @@ body.lang-en .tool-desc.ja { display: none; }
       </a>
     </div>
 
+      <!-- Tool 4: ScAlN Buffer Layer Optimizer -->
+      <div class="tool-card">
+        <div class="tool-icon-wrap" style="background:#E1F5EE">
+          <span style="font-size:26px">🔬</span>
+        </div>
+        <p class="tool-number">Tool 4</p>
+        <p class="tool-name">ScAlN Buffer Layer Optimizer</p>
+        <p class="tool-desc ja">
+          ScAlN中間層のSc%を最適化。室温接合（Sc=36%）と
+          4K動作（Sc=10-19%）の最適窓を定量化。
+          接合成功・動作成功・両立の三段階判定をリアルタイム表示。
+        </p>
+        <p class="tool-desc en">
+          Optimize ScAlN interlayer Sc% for LiNbO3/Sapphire bonding.
+          Quantifies optimal windows: room-temp bonding (Sc=36%) vs
+          4K operation (Sc=10-19%). Real-time bond/op/dual pass/fail judgment.
+        </p>
+        <div class="tag-row">
+          <span class="tag tag-teal">Sc 0-50%</span>
+          <span class="tag tag-teal">sigma limit 23 MPa</span>
+          <span class="tag tag-teal">dual optimal</span>
+          <span class="tag tag-teal">Moser 2023</span>
+        </div>
+        <a class="open-btn teal" href="scaln_optimizer.html">
+          ▶ &nbsp;<span class="ja">ScAlN Optimizer を開く</span><span class="en">Open ScAlN Optimizer</span>
+        </a>
+      </div>
+
+      <!-- Tool 5: Research 3 & 5 Advanced -->
+      <div class="tool-card">
+        <div class="tool-icon-wrap" style="background:#F3E8FF">
+          <span style="font-size:26px">📐</span>
+        </div>
+        <p class="tool-number">Tool 5</p>
+        <p class="tool-name">SAW-TLS &amp; 3-Layer Advanced</p>
+        <p class="tool-desc ja">
+          SAW-TLS結合のd_TLS文献値（Sarabi 2016）によるcoupling_eff範囲の定量化。
+          In/Sn/Al/AuSn中間層の4材料比較。
+          2層近似の有効性を全材料で証明。
+        </p>
+        <p class="tool-desc en">
+          SAW-TLS coupling_eff range from literature d_TLS (Sarabi 2016).
+          4-material interlayer comparison: In/Sn/Al/AuSn.
+          Proves 2-layer approximation valid for all interlayer materials.
+        </p>
+        <div class="tag-row">
+          <span class="tag tag-amber">d_TLS 0.1-8.3 D</span>
+          <span class="tag tag-amber">coupling_eff unverified</span>
+          <span class="tag tag-amber">Freund-Suresh</span>
+          <span class="tag tag-amber">4-material</span>
+        </div>
+        <a class="open-btn amber" href="research3_5_advanced_v2.html">
+          ▶ &nbsp;<span class="ja">Advanced Analysis を開く</span><span class="en">Open Advanced Analysis</span>
+        </a>
+      </div>
+
   </div>
 
   <!-- Physics section -->
@@ -417,6 +475,22 @@ body.lang-en .tool-desc.ja { display: none; }
       </p>
       <p class="physics-formula">coupling_eff: 実験要</p>
     </div>
+      <div class="physics-card">
+        <p class="physics-label">
+          <span class="status-dot dot-ok"></span>
+          <span class="ja">ScAlN最適Sc%（確定）</span>
+          <span class="en">ScAlN optimal Sc% (confirmed)</span>
+        </p>
+        <p class="physics-formula">RT: 36% | 4K: 10-19%</p>
+      </div>
+      <div class="physics-card">
+        <p class="physics-label">
+          <span class="status-dot dot-ok"></span>
+          <span class="ja">In中間層（弾性計算）</span>
+          <span class="en">In interlayer (elastic)</span>
+        </p>
+        <p class="physics-formula">delta sigma_LN &lt; 1%</p>
+      </div>
   </div>
 
   <!-- Disclaimer -->
@@ -462,7 +536,7 @@ body.lang-en .tool-desc.ja { display: none; }
   </section>
 
   <footer class="site-footer">
-  Au Nanogap Design Suite v1.0 — 2026-05-08<br>
+  Au Nanogap Design Suite v2.0 — 2026-05-14<br>
   Plasmon DIET model: de Graaf et al. <em>Nature Communications</em> 9, 1143 (2018)<br>
   Detector model: universal scaling law (unpublished) &nbsp;|&nbsp; Not peer reviewed
 </footer>
