@@ -7,6 +7,9 @@ date-released: "2026-05-14"
 license: CC-BY-4.0
 url: "https://e-ito-research.github.io/au-nanogap-suite/"
 repository-code: "https://github.com/e-ito-research/au-nanogap-suite"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20175070
 abstract: >
   Browser-based calculators for quantum device design.
   Includes Au nanogap detector optimizer, qubit noise
