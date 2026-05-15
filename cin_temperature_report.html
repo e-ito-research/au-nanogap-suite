@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Cin Temperature Dependence</title>
+<style>
+body{font-family:sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;color:#222}
+h1{font-size:1.3rem}
+.subtitle{color:#666;font-size:0.9rem;margin-bottom:1.5rem}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:1rem 0}
+th{background:#f0f0f0;padding:8px;border:1px solid #ddd;text-align:left}
+td{padding:8px;border:1px solid #ddd}
+.ok{color:#0a5c3a;font-weight:500}
+.result{background:#eaf3de;border-left:4px solid #3b6d11;padding:0.8rem 1rem;margin:1rem 0;font-size:0.95rem}
+.warning{background:#faeeda;border-left:4px solid #854f0b;padding:0.8rem 1rem;font-size:0.85rem;margin:1rem 0}
+.ref{font-size:0.8rem;color:#666;margin-top:1.5rem;line-height:1.7}
+</style>
+</head>
+<body>
+<h1>Cin 温度依存性解析</h1>
+<p class="subtitle">Drude モデル (Johnson &amp; Christy 1972) による Au 誘電率の温度依存性</p>
+
+<div class="result">
+<strong>主要結果：</strong>
+Au ナノギャップの Cin は 4K〜295K（室温）の範囲で <strong>0.21% 以下</strong> しか変化しない。
+tau = Rf x Cin へのスコア影響は +0.19% 以内。
+<strong>Tool 1 の設計は室温でも 4K でも実質同一の結果を与える。</strong>
+</div>
+
+<table>
+<tr><th>温度</th><th>gamma (rad/s)</th><th>Cin 相対値</th><th>tau 相対値</th><th>スコア変化</th></tr>
+<tr><td>4 K</td><td>1.42e12</td><td>1.0000</td><td>1.0000</td><td class="ok">基準</td></tr>
+<tr><td>15 K</td><td>5.34e12</td><td>1.0000</td><td>1.0000</td><td class="ok">&lt;0.01%</td></tr>
+<tr><td>77 K</td><td>2.74e13</td><td>0.9999</td><td>0.9999</td><td class="ok">+0.01%</td></tr>
+<tr><td>150 K</td><td>5.34e13</td><td>0.9994</td><td>0.9994</td><td class="ok">+0.05%</td></tr>
+<tr><td>295 K (室温)</td><td>1.05e14</td><td>0.9979</td><td>0.9979</td><td class="ok">+0.19%</td></tr>
+</table>
+
+<div class="warning">
+<strong>注意（モデルの限界）：</strong>
+本解析は Drude 単一バンドモデルに基づく。
+低温での金の誘電率直接測定データ（Drude からの逸脱）は未参照。
+実験的確認が望ましい。
+</div>
+
+<p class="ref">
+参考文献:<br>
+Johnson, P.B. &amp; Christy, R.W. (1972). Optical Constants of the Noble Metals.
+<em>Physical Review B</em> 6, 4370.<br>
+Drude モデル: gamma(T) = gamma_0 x (T/295), omega_p = 1.37e16 rad/s, gamma_0 = 1.05e14 rad/s (295K)
+</p>
+</body>
+</html>
