@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>d_TLS Sensitivity Analysis</title>
+<style>
+body{font-family:sans-serif;max-width:800px;margin:2rem auto;padding:0 1rem;color:#222}
+h1{font-size:1.3rem;margin-bottom:0.3rem}
+.subtitle{color:#666;font-size:0.9rem;margin-bottom:1.5rem}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.5rem 0}
+.card{background:#f5f5f5;border-radius:8px;padding:1rem}
+.card-label{font-size:0.75rem;color:#666;margin-bottom:4px}
+.card-value{font-size:1.4rem;font-weight:500}
+.card-value.green{color:#0a5c3a}
+.card-value.red{color:#a32d2d}
+.card-value.amber{color:#633806}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:1rem 0}
+th{background:#f0f0f0;padding:8px;text-align:left;border:1px solid #ddd}
+td{padding:8px;border:1px solid #ddd}
+.ok{color:#0a5c3a;font-weight:500}
+.ng{color:#a32d2d;font-weight:500}
+.ref{font-size:0.8rem;color:#666;margin-top:1.5rem;line-height:1.7}
+.warning{background:#faeeda;border-left:4px solid #854f0b;padding:0.8rem 1rem;font-size:0.85rem;margin:1rem 0}
+</style>
+</head>
+<body>
+<h1>d_TLS Sensitivity Analysis</h1>
+<p class="subtitle">Tool 5 (SAW-TLS) — Sarabi et al. PRL 116, 167002 (2016)</p>
+
+<div class="warning">
+注記：d_TLS は Sarabi 2016 の理論・実験値範囲（超伝導量子回路）からの引用。
+Au ナノギャップ構造での直接測定値ではない。本解析はその不確実性の定量化が目的。
+</div>
+
+<div class="result-grid">
+  <div class="card">
+    <div class="card-label">d_TLS 範囲 (Sarabi 2016)</div>
+    <div class="card-value amber">0.1 - 8.3 D</div>
+  </div>
+  <div class="card">
+    <div class="card-label">ノイズ最大/最小比</div>
+    <div class="card-value red">6,889 倍</div>
+  </div>
+  <div class="card">
+    <div class="card-label">設計成立境界</div>
+    <div class="card-value green">d_TLS &lt; 3.16 D</div>
+  </div>
+  <div class="card">
+    <div class="card-label">根拠式</div>
+    <div class="card-value amber">A ~ d_TLS²</div>
+  </div>
+</div>
+
+<svg width="100%" viewBox="0 0 680 400" style="margin:1rem 0">
+  <rect x="50" y="20" width="570" height="340" fill="#fafafa" stroke="#ddd" stroke-width="0.5"/>
+
+  <!-- 軸 -->
+  <line x1="60" y1="350" x2="620" y2="350" stroke="#666" stroke-width="1"/>
+  <line x1="60" y1="30" x2="60" y2="350" stroke="#666" stroke-width="1"/>
+
+  <!-- 軸ラベル -->
+  <text x="340" y="380" text-anchor="middle" font-size="13" fill="#444">d_TLS (Debye)</text>
+  <text x="16" y="190" text-anchor="middle" font-size="13" fill="#444" transform="rotate(-90,16,190)">A_norm (d=1D 基準)</text>
+
+  <!-- 目盛り x -->
+  <line x1="121" y1="350" x2="121" y2="355" stroke="#666" stroke-width="0.5"/><text x="121" y="368" text-anchor="middle" font-size="11" fill="#666">1</text><line x1="190" y1="350" x2="190" y2="355" stroke="#666" stroke-width="0.5"/><text x="190" y="368" text-anchor="middle" font-size="11" fill="#666">2</text><line x1="258" y1="350" x2="258" y2="355" stroke="#666" stroke-width="0.5"/><text x="258" y="368" text-anchor="middle" font-size="11" fill="#666">3</text><line x1="326" y1="350" x2="326" y2="355" stroke="#666" stroke-width="0.5"/><text x="326" y="368" text-anchor="middle" font-size="11" fill="#666">4</text><line x1="395" y1="350" x2="395" y2="355" stroke="#666" stroke-width="0.5"/><text x="395" y="368" text-anchor="middle" font-size="11" fill="#666">5</text><line x1="463" y1="350" x2="463" y2="355" stroke="#666" stroke-width="0.5"/><text x="463" y="368" text-anchor="middle" font-size="11" fill="#666">6</text><line x1="531" y1="350" x2="531" y2="355" stroke="#666" stroke-width="0.5"/><text x="531" y="368" text-anchor="middle" font-size="11" fill="#666">7</text><line x1="600" y1="350" x2="600" y2="355" stroke="#666" stroke-width="0.5"/><text x="600" y="368" text-anchor="middle" font-size="11" fill="#666">8</text>
+
+  <!-- 目盛り y -->
+  <line x1="55" y1="350" x2="60" y2="350" stroke="#666" stroke-width="0.5"/><text x="50" y="350" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">0</text><line x1="55" y1="304" x2="60" y2="304" stroke="#666" stroke-width="0.5"/><text x="50" y="304" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">10</text><line x1="55" y1="259" x2="60" y2="259" stroke="#666" stroke-width="0.5"/><text x="50" y="259" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">20</text><line x1="55" y1="213" x2="60" y2="213" stroke="#666" stroke-width="0.5"/><text x="50" y="213" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">30</text><line x1="55" y1="167" x2="60" y2="167" stroke="#666" stroke-width="0.5"/><text x="50" y="167" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">40</text><line x1="55" y1="121" x2="60" y2="121" stroke="#666" stroke-width="0.5"/><text x="50" y="121" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">50</text><line x1="55" y1="76" x2="60" y2="76" stroke="#666" stroke-width="0.5"/><text x="50" y="76" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">60</text><line x1="55" y1="30" x2="60" y2="30" stroke="#666" stroke-width="0.5"/><text x="50" y="30" text-anchor="end" dominant-baseline="central" font-size="11" fill="#666">70</text>
+
+  <!-- 成立ゾーン（緑） -->
+  <rect x="60" y="304" width="209" height="46" fill="#1D9E75" opacity="0.10"/>
+  <!-- 不成立ゾーン（赤） -->
+  <rect x="269" y="30" width="351" height="320" fill="#E24B4A" opacity="0.07"/>
+
+  <!-- 閾値ライン (A_norm=10) -->
+  <line x1="60" y1="304" x2="620" y2="304" stroke="#BA7517" stroke-width="1" stroke-dasharray="6 3"/>
+  <text x="622" y="298" font-size="11" fill="#633806">A=10 (閾値)</text>
+
+  <!-- 境界ライン -->
+  <line x1="269" y1="30" x2="269" y2="350" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="273" y="46" font-size="11" fill="#085041">3.16 D (境界)</text>
+
+  <!-- Sarabi p1=2.8D -->
+  <circle cx="244" cy="314" r="5" fill="#1D9E75" stroke="#085041" stroke-width="0.5"/>
+  <text x="252" y="308" font-size="11" fill="#085041">p1=2.8D (OK)</text>
+
+  <!-- Sarabi p2=8.3D -->
+  <circle cx="620" cy="35" r="5" fill="#E24B4A" stroke="#A32D2D" stroke-width="0.5"/>
+  <text x="560" y="27" font-size="11" fill="#A32D2D">p2=8.3D (NG)</text>
+
+  <!-- カーブ -->
+  <path d="M 60.0,350.0 L 65.6,349.8 L 71.2,349.7 L 76.8,349.5 L 82.4,349.2 L 88.1,348.8 L 93.7,348.4 L 99.3,347.9 L 104.9,347.4 L 110.5,346.8 L 116.1,346.1 L 121.7,345.4 L 127.3,344.6 L 132.9,343.8 L 138.6,342.9 L 144.2,341.9 L 149.8,340.9 L 155.4,339.8 L 161.0,338.6 L 166.6,337.4 L 172.2,336.1 L 177.8,334.8 L 183.4,333.4 L 189.1,331.9 L 194.7,330.4 L 200.3,328.8 L 205.9,327.1 L 211.5,325.4 L 217.1,323.7 L 222.7,321.8 L 228.3,319.9 L 233.9,318.0 L 239.6,315.9 L 245.2,313.9 L 250.8,311.7 L 256.4,309.5 L 262.0,307.3 L 267.6,304.9 L 273.2,302.5 L 278.8,300.1 L 284.4,297.6 L 290.1,295.0 L 295.7,292.4 L 301.3,289.7 L 306.9,286.9 L 312.5,284.1 L 318.1,281.2 L 323.7,278.3 L 329.3,275.2 L 334.9,272.2 L 340.6,269.0 L 346.2,265.9 L 351.8,262.6 L 357.4,259.3 L 363.0,255.9 L 368.6,252.5 L 374.2,249.0 L 379.8,245.4 L 385.5,241.8 L 391.1,238.1 L 396.7,234.3 L 402.3,230.5 L 407.9,226.7 L 413.5,222.7 L 419.1,218.7 L 424.7,214.7 L 430.3,210.6 L 436.0,206.4 L 441.6,202.1 L 447.2,197.8 L 452.8,193.5 L 458.4,189.0 L 464.0,184.6 L 469.6,180.0 L 475.2,175.4 L 480.8,170.7 L 486.5,166.0 L 492.1,161.2 L 497.7,156.3 L 503.3,151.4 L 508.9,146.4 L 514.5,141.4 L 520.1,136.3 L 525.7,131.1 L 531.3,125.9 L 537.0,120.6 L 542.6,115.2 L 548.2,109.8 L 553.8,104.4 L 559.4,98.8 L 565.0,93.2 L 570.6,87.6 L 576.2,81.8 L 581.8,76.0 L 587.5,70.2 L 593.1,64.3 L 598.7,58.3 L 604.3,52.3 L 609.9,46.2 L 615.5,40.0" fill="none" stroke="#185FA5" stroke-width="2"/>
+
+  <!-- 凡例 -->
+  <rect x="70" y="36" width="12" height="12" fill="#1D9E75" opacity="0.3"/>
+  <text x="86" y="47" font-size="11" fill="#085041">設計成立域</text>
+  <rect x="160" y="36" width="12" height="12" fill="#E24B4A" opacity="0.2"/>
+  <text x="176" y="47" font-size="11" fill="#A32D2D">設計不成立域</text>
+</svg>
+
+<table>
+  <tr><th>d_TLS 値</th><th>A_norm</th><th>ノイズ水準</th><th>設計判定</th><th>備考</th></tr>
+  <tr><td>0.1 D (最小)</td><td>0.01</td><td>基準の 1%</td><td class="ok">成立</td><td>最良ケース</td></tr>
+  <tr><td>1.0 D (基準)</td><td>1.00</td><td>基準</td><td class="ok">成立</td><td>正規化基準点</td></tr>
+  <tr><td>2.8 D (Sarabi p1)</td><td>7.84</td><td>7.84 倍</td><td class="ok">成立</td><td>文献代表値</td></tr>
+  <tr><td>3.16 D (境界)</td><td>10.0</td><td>10 倍</td><td class="ok">境界</td><td>設計成立の上限</td></tr>
+  <tr><td>4.0 D</td><td>16.0</td><td>16 倍</td><td class="ng">不成立</td><td></td></tr>
+  <tr><td>8.3 D (最大)</td><td>68.9</td><td>68.9 倍</td><td class="ng">不成立</td><td>最悪ケース</td></tr>
+</table>
+
+<p class="ref">
+参考文献:<br>
+Sarabi, B. et al. (2016). Projected Dipole Moments of Individual Two-Level Defects Extracted Using Circuit Quantum Electrodynamics. <em>Physical Review Letters</em> 116, 167002.<br>
+本解析: A ~ d_TLS² の比例則を用いた感度解析。d_TLS=1.0 D を正規化基準とした。
+</p>
+</body>
+</html>
