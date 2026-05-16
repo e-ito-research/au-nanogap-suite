@@ -81,10 +81,9 @@ table.dt tr:hover td{background:#0e1c2c;}
   <div class="sec">Bond Limit</div>
   <div class="param-row"><label>sigma_limit</label><input type="range" id="sigLim" min="5" max="50" step="1" value="23" aria-label="Bond stress limit"><span class="pval"><span id="sigLimd">23</span> MPa</span></div>
   <div class="sec">ScAlN Material Model</div>
-  <div class="param-row"><label>E_AlN (GPa)</label><span class="pval" style="color:var(--muted)">296</span></div>
-  <div class="param-row"><label>E_Sc36% (GPa)</label><span class="pval" style="color:var(--muted)">175</span></div>
+  <div class="param-row"><label>M_bi formula (GPa)</label><span class="pval" style="color:var(--muted);font-size:.62rem">-1430x²-264x+471</span></div>
   <div class="param-row"><label>alpha_AlN (ppm/K)</label><span class="pval" style="color:var(--muted)">4.2</span></div>
-  <div class="param-row"><label>alpha_ScN (ppm/K)</label><span class="pval" style="color:var(--muted)">10.0</span></div>
+  <div class="param-row"><label>alpha_ScN (ppm/K)</label><span class="pval" style="color:var(--muted)">6.61</span></div>
   <div class="param-row"><label>alpha_Sap (ppm/K)</label><input type="range" id="alphaSap" min="4" max="7" step="0.1" value="5.0" aria-label="Sapphire CTE"><span class="pval"><span id="alphaSapd">5.0</span> ppm/K</span></div>
   <div class="sec">References</div>
   <div class="ref">ScAlN elastic: Zhang, Fu, Holec, Humphreys, Moram, J. Appl. Phys. 114, 243516 (2013)<br>ScAlN CTE: linear interp AlN/ScN<br>AlN baseline: Davydov (2002)<br>Bond limit: Watanabe &amp; Takigawa,<br>Appl. Surf. Sci. (2023) -- 23 MPa<br>LiNbO3: Weis &amp; Gaylord (1985)</div>
@@ -108,7 +107,7 @@ table.dt tr:hover td{background:#0e1c2c;}
   <div class="cbox"><div class="ctitle">sigma (MPa) vs Temperature -- at selected Sc% | Bond limit shown</div><div class="chart-wrap"><canvas id="tChart" height="180"></canvas></div></div>
   <div class="cbox">
     <div class="ctitle">Full Sc% table</div>
-    <div class="tscroll"><table class="dt"><thead><tr><th>Sc%</th><th>alpha (ppm/K)</th><th>E (GPa)</th><th>sigma(T_bond) MPa</th><th>bond OK?</th><th>sigma(T_op) MPa</th><th>op OK?</th><th>dual OK?</th></tr></thead><tbody id="scTable"></tbody></table></div>
+    <div class="tscroll"><table class="dt"><thead><tr><th>Sc%</th><th>alpha (ppm/K)</th><th>M_bi (GPa)</th><th>sigma(T_bond) MPa</th><th>bond OK?</th><th>sigma(T_op) MPa</th><th>op OK?</th><th>dual OK?</th></tr></thead><tbody id="scTable"></tbody></table></div>
   </div>
   <div class="alert ai" id="discoveryBox"></div>
 </div>
@@ -116,8 +115,8 @@ table.dt tr:hover td{background:#0e1c2c;}
 <script>
 function clamp(v,lo,hi){const n=parseFloat(v);return isFinite(n)?Math.max(lo,Math.min(hi,n)):lo;}
 function safeText(el,s){if(el)el.textContent=String(s);}
-// E_AlN=296GPa, E(Sc36%)=175GPa: derived from C-tensor of Zhang et al. JAP 114,243516(2013). Single E-value not directly in paper; /36 normalization basis unconfirmed.
-function scalnProps(sc){const alpha=(4.2+(10.0-4.2)*sc/100)*1e-6;const E=Math.max(80e9,(296-(296-175)*sc/36)*1e9);return{alpha,E,M:E/0.78};}
+// M_bi = C11+C12-2*C13^2/C33 from Zhang et al. JAP 114,243516(2013) DFT data. Polynomial fit: M_bi(x)=-1430x^2-264x+471 [GPa], valid x=0-0.375 (room temp only).
+function scalnProps(sc){const alpha=(4.2+(6.61-4.2)*sc/100)*1e-6;const x=sc/100;const M=Math.max(10e9,(-1430*x*x-264*x+471)*1e9);return{alpha,E:M,M};}
 function sigma(sc,T_K,aSap,Tbond){const{M,alpha}=scalnProps(sc);const DT=Math.abs(Tbond-T_K);return M*Math.abs(alpha-aSap*1e-6)*DT/1e6;}
 function findWindow(cond,arr){const ok=arr.filter(cond);if(!ok.length)return'None';return ok[0]+'-'+ok[ok.length-1]+'%';}
 function drawChart(id,xs,series,xl,yl,refs){
@@ -190,9 +189,9 @@ update();
 </script>
 <footer style="max-width:900px;margin:2rem auto;padding:1rem;font-size:11px;color:#666;border-top:1px solid #ddd;line-height:1.8">
 <strong>Physical model and references:</strong><br>
-ScAlN elastic constants: Zhang, G.W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, <em>Journal of Applied Physics</em> 114, 243516 (2013). DOI: 10.1063/1.4848036. Note: room temperature DFT calculation. Cryogenic (4K) elastic constants of ScAlN are not reported in this paper. Sc optimal window at 4K is extrapolated from room temperature data.<br>
+ScAlN biaxial modulus: M_bi(x) = C11+C12-2*C13&sup2;/C33, polynomial fit M_bi(x) = -1430x&sup2;-264x+471 [GPa] (x=Sc fraction, valid 0&le;x&le;0.375). Source: S. Zhang, W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, <em>Journal of Applied Physics</em> 114, 243516 (2013). DOI: 10.1063/1.4848036. CTE matching point: Sc &asymp; 33.2% (alpha_ScAlN = alpha_Sapphire = 5.0 ppm/K, using alpha_ScN=6.61 ppm/K from Ciprian et al. 2024). <strong>Note:</strong> Room temperature DFT values. Cryogenic (4K) M_bi values not reported. Previous model (E/0.78) underestimated M_bi by 19-22% for Sc&lt;30%.<br>
 LiNbO3 elastic constants: Weis, R.S. &amp; Gaylord, T.K. <em>Applied Physics A</em> 37, 191 (1985).<br>
-AlN baseline CTE: Davydov, V.Yu. et al. (2002). ScAlN CTE: linear interpolation AlN/ScN.<br>
+AlN CTE: alpha_AlN=4.2 ppm/K &mdash; Davydov, V.Yu. et al. (2002). ScN CTE: alpha_ScN=6.61&plusmn;0.60 ppm/K (300K, XRD) &mdash; Ciprian, Mihalic, L&uuml;ttich, H&ouml;rich, Wade, Christian, Dadgar, Ambacher, <em>Appl. Phys. Lett.</em> 124, 052203 (2024). DOI: 10.1063/5.0176082. CTE matching point: Sc&asymp;33.2% (corrected from 13.8% with alpha_ScN=10.0, source unknown).<br>
 Bond stress limit 23 MPa: Watanabe &amp; Takigawa, <em>Applied Surface Science</em> (2023).<br>
 <strong>Disclaimer:</strong> ScAlN optimal windows are based on linear interpolation of literature elastic constants. Users should verify results with their own experimental data before making engineering decisions.
 </footer>

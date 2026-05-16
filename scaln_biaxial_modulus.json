@@ -1,0 +1,69 @@
+{
+  "description": "ScAlN biaxial modulus from Zhang et al. JAP 114, 243516 (2013)",
+  "formula": "M_bi = C11 + C12 - 2*C13^2/C33",
+  "polynomial_fit": {
+    "formula": "M_bi(x) = a*x^2 + b*x + c",
+    "a": -1430.4,
+    "b": -264.4,
+    "c": 471.1,
+    "valid_range": "0 <= x <= 0.375"
+  },
+  "nu_bi_fit": {
+    "formula": "nu_bi(x) = a*x^2 + b*x + c",
+    "a": 7.136,
+    "b": 0.094,
+    "c": 0.582
+  },
+  "source": "Zhang, Fu, Holec, Humphreys, Moram, JAP 114, 243516 (2013)",
+  "caveat": "Room temperature DFT values. Cryogenic (4K) values not reported.",
+  "data": [
+    {
+      "x": 0.0,
+      "sc_pct": 0.0,
+      "C11": 396,
+      "C12": 137,
+      "C13": 108,
+      "C33": 373,
+      "M_bi_GPa": 470.5,
+      "nu_bi": 0.579,
+      "M_current_GPa": 379.5,
+      "diff_pct": 19.3
+    },
+    {
+      "x": 0.125,
+      "sc_pct": 12.5,
+      "C11": 358,
+      "C12": 141,
+      "C13": 114,
+      "C33": 319,
+      "M_bi_GPa": 417.5,
+      "nu_bi": 0.715,
+      "M_current_GPa": 325.6,
+      "diff_pct": 22.0
+    },
+    {
+      "x": 0.25,
+      "sc_pct": 25.0,
+      "C11": 296,
+      "C12": 148,
+      "C13": 125,
+      "C33": 240,
+      "M_bi_GPa": 313.8,
+      "nu_bi": 1.042,
+      "M_current_GPa": 271.8,
+      "diff_pct": 13.4
+    },
+    {
+      "x": 0.375,
+      "sc_pct": 37.5,
+      "C11": 231,
+      "C12": 158,
+      "C13": 134,
+      "C33": 165,
+      "M_bi_GPa": 171.4,
+      "nu_bi": 1.624,
+      "M_current_GPa": 217.9,
+      "diff_pct": -27.2
+    }
+  ]
+}
