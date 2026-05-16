@@ -252,5 +252,13 @@ let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(u
 ['fSAW','pSAW','Top','dModel','dCust','hLN','hMid','hSap'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',update);});
 update();
 </script>
+<footer style="max-width:900px;margin:2rem auto;padding:1rem;font-size:11px;color:#666;border-top:1px solid #ddd;line-height:1.8">
+<strong>Physical model and references:</strong><br>
+TLS dipole moment range d_TLS=0.1&ndash;8.3 D: Sarabi, B. et al. <em>Physical Review Letters</em> 116, 167002 (2016).<br>
+Multilayer stress model: Freund, L.B. &amp; Suresh, S. <em>Thin Film Materials</em> (Cambridge University Press, 2003).<br>
+LiNbO3 elastic constants: Weis, R.S. &amp; Gaylord, T.K. <em>Applied Physics A</em> 37, 191 (1985).<br>
+<strong>Material caveat (identified in this work):</strong> The d_TLS range 0.1&ndash;8.3 D from Sarabi et al. (2016) was measured in silicon nitride (SiNx) thin films, not on Au (gold) surfaces or nanogaps. Direct applicability to Au nanogap TLS is unverified. As of 2025, d_TLS on Au nanogap surfaces has not been reported in peer-reviewed literature. This measurement is identified as the highest priority experimental validation needed for this work.<br>
+<strong>Disclaimer:</strong> The SAW-TLS coupling_eff is a theoretical estimate based on d_TLS bounds from Sarabi 2016 (superconducting qubit measurements). Direct measurement of d_TLS in Au nanogap structures has not been performed. The 2-layer approximation validity is confirmed analytically for In/Sn/Al/AuSn interlayers. Users should verify results with their own experimental data.
+</footer>
 </body>
 </html>

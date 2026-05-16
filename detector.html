@@ -236,7 +236,7 @@ tr:hover{background:#f0f6ff}
     τ★ = 25,317 Ω·fF<br>
     τ_min = 12,000<br>
     τ_upper = 41,137<br>
-    κ = −0.903<br>
+    κ = −0.903 <span style='font-size:10px;color:#888'>(score vs tau post-fit exponent, R&sup2;=0.94; not used in computation &mdash; for reference only)</span><br>
     G = 50·exp(−g/1.5)/g^0.8<br>
     I = 2μA·G·[exp(−t/0.5ns)+0.5·exp(−t/2ns)]<br>
     SNR = ΣV²_sig / ΣV²_noise
@@ -543,5 +543,12 @@ function renderResults(rows, ms) {
     });
 }
 </script>
+<footer style="max-width:900px;margin:2rem auto;padding:1rem;font-size:11px;color:#666;border-top:1px solid #ddd;line-height:1.8">
+<strong>Physical model and references:</strong><br>
+Score function: score &prop; &tau;<sup>&minus;0.903</sup> (R&sup2;=0.94). This exponent is derived from numerical scan of the physical model in this tool (dual-exponential pulse, thermal + shot noise). Python reproduction yields &kappa;=&minus;0.862 (R&sup2;=0.997, gap=1.5nm fixed). Not from external literature. de Graaf et al. (2018) provides the DIET calibration anchor (k_des0), not the scoring exponent.<br>
+Cin model: parallel-plate approximation C = &epsilon;A/d, using Johnson &amp; Christy (1972) Au dielectric constants at 807 nm.<br>
+Gans theory for ellipsoidal nanoparticles: Gans, R. <em>Ann. Phys.</em> 352, 270 (1915).<br>
+<strong>Disclaimer:</strong> This tool is based on established physical models calibrated against experimental data. Users should verify results with their own experimental data before making engineering decisions. The SAW phonon coupling_eff is a theoretical estimate, not yet experimentally verified.
+</footer>
 </body>
 </html>

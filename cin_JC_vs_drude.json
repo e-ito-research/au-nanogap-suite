@@ -1,0 +1,33 @@
+{
+  "description": "Cin calculation: Johnson & Christy 1972 vs Drude model",
+  "wavelength_nm": 807,
+  "eps_JC": {
+    "real": -31.0,
+    "imag": 0.92
+  },
+  "eps_Drude": {
+    "real": -33.33279976917263,
+    "imag": 1.5433731174094185
+  },
+  "results": [
+    {
+      "gap_nm": 1.5,
+      "Cin_JC_aF": 18.298266666666663,
+      "Cin_Drude_aF": 19.675240610416964,
+      "diff_pct": 7.525160545718178
+    },
+    {
+      "gap_nm": 2.0,
+      "Cin_JC_aF": 13.723699999999997,
+      "Cin_Drude_aF": 14.756430457812725,
+      "diff_pct": 7.525160545718192
+    },
+    {
+      "gap_nm": 3.3,
+      "Cin_JC_aF": 8.317393939393938,
+      "Cin_Drude_aF": 8.943291186553164,
+      "diff_pct": 7.525160545718166
+    }
+  ],
+  "caveat": "Area A=100nm^2 is assumed. Absolute Cin values are geometry-dependent."
+}

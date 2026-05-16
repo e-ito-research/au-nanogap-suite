@@ -1,0 +1,135 @@
+{
+  "description": "DD+DIET optimal N (revised)",
+  "analytic_solution": "N_opt = sqrt(TLS_remain / epsilon)",
+  "reference": "Viola, Lloyd, Knill, PRL 82, 2417 (1999) - simplified model",
+  "results": [
+    {
+      "diet_pct": 0,
+      "epsilon": 0.001,
+      "N_opt_numeric": 32,
+      "N_opt_analytic": 32,
+      "E_min": 0.06325,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 0,
+      "epsilon": 0.005,
+      "N_opt_numeric": 14,
+      "N_opt_analytic": 14,
+      "E_min": 0.14142857142857143,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 0,
+      "epsilon": 0.01,
+      "N_opt_numeric": 10,
+      "N_opt_analytic": 10,
+      "E_min": 0.2,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 30,
+      "epsilon": 0.001,
+      "N_opt_numeric": 26,
+      "N_opt_analytic": 26,
+      "E_min": 0.05292307692307692,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 30,
+      "epsilon": 0.005,
+      "N_opt_numeric": 12,
+      "N_opt_analytic": 12,
+      "E_min": 0.11833333333333332,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 30,
+      "epsilon": 0.01,
+      "N_opt_numeric": 8,
+      "N_opt_analytic": 8,
+      "E_min": 0.16749999999999998,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 50,
+      "epsilon": 0.001,
+      "N_opt_numeric": 22,
+      "N_opt_analytic": 22,
+      "E_min": 0.04472727272727273,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 50,
+      "epsilon": 0.005,
+      "N_opt_numeric": 10,
+      "N_opt_analytic": 10,
+      "E_min": 0.1,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 50,
+      "epsilon": 0.01,
+      "N_opt_numeric": 7,
+      "N_opt_analytic": 7,
+      "E_min": 0.14142857142857143,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 70,
+      "epsilon": 0.001,
+      "N_opt_numeric": 17,
+      "N_opt_analytic": 17,
+      "E_min": 0.03464705882352942,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 70,
+      "epsilon": 0.005,
+      "N_opt_numeric": 8,
+      "N_opt_analytic": 8,
+      "E_min": 0.07750000000000001,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 70,
+      "epsilon": 0.01,
+      "N_opt_numeric": 5,
+      "N_opt_analytic": 5,
+      "E_min": 0.11000000000000001,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 90,
+      "epsilon": 0.001,
+      "N_opt_numeric": 10,
+      "N_opt_analytic": 10,
+      "E_min": 0.019999999999999997,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 90,
+      "epsilon": 0.005,
+      "N_opt_numeric": 4,
+      "N_opt_analytic": 4,
+      "E_min": 0.045,
+      "qec_threshold_1pct": false
+    },
+    {
+      "diet_pct": 90,
+      "epsilon": 0.01,
+      "N_opt_numeric": 3,
+      "N_opt_analytic": 3,
+      "E_min": 0.06333333333333332,
+      "qec_threshold_1pct": false
+    }
+  ],
+  "confirmed_conclusion": "Within simplified model: all conditions fail QEC threshold E<0.01. DIET 90% + epsilon=0.1% gives E_min=0.020. Additional epsilon reduction to <0.01% required.",
+  "limitations": [
+    "E = TLS_remain/N + N*epsilon is a heavily simplified model",
+    "Real Surface Code error propagation is more complex",
+    "TLS_remain quantification requires experimental TLS density measurement",
+    "Pulse error rate epsilon has N-dependence not captured here",
+    "QEC threshold correspondence is approximate"
+  ]
+}

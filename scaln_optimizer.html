@@ -66,7 +66,7 @@ table.dt tr:hover td{background:#0e1c2c;}
 <header>
   <h1>ScAlN Buffer Layer Optimizer
     <span class="badge b-ok">CALIBRATED</span>
-    <span class="badge b-lit">Weis &amp; Gaylord 1985 | Moser 2023</span>
+    <span class="badge b-lit">Weis &amp; Gaylord 1985 | Moram et al. JAP 2013</span>
     <span class="badge b-warn">sigma_limit: Watanabe 2023</span>
   </h1>
   <p>ScAlN interlayer design for LiNbO3/Sapphire cryogenic bonding -- optimal Sc% at room temp and 4K | v1.0 2026-05</p>
@@ -87,7 +87,7 @@ table.dt tr:hover td{background:#0e1c2c;}
   <div class="param-row"><label>alpha_ScN (ppm/K)</label><span class="pval" style="color:var(--muted)">10.0</span></div>
   <div class="param-row"><label>alpha_Sap (ppm/K)</label><input type="range" id="alphaSap" min="4" max="7" step="0.1" value="5.0" aria-label="Sapphire CTE"><span class="pval"><span id="alphaSapd">5.0</span> ppm/K</span></div>
   <div class="sec">References</div>
-  <div class="ref">ScAlN elastic: Moser et al., Appl. Phys. Lett. 2023<br>ScAlN CTE: linear interp AlN/ScN<br>AlN baseline: Davydov (2002)<br>Bond limit: Watanabe &amp; Takigawa,<br>Appl. Surf. Sci. (2023) -- 23 MPa<br>LiNbO3: Weis &amp; Gaylord (1985)</div>
+  <div class="ref">ScAlN elastic: Zhang, Fu, Holec, Humphreys, Moram, J. Appl. Phys. 114, 243516 (2013)<br>ScAlN CTE: linear interp AlN/ScN<br>AlN baseline: Davydov (2002)<br>Bond limit: Watanabe &amp; Takigawa,<br>Appl. Surf. Sci. (2023) -- 23 MPa<br>LiNbO3: Weis &amp; Gaylord (1985)</div>
 </div>
 <div class="main">
   <div class="rg">
@@ -116,6 +116,7 @@ table.dt tr:hover td{background:#0e1c2c;}
 <script>
 function clamp(v,lo,hi){const n=parseFloat(v);return isFinite(n)?Math.max(lo,Math.min(hi,n)):lo;}
 function safeText(el,s){if(el)el.textContent=String(s);}
+// E_AlN=296GPa, E(Sc36%)=175GPa: derived from C-tensor of Zhang et al. JAP 114,243516(2013). Single E-value not directly in paper; /36 normalization basis unconfirmed.
 function scalnProps(sc){const alpha=(4.2+(10.0-4.2)*sc/100)*1e-6;const E=Math.max(80e9,(296-(296-175)*sc/36)*1e9);return{alpha,E,M:E/0.78};}
 function sigma(sc,T_K,aSap,Tbond){const{M,alpha}=scalnProps(sc);const DT=Math.abs(Tbond-T_K);return M*Math.abs(alpha-aSap*1e-6)*DT/1e6;}
 function findWindow(cond,arr){const ok=arr.filter(cond);if(!ok.length)return'None';return ok[0]+'-'+ok[ok.length-1]+'%';}
@@ -187,5 +188,13 @@ let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(u
 ['scPct','Tbond','Top','sigLim','alphaSap'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',update);});
 update();
 </script>
+<footer style="max-width:900px;margin:2rem auto;padding:1rem;font-size:11px;color:#666;border-top:1px solid #ddd;line-height:1.8">
+<strong>Physical model and references:</strong><br>
+ScAlN elastic constants: Zhang, G.W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, <em>Journal of Applied Physics</em> 114, 243516 (2013). DOI: 10.1063/1.4848036. Note: room temperature DFT calculation. Cryogenic (4K) elastic constants of ScAlN are not reported in this paper. Sc optimal window at 4K is extrapolated from room temperature data.<br>
+LiNbO3 elastic constants: Weis, R.S. &amp; Gaylord, T.K. <em>Applied Physics A</em> 37, 191 (1985).<br>
+AlN baseline CTE: Davydov, V.Yu. et al. (2002). ScAlN CTE: linear interpolation AlN/ScN.<br>
+Bond stress limit 23 MPa: Watanabe &amp; Takigawa, <em>Applied Surface Science</em> (2023).<br>
+<strong>Disclaimer:</strong> ScAlN optimal windows are based on linear interpolation of literature elastic constants. Users should verify results with their own experimental data before making engineering decisions.
+</footer>
 </body>
 </html>

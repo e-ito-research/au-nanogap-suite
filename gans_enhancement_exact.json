@@ -1,0 +1,86 @@
+{
+  "description": "Gans 1915 exact field enhancement for Au nanogap",
+  "eps_Au_807nm": {
+    "real": -27.0,
+    "imag": 1.7,
+    "source": "Johnson & Christy, PRB 6, 4370 (1972)"
+  },
+  "model": "Prolate spheroid, long-axis enhancement",
+  "assumption": "gap = 2b, a = lambda/4",
+  "results": [
+    {
+      "gap_nm": 1.5,
+      "R": 269.0,
+      "L": 7.307764722851806e-05,
+      "enhancement_Gans": 734.8943554067415,
+      "enhancement_approx": 12478.816931103685,
+      "ratio": 0.058891348391769696
+    },
+    {
+      "gap_nm": 2.0,
+      "R": 201.75,
+      "L": 0.00012284989375203065,
+      "enhancement_Gans": 736.9511730057527,
+      "enhancement_approx": 8105.229353633369,
+      "ratio": 0.09092292652710637
+    },
+    {
+      "gap_nm": 2.5,
+      "R": 161.4,
+      "L": 0.00018339059317633538,
+      "enhancement_Gans": 739.4646383225248,
+      "enhancement_approx": 5799.630018544287,
+      "ratio": 0.12750203650199934
+    },
+    {
+      "gap_nm": 3.0,
+      "R": 134.5,
+      "L": 0.0002540100998709765,
+      "enhancement_Gans": 742.4128065995524,
+      "enhancement_approx": 4411.928036584459,
+      "ratio": 0.16827400638526716
+    },
+    {
+      "gap_nm": 3.3,
+      "R": 122.27272727272728,
+      "L": 0.0003009821289713335,
+      "enhancement_Gans": 744.3835206127052,
+      "enhancement_approx": 3824.18939029731,
+      "ratio": 0.19465132205568755
+    },
+    {
+      "gap_nm": 5.0,
+      "R": 80.7,
+      "L": 0.0006272355061560499,
+      "enhancement_Gans": 758.2903381267481,
+      "enhancement_approx": 2050.478857242864,
+      "ratio": 0.36981134209126565
+    },
+    {
+      "gap_nm": 7.0,
+      "R": 57.642857142857146,
+      "L": 0.0011283541449220668,
+      "enhancement_Gans": 780.4212584973084,
+      "enhancement_approx": 1237.8363788783379,
+      "ratio": 0.6304720654635187
+    },
+    {
+      "gap_nm": 10.0,
+      "R": 40.35,
+      "L": 0.002084621144717648,
+      "enhancement_Gans": 825.4267289951739,
+      "enhancement_approx": 724.9537523180359,
+      "ratio": 1.1385922568934588
+    }
+  ],
+  "critical_limitations": [
+    "Gans 1915 theory applies to isolated prolate spheroids, NOT to dimer nanogaps",
+    "Au nanogap is a dimer/bowtie structure: two opposing flat metal surfaces",
+    "Correct model for dimer nanogap requires FDTD or coupled-dipole simulation",
+    "The approximation (lambda/gap)^1.5 is empirical, NOT derived from Gans theory",
+    "At gap=1.5nm, Gans gives ~735x but (lambda/gap)^1.5 gives ~12479x (17x overestimate)",
+    "Plasmon resonance condition L*Re(eps_m) + (1-L) = 0 gives R~6 (not R=269 for 1.5nm gap)",
+    "For R>>1 (small gap), Gans enhancement saturates to |eps_Au|^2 ~ 730, gap-independent"
+  ],
+  "recommendation": "All field enhancement values in this work should be treated as order-of-magnitude estimates only. FDTD calculation is required for accurate values."
+}

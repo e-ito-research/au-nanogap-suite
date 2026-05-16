@@ -1,0 +1,49 @@
+[
+  {
+    "step": 1,
+    "claim": "Au ナノギャップの DIET 処理で TLS 密度が低減する",
+    "evidence": "de Graaf et al., Nature Communications 9, 1143 (2018)",
+    "detail": "超伝導共振器で表面スピン脱離によりノイズが約10倍低減",
+    "status": "実験的に確認済み（超伝導）"
+  },
+  {
+    "step": 2,
+    "claim": "イオントラップ電極表面にも TAF（TLS）が存在しノイズ源である",
+    "evidence": "Noel et al., Physical Review A 99, 063427 (2019)",
+    "detail": "活性化エネルギー 0.35〜0.65 eV の TAF を実験的に同定",
+    "status": "実験的に確認済み（イオントラップ）"
+  },
+  {
+    "step": 3,
+    "claim": "Surface noise is a common problem for both superconducting qubits and ion traps, with similar 1/f characteristics",
+    "evidence": "Brownnutt et al., Rev. Mod. Phys. 87, 1419 (2015)",
+    "detail": "Brownnutt et al. Rev. Mod. Phys. 87, 1419 (2015) reviews electric-field noise in ion traps and compares with other quantum systems including superconducting qubits. Both show surface-origin 1/f noise. Note: physical origin is not proven to be identical, but the phenomenology (surface adsorbates, 1/f spectrum) is shared.",
+    "status": "Confirmed by review literature (Brownnutt 2015)"
+  },
+  {
+    "step": 4,
+    "claim": "表面処理でイオントラップの電場ノイズが変化する",
+    "evidence": "Sedlacek et al., PRA 98, 063430 (2018); Palani et al., Entropy 27, 1208 (2025)",
+    "detail": "Ar スパッタで Au・Nb 電極のノイズが変化することを確認。ただし変化は非単調（最初に悪化後に改善）であり、単純な TLS 除去とは異なる複数メカニズムが関与する",
+    "status": "実験的に確認済み（ただし非単調な挙動に注意）",
+    "verification_status": {
+      "Sedlacek_2018": "Confirmed via web search. PRA 98, 063430 (2018). Nb and Au electrodes, noise changes with ion milling.",
+      "Palani_2025": "Confirmed via direct fetch of DOI 10.3390/e27121208. Non-monotonic dependence of heating and dephasing on Ar+ sputtering reported.",
+      "both_confirmed": true
+    }
+  },
+  {
+    "step": 5,
+    "claim": "Au ナノギャップ DIET をイオントラップ電極（Au 表面）に適用すると TAF 密度が低減しノイズが低減する可能性がある",
+    "evidence": "Steps 1〜4 の論理的帰結",
+    "detail": "DIET は特定の TLS を電子的に励起して選択的に除去するため、Ar スパッタの非単調な挙動とは異なる可能性がある。電極材料が Au である場合に特に適用可能性が高い。Nb 電極への適用は材料が異なるため別途検討が必要。",
+    "status": "理論的提案（実験未実施・2025年時点で査読論文なし）"
+  },
+  {
+    "step": 6,
+    "claim": "ノイズ低減の定量的予測",
+    "evidence": "現時点で確認できる文献なし",
+    "detail": "イオントラップ電極での DIET 効果の定量的予測にはホット電子生成効率と TAF 脱離断面積の実測値が必要。現時点では定量的予測不可。",
+    "status": "現時点で定量的予測不可"
+  }
+]

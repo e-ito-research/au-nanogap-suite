@@ -558,17 +558,17 @@ function updateScAlN(){
   document.getElementById('sc-M').textContent=M.toFixed(0);
 
   // Gauges
-  const pct1=Math.min(sigma/23*100,100);
+  const pct1=Math.min(sigma/BOND_LIMIT_MPA*100,100);
   const pct2=Math.min(sigma/545.7*100,100);
   const c1=pct1>100?'var(--danger)':pct1>50?'var(--warn)':'var(--ok)';
   document.getElementById('sc-gf1').style.cssText='width:'+Math.min(pct1,100)+'%;background:'+c1;
   document.getElementById('sc-gf2').style.cssText='width:'+Math.min(pct2,100)+'%;background:var(--accent2)';
-  document.getElementById('sc-g1').textContent=sigma.toFixed(1)+' MPa  ('+( sigma/23).toFixed(1)+'x limit)';
+  document.getElementById('sc-g1').textContent=sigma.toFixed(1)+' MPa  ('+( sigma/BOND_LIMIT_MPA).toFixed(1)+'x limit)';
   document.getElementById('sc-g2').textContent=(sigma/545.7*100).toFixed(1)+'% of LiNbO3';
 
   const box=document.getElementById('sc-status');
   const phaseLim=x>0.4375?'DANGER: wurtzite lost!':x>0.3125?'CAUTION: elastic properties affected':null;
-  if(sigma<=23&&!phaseLim){
+  if(sigma<=BOND_LIMIT_MPA&&!phaseLim){
     box.className='status-box ok';
     box.innerHTML='OK - sigma='+sigma.toFixed(1)+' MPa below bond limit. Direct bonding may be possible.';
   } else if(phaseLim){
@@ -613,7 +613,7 @@ function updateScAlNChart(){
   if(tab==='stress'){
     datasets=[
       {label:'Thermal stress (MPa)',data:y1,borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false},
-      {label:'Bond limit 23 MPa',data:xs.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'Bond limit 23 MPa',data:xs.map(()=>BOND_LIMIT_MPA),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
       {label:'LiNbO3 X-cut 545.7 MPa',data:xs.map(()=>545.7),borderColor:'#ff6b35',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
     ];
     ylabel='MPa'; title='Thermal Stress vs Sc%';
@@ -692,6 +692,7 @@ function sanitizeHTML(str) {
   return d.innerHTML;
 }
 // ======================================================
+const BOND_LIMIT_MPA = 23; // MPa: Watanabe & Takigawa, Appl. Surf. Sci. (2023) — Au direct-bonding peel strength limit
 const C11=203,C33=245,C44=60,C12=53,C13=75,C14=9,C66=(C11-C12)/2;
 const C_voigt=[[C11,C12,C13,C14,0,0],[C12,C11,C13,-C14,0,0],[C13,C13,C33,0,0,0],[C14,-C14,0,C44,0,0],[0,0,0,0,C44,C14],[0,0,0,0,C14,C66]];
 const vm=[[0,0],[1,1],[2,2],[1,2],[0,2],[0,1]];
@@ -813,16 +814,16 @@ function update(){
 
   const sfrac=fractureMPa(p);
   const starget=sfrac*0.5;
-  const pct1=metric/23*100,pct2=metric/sfrac*100,relief=Math.max(0,(1-23/metric)*100);
+  const pct1=metric/BOND_LIMIT_MPA*100,pct2=metric/sfrac*100,relief=Math.max(0,(1-BOND_LIMIT_MPA/metric)*100);
   setGauge('g1',pct1,pct1>100?'var(--danger)':pct1>50?'var(--warn)':'var(--ok)');
   setGauge('g2',pct2,pct2>100?'var(--danger)':pct2>80?'var(--warn)':'var(--ok)');
   setGauge('g3',relief,'var(--accent2)');
-  document.getElementById('g1-pct').textContent=fmt(metric/23,1)+'x limit';
+  document.getElementById('g1-pct').textContent=fmt(metric/BOND_LIMIT_MPA,1)+'x limit';
   document.getElementById('g2-pct').textContent=fmt(metric/sfrac,1)+'x fracture';
   document.getElementById('g3-pct').textContent=fmt(relief,1)+'%';
 
   const box=document.getElementById('status-box');
-  if(metric>500){box.className='status-box danger';box.innerHTML='WARNING sigma = '+fmt(metric)+' MPa - '+fmt(metric/23,0)+'x bond limit. In-layer required.';}
+  if(metric>500){box.className='status-box danger';box.innerHTML='WARNING sigma = '+fmt(metric)+' MPa - '+fmt(metric/BOND_LIMIT_MPA,0)+'x bond limit. In-layer required.';}
   else if(metric>100){box.className='status-box warning';box.innerHTML='CAUTION sigma = '+fmt(metric)+' MPa - Partial relaxation needed.';}
   else{box.className='status-box ok';box.innerHTML='OK sigma = '+fmt(metric)+' MPa - Within acceptable range.';}
 
@@ -863,14 +864,14 @@ function updateMainChart(p){
     for(let th=0;th<=180;th+=2){labels.push(th);datasets[0]=(datasets[0]||[]);datasets[0].push(computeStress(th,p.phi,p).metric);}
     datasets=[
       {label:'sigma_metric',data:datasets[0],borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false,tension:.3},
-      {label:'Bond limit 23 MPa',data:labels.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'Bond limit 23 MPa',data:labels.map(()=>BOND_LIMIT_MPA),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
       {label:'sigma_fracture',data:labels.map(()=>sfrac),borderColor:'#ffdd57',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
     ];
   } else if(currentChartTab==='phi'){
     const ys=[];for(let ph=0;ph<=360;ph+=2){labels.push(ph);ys.push(computeStress(p.theta,ph,p).metric);}
     datasets=[
       {label:'sigma_metric',data:ys,borderColor:'#ff6b35',borderWidth:2,pointRadius:0,fill:false,tension:.3},
-      {label:'Bond limit 23 MPa',data:labels.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'Bond limit 23 MPa',data:labels.map(()=>BOND_LIMIT_MPA),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
     ];
   } else {
     type='bar';
@@ -894,7 +895,7 @@ function updateRefTable(p){
       +'<td>'+c.th+' deg</td>'
       +'<td>'+c.ph+' deg</td>'
       +'<td class="'+valCls+'">'+m.toFixed(1)+'</td>'
-      +'<td style="color:var(--danger);font-size:10px;">'+(m/23).toFixed(0)+'x</td>'
+      +'<td style="color:var(--danger);font-size:10px;">'+(m/BOND_LIMIT_MPA).toFixed(0)+'x</td>'
       +'</tr>';
   }).join('');
 }
@@ -1004,7 +1005,7 @@ document.getElementById('heatmap-canvas').addEventListener('mousemove',e=>{
   if(th>180||ph>360)return;
   const ti=Math.min(HM_TH-1,Math.floor(th/2)),pi=Math.min(HM_PH-1,Math.floor(ph/2));
   const v=heatmapData.data[ti*HM_PH+pi];
-  document.getElementById('heatmap-hover-info').textContent='?='+th+'?, ?='+ph+'? -> sigma_metric = '+v.toFixed(1)+' MPa  ('+(v/23).toFixed(0)+'x bond limit)';
+  document.getElementById('heatmap-hover-info').textContent='?='+th+'?, ?='+ph+'? -> sigma_metric = '+v.toFixed(1)+' MPa  ('+(v/BOND_LIMIT_MPA).toFixed(0)+'x bond limit)';
 });
 document.getElementById('heatmap-canvas').addEventListener('click',e=>{
   const canvas=e.target;
@@ -1030,7 +1031,7 @@ function updateCriticalPage(p,sfrac,E_eff){
   const T_room=300;
 
   const limits=[
-    {name:'Bond limit (23 MPa)',sigma:23,color:'#ff3860'},
+    {name:'Bond limit (23 MPa)',sigma:BOND_LIMIT_MPA,color:'#ff3860'},
     {name:'LiNbO₃ fracture',sigma:sfrac,color:'#ffdd57'},
     {name:'In yield (0.9 MPa)',sigma:0.9,color:'#39ff14'},
     {name:'In yield 4K est. (5 MPa)',sigma:5,color:'#00c8ff'},
@@ -1058,7 +1059,7 @@ function updateCriticalPage(p,sfrac,E_eff){
   for(let T=300;T>=4;T-=5){Ts.push(T);stress.push(alpha_eff*E_MPa*(300-T));}
   critChart=new Chart(ctx,{type:'line',data:{labels:Ts,datasets:[
     {label:'Accumulated thermal stress (MPa)',data:stress,borderColor:'#00c8ff',borderWidth:2,pointRadius:0,fill:false,tension:.3},
-    {label:'Bond limit 23 MPa',data:Ts.map(()=>23),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+    {label:'Bond limit 23 MPa',data:Ts.map(()=>BOND_LIMIT_MPA),borderColor:'#ff3860',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
     {label:'sigma_fracture LiNbO₃',data:Ts.map(()=>sfrac),borderColor:'#ffdd57',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
   ]},options:{responsive:true,animation:{duration:200},plugins:{legend:{labels:{color:'#5a7090',font:{size:9,family:'JetBrains Mono'}}}},scales:{x:{reverse:true,ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Temperature (K)',color:'#5a7090',font:{size:9}}},y:{ticks:{color:'#5a7090',font:{size:9}},grid:{color:'rgba(30,45,69,.5)'},title:{display:true,text:'Stress (MPa)',color:'#5a7090',font:{size:9}}}}}});
 }
@@ -1172,7 +1173,7 @@ function updateReport(p,metric,sxx,syy,sxy,sfrac,starget,t_In,f){
     '  sigma_yy        = '+fmt(syy)+' MPa',
     '  sigma_xy        = '+fmt(sxy)+' MPa',
     '  sigma_metric    = '+fmt(metric)+' MPa',
-    '  vs Bond limit   = '+fmt(metric/23,1)+'x',
+    '  vs Bond limit   = '+fmt(metric/BOND_LIMIT_MPA,1)+'x',
     '  vs sigma_frac   = '+fmt(metric/sfrac,1)+'x',
     '',
     'LiNbO3 FRACTURE PARAMETERS',
@@ -1437,5 +1438,13 @@ document.getElementById('chart-tabs').querySelectorAll('.chart-tab').forEach(tab
   </div><!-- panel -->
 </div><!-- page-about -->
 
+<footer style="max-width:900px;margin:2rem auto;padding:1rem;font-size:11px;color:#666;border-top:1px solid #ddd;line-height:1.8">
+<strong>Physical model and references:</strong><br>
+LiNbO3 elastic and piezoelectric constants: Weis, R.S. &amp; Gaylord, T.K. <em>Applied Physics A</em> 37, 191 (1985).<br>
+Bond stress limit 23 MPa: Watanabe &amp; Takigawa, <em>Applied Surface Science</em> (2023).<br>
+Anisotropic thermoelastic tensor calculation: full 6x6 Voigt notation, theta-phi scan over all orientations.<br>
+<strong>Key result:</strong> Magic-cut (zero-stress orientation) non-existence proved analytically for LiNbO3/Sapphire bonded structures at 4K.<br>
+<strong>Disclaimer:</strong> Results are based on published elastic constants at room temperature. Temperature dependence of elastic constants at cryogenic temperatures is not included. Users should verify results with their own experimental data before making engineering decisions.
+</footer>
 </body>
 </html>

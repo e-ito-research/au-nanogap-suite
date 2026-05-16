@@ -1,0 +1,40 @@
+{
+  "description": "Calculation A: QEC threshold condition for noise amplitude A",
+  "basis": [
+    "Ithier et al., PRB 72, 134519 (2005) - Eq.(21): 1/f noise dephasing",
+    "Krantz et al., APR 6, 021318 (2019) - t_gate = 50 ns",
+    "Fowler et al., PRA 86, 032324 (2012) - QEC threshold ~1%"
+  ],
+  "formula": "A_max = 1 / (T_phi_min^2 * D_lambda_z^2 * ln(omega_c/omega_ir))",
+  "parameters": {
+    "T_phi_min_s": 5e-06,
+    "T_phi_min_basis": "t_gate / E_threshold = 50ns / 0.01 (Krantz 2019, Fowler 2012)",
+    "D_lambda_z_rad_s": 193000000000.0,
+    "D_lambda_z_basis": "Ithier 2005 Table I, TLFs column",
+    "omega_ir_rad_s": 62.8,
+    "omega_c_rad_s": 6280000.0,
+    "ln_ratio": 11.51,
+    "ln_ratio_basis": "omega_ir=2pi*10Hz, omega_c=2pi*1MHz (typical values)"
+  },
+  "result": {
+    "A_max_rad_s": 9.33e-14,
+    "interpretation": "T_phi > 5.0 us requires A < 9.33e-14 rad/s. This is the noise amplitude upper bound for QEC threshold operation."
+  },
+  "connection_to_d_TLS": {
+    "status": "Not established",
+    "reason": "Conversion from A (rad/s) to d_TLS (Debye) requires Sarabi 2016 proportionality constant. Not yet obtained."
+  },
+  "connection_to_de_Graaf_2018": {
+    "status": "Energy scale mismatch identified",
+    "de_Graaf_desorption_ueV": 8600,
+    "kT_15mK_ueV": 1.3,
+    "ratio": 6615,
+    "conclusion": "de Graaf 2018 removed TLS with desorption energy ~8600 ueV, while qubits at 15mK are affected by TLS with E < 1.3 ueV. This 6615x energy scale discrepancy is an open problem."
+  },
+  "limitations": [
+    "ln(omega_c/omega_ir) depends on cutoff frequency choice (typical values used)",
+    "D_lambda_z from Ithier 2005 is for quantronium qubit, not Au nanogap TLS",
+    "T_phi_min calculation assumes single dominant noise source",
+    "1/f noise approximation used (Ithier 2005 Eq.21)"
+  ]
+}

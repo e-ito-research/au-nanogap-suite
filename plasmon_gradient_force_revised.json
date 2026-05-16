@@ -1,0 +1,89 @@
+{
+  "description": "Plasmon field enhancement and gradient force (reference values only)",
+  "revision": "Removed DIET evaluation claim. Gradient force model does NOT evaluate DIET mechanism. DIET = Desorption Induced by Electronic Transitions (hot electron mechanism).",
+  "valid_content": {
+    "field_enhancement_Gans": "Enhancement ~ (lambda/gap)^1.5 (Gans approximation)",
+    "reference": "Gans, R. Ann. Phys. 352, 270 (1915)"
+  },
+  "reference_values_only": [
+    {
+      "gap_nm": 1.5,
+      "I0_W_m2": 1000000.0,
+      "enhancement_Gans": 12478.816931103685,
+      "F_pN_reference_only": 2.132312434067944,
+      "work_eV_reference_only": 0.019965472229100598,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 1.5,
+      "I0_W_m2": 100000000.0,
+      "enhancement_Gans": 12478.816931103685,
+      "F_pN_reference_only": 21.323124340679446,
+      "work_eV_reference_only": 0.19965472229100603,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 1.5,
+      "I0_W_m2": 10000000000.0,
+      "enhancement_Gans": 12478.816931103685,
+      "F_pN_reference_only": 213.23124340679442,
+      "work_eV_reference_only": 1.99654722291006,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 2.0,
+      "I0_W_m2": 1000000.0,
+      "enhancement_Gans": 8105.229353633367,
+      "F_pN_reference_only": 1.0387331643984021,
+      "work_eV_reference_only": 0.012967954611715382,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 2.0,
+      "I0_W_m2": 100000000.0,
+      "enhancement_Gans": 8105.229353633367,
+      "F_pN_reference_only": 10.38733164398402,
+      "work_eV_reference_only": 0.12967954611715382,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 2.0,
+      "I0_W_m2": 10000000000.0,
+      "enhancement_Gans": 8105.229353633367,
+      "F_pN_reference_only": 103.8733164398402,
+      "work_eV_reference_only": 1.2967954611715382,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 3.3000000000000003,
+      "I0_W_m2": 1000000.0,
+      "enhancement_Gans": 3824.1893902973093,
+      "F_pN_reference_only": 0.29702577474736963,
+      "work_eV_reference_only": 0.0061185084685787755,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 3.3000000000000003,
+      "I0_W_m2": 100000000.0,
+      "enhancement_Gans": 3824.1893902973093,
+      "F_pN_reference_only": 2.9702577474736955,
+      "work_eV_reference_only": 0.06118508468578774,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    },
+    {
+      "gap_nm": 3.3000000000000003,
+      "I0_W_m2": 10000000000.0,
+      "enhancement_Gans": 3824.1893902973093,
+      "F_pN_reference_only": 29.70257747473696,
+      "work_eV_reference_only": 0.6118508468578775,
+      "note": "Gradient force only. NOT a DIET evaluation."
+    }
+  ],
+  "limitations": [
+    "DIET mechanism is hot-electron-induced desorption, not gradient force",
+    "Gans theory is an approximation; FDTD calculation required for accurate values",
+    "Gradient force vs desorption energy comparison does not constitute DIET evaluation",
+    "I0=1e10 W/m2 poses nanogap damage risk due to local fluence amplification"
+  ],
+  "gans_model_critical_note": "Gans 1915 theory is for isolated prolate spheroids. Au nanogap is a dimer structure. Gans exact solution gives ~735x at gap=1.5nm (gap-independent for R>>1), while (lambda/gap)^1.5 gives 12479x (17x overestimate). FDTD required for accurate enhancement values."
+}

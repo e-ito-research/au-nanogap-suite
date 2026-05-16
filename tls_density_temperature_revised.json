@@ -1,0 +1,81 @@
+{
+  "description": "Room temperature TLS density (revised)",
+  "model": "Anderson, Halperin, Varma 1972 tunneling model",
+  "results": {
+    "1 ueV": {
+      "E_TLS_eV": 1e-06,
+      "temps": {
+        "15mK": 0.8642141012238158,
+        "100mK": 0.9966433627294087,
+        "1K": 0.999966359074531,
+        "4K": 0.9999978973979493,
+        "15K": 0.9999998504814375,
+        "77K": 0.9999999943259099,
+        "295K": 0.9999999996134252
+      }
+    },
+    "10 ueV": {
+      "E_TLS_eV": 1e-05,
+      "temps": {
+        "15mK": 0.0017500556848128943,
+        "100mK": 0.7268098454228972,
+        "1K": 0.9966433627294087,
+        "4K": 0.9997897689697051,
+        "15K": 0.999985048291276,
+        "77K": 0.9999994325912089,
+        "295K": 0.9999999613425118
+      }
+    },
+    "100 ueV": {
+      "E_TLS_eV": 0.0001,
+      "temps": {
+        "15mK": 1.0370064288443936e-33,
+        "100mK": 3.665306109127609e-05,
+        "1K": 0.7268098454228972,
+        "4K": 0.9792652063113426,
+        "15K": 0.9985063033490881,
+        "77K": 0.9999432612456887,
+        "295K": 0.9999961342610442
+      }
+    },
+    "1 meV": {
+      "E_TLS_eV": 0.001,
+      "temps": {
+        "15mK": 0.0,
+        "100mK": 1.669714341787623e-50,
+        "1K": 3.665306109127609e-05,
+        "4K": 0.1977214514058007,
+        "15K": 0.8642141012238158,
+        "77K": 0.9943473046638279,
+        "295K": 0.9996135247130972
+      }
+    }
+  },
+  "kT_15mK_ueV": 1.293071161048689,
+  "confirmed_conclusion": "Within AHV model: TLS with E_TLS >= 10 ueV are frozen at 15mK and fully active at room temperature.",
+  "critical_caveat": "Room temperature DIET may remove TLS with E_TLS >= 10 ueV (active at RT), but qubits at 15mK are primarily affected by TLS with E_TLS < 1.3 ueV. Whether RT DIET selectively removes the relevant TLS is unknown.",
+  "limitations": [
+    "Actual E_TLS distribution of TLS on Au nanogap is unmeasured",
+    "Which energy range DIET preferentially removes is unknown",
+    "AHV model applicability to Au nanogap TLS is unverified",
+    "de Graaf 2018 desorption energy ~8600 ueV is ~6600x larger than kT(15mK)=1.3 ueV. Direct connection between DIET and qubit-relevant TLS removal is unverified."
+  ],
+  "de_Graaf_2018_energy_scale": {
+    "desorption_energy_K": 100,
+    "desorption_energy_ueV": 8600,
+    "source": "de Graaf et al., Nat. Commun. 9, 1143 (2018), Discussion section",
+    "quote": "For weakly absorbed spins it is reasonable to expect that W ~ 100 K, limited by the observed desorption energy."
+  },
+  "energy_gap_problem": {
+    "kT_15mK_ueV": 1.3,
+    "deGraaf_desorption_ueV": 8600,
+    "ratio": 6615.384615384615,
+    "conclusion": "The TLS removed by DIET in de Graaf 2018 (desorption energy ~8600 ueV) are at an energy scale ~6600x larger than TLS affecting qubits at 15mK (E < 1.3 ueV). Whether DIET removes the TLS relevant to qubit operation is an open experimental question.",
+    "significance": "This energy scale discrepancy is a previously unquantified problem. Identifying it is a novel theoretical contribution of this work."
+  },
+  "material_caveat": {
+    "Sarabi_2016_material": "Silicon nitride (SiNx) thin film",
+    "Au_nanogap_d_TLS": "Not measured (as of 2025)",
+    "implication": "AHV model calculations in this work use E_TLS ranges inferred from general TLS theory. The actual E_TLS distribution on Au nanogap surfaces is unknown. Sarabi 2016 d_TLS values (SiNx) cannot be directly applied to Au nanogap TLS without experimental verification."
+  }
+}

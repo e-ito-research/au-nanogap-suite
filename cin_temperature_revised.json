@@ -1,0 +1,76 @@
+{
+  "description": "Cin temperature dependence (revised)",
+  "model": "Drude single-band model",
+  "reference": "Johnson & Christy, PRB 6, 4370 (1972)",
+  "results": {
+    "4K": {
+      "T_K": 4,
+      "gamma_rad_s": 1423728813559.322,
+      "eps_real": -33.402166723440686,
+      "Cin_rel": 1.0,
+      "tau_rel": 1.0,
+      "score_change_pct": 0.0
+    },
+    "15K": {
+      "T_K": 15,
+      "gamma_rad_s": 5338983050847.458,
+      "eps_real": -33.40199976468369,
+      "Cin_rel": 0.999995001559079,
+      "tau_rel": 0.999995001559079,
+      "score_change_pct": 0.00044986181906292444
+    },
+    "77K": {
+      "T_K": 77,
+      "gamma_rad_s": 27406779661016.95,
+      "eps_real": -33.39744377421661,
+      "Cin_rel": 0.9998586035072761,
+      "tau_rel": 0.9998586035072761,
+      "score_change_pct": 0.012727393977618462
+    },
+    "150K": {
+      "T_K": 150,
+      "gamma_rad_s": 53389830508474.57,
+      "eps_real": -33.38421476163953,
+      "Cin_rel": 0.9994625509791087,
+      "tau_rel": 0.9994625509791087,
+      "score_change_pct": 0.04839512151675329
+    },
+    "295K": {
+      "T_K": 295,
+      "gamma_rad_s": 105000000000000.0,
+      "eps_real": -33.33279976917262,
+      "Cin_rel": 0.9979232798027025,
+      "tau_rel": 0.9979232798027025,
+      "score_change_pct": 0.1872743010654654
+    }
+  },
+  "confirmed_conclusion": "Within Drude model: Re(epsilon) changes < 0.21% from 4K to 295K. Score impact < +0.19%.",
+  "removed": "Removed overconfident statement 'tool valid at room temp'. Drude model is an approximation.",
+  "limitations": [
+    "Drude single-band model does not fully capture Au dielectric at low T",
+    "No comparison with low-T experimental dielectric data",
+    "Quantum effects in nanogap not included"
+  ],
+  "model_inconsistency_note": {
+    "issue": "qubit_noise.html uses effective nanoparticle response function, NOT bare Au dielectric constant",
+    "qubit_noise_model": {
+      "EI": 9.0,
+      "WP": 1.3697e+16,
+      "LZ": 0.039,
+      "CLZ": 55.44,
+      "formula": "re = epsReGD(omega, gd) + CLZ",
+      "interpretation": "Clausius-Mossotti type correction for nanoparticle shape (LZ=0.039) and surrounding medium (EPS_M=2.25). Effective re at 807nm ~ -25 + 55 = +30 (positive), NOT the bare Au dielectric constant."
+    },
+    "cin_temperature_model": {
+      "formula": "Drude: eps = 1 - wp^2/(w^2 + i*gamma*w)",
+      "eps_re_807nm": -27.0,
+      "source": "Johnson & Christy 1972 (Drude fit)"
+    },
+    "JC_1972_measured": {
+      "eps_re_807nm": -31.0,
+      "eps_im_807nm": 0.92,
+      "diff_from_Drude_pct": 7.5
+    },
+    "conclusion": "Cin temperature analysis (calculation 2) uses bare Au Drude dielectric. qubit_noise.html uses effective nanoparticle response with shape correction. These are different physical quantities and cannot be directly compared. The 0.21% temperature variation conclusion applies only to the bare Drude model."
+  }
+}

@@ -40,7 +40,7 @@ data before making engineering decisions.
 - de Graaf et al., Nature Communications 9, 1143 (2018)
 - Weis & Gaylord, Appl. Phys. A 37, 191-203 (1985)
 - Watanabe & Takigawa, Appl. Surf. Sci. (2023)
-- Zukauskaite et al., J. Appl. Phys. 114, 243516 (2013)
+- S. Zhang, W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, J. Appl. Phys. 114, 243516 (2013). DOI: 10.1063/1.4848036
 - Johnson & Christy, Phys. Rev. B 6, 4370 (1972)
 
 ## License

@@ -1,0 +1,53 @@
+{
+  "description": "AHV 1972 tunneling model: analytic activation rate",
+  "formula": "P_active(T) = sech^2(E_TLS / 2kBT)",
+  "asymptotic": {
+    "E_much_greater_kBT": "P_active ~ 4*exp(-E/kBT)",
+    "E_much_less_kBT": "P_active ~ 1"
+  },
+  "kT_values": {
+    "15mK_ueV": 1.293071161048689,
+    "295K_meV": 25.43039950062422
+  },
+  "de_Graaf_connection": {
+    "desorption_energy_ueV": 8600,
+    "P_active_15mK": 0.0,
+    "P_active_295K": 0.971945187881223,
+    "ratio": Infinity
+  },
+  "results": [
+    {
+      "E_TLS_eV": 1e-06,
+      "P_15mK": 0.8642141012238158,
+      "P_295K": 0.9999999996134252,
+      "ratio": 1.1571206697476037,
+      "x1": 0.386676321506155,
+      "x2": 1.966150787319432e-05
+    },
+    {
+      "E_TLS_eV": 1e-05,
+      "P_15mK": 0.0017500556848128943,
+      "P_295K": 0.9999999613425118,
+      "ratio": 571.4103671217902,
+      "x1": 3.8667632150615505,
+      "x2": 0.00019661507873194322
+    },
+    {
+      "E_TLS_eV": 0.0001,
+      "P_15mK": 1.0370064288443936e-33,
+      "P_295K": 0.9999961342610442,
+      "ratio": 9.643104482731197e+32,
+      "x1": 38.6676321506155,
+      "x2": 0.001966150787319432
+    },
+    {
+      "E_TLS_eV": 0.001,
+      "P_15mK": 0.0,
+      "P_295K": 0.9996135247130972,
+      "ratio": Infinity,
+      "x1": 386.67632150615503,
+      "x2": 0.01966150787319432
+    }
+  ],
+  "reference": "Anderson, Halperin, Varma, Philos. Mag. 25, 1 (1972)"
+}
