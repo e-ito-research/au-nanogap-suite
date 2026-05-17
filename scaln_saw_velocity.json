@@ -1,0 +1,80 @@
+{
+  "description": "ScAlN SAW velocity and IDT pitch vs Sc concentration",
+  "formula": "v_SAW = 0.9 * sqrt(C44/rho) (Rayleigh wave approximation)",
+  "C44_polynomial": {
+    "formula": "C44(x) = a*x^2 + b*x + c [GPa]",
+    "a": -128.0,
+    "b": -134.4,
+    "c": 116.2,
+    "valid_range": "x=0-0.375 (Zhang 2013 DFT data)"
+  },
+  "source": "Zhang, Fu, Holec, Humphreys, Moram, JAP 114, 243516 (2013)",
+  "connection_to_Au_nanogap": "Au nanogap (1.5-3.3 nm) is 100-300x smaller than IDT pitch (360-540 nm). Au nanogap cannot be used as IDT electrode. Connection: Au nanogap DIET pre-treatment of ScAlN substrate surface before IDT fabrication.",
+  "limitations": [
+    "0.9 factor is isotropic approximation; piezoelectric correction needed",
+    "rho uses linear interpolation (bowing not considered)",
+    "C44 polynomial fit valid only for x=0-0.375",
+    "Full SAW equation requires piezoelectric tensor"
+  ],
+  "AlN_validation": {
+    "v_SAW_calculated_m_s": 5373.0,
+    "v_SAW_literature_m_s": "5600-6200",
+    "agreement_pct": "within 5%"
+  },
+  "results": [
+    {
+      "sc_pct": 0,
+      "C44_GPa": 116.2,
+      "rho_kg_m3": 3260.0,
+      "v_SAW_m_s": 5373.0,
+      "IDT_pitch_nm_at_4GHz": 672.0,
+      "IDT_pitch_nm_at_5GHz": 537.0,
+      "IDT_pitch_nm_at_6GHz": 448.0
+    },
+    {
+      "sc_pct": 10,
+      "C44_GPa": 101.5,
+      "rho_kg_m3": 3384.0,
+      "v_SAW_m_s": 4929.0,
+      "IDT_pitch_nm_at_4GHz": 616.0,
+      "IDT_pitch_nm_at_5GHz": 493.0,
+      "IDT_pitch_nm_at_6GHz": 411.0
+    },
+    {
+      "sc_pct": 19,
+      "C44_GPa": 86.0,
+      "rho_kg_m3": 3496.0,
+      "v_SAW_m_s": 4465.0,
+      "IDT_pitch_nm_at_4GHz": 558.0,
+      "IDT_pitch_nm_at_5GHz": 447.0,
+      "IDT_pitch_nm_at_6GHz": 372.0
+    },
+    {
+      "sc_pct": 25,
+      "C44_GPa": 74.6,
+      "rho_kg_m3": 3570.0,
+      "v_SAW_m_s": 4114.0,
+      "IDT_pitch_nm_at_4GHz": 514.0,
+      "IDT_pitch_nm_at_5GHz": 411.0,
+      "IDT_pitch_nm_at_6GHz": 343.0
+    },
+    {
+      "sc_pct": 33,
+      "C44_GPa": 57.9,
+      "rho_kg_m3": 3669.0,
+      "v_SAW_m_s": 3575.0,
+      "IDT_pitch_nm_at_4GHz": 447.0,
+      "IDT_pitch_nm_at_5GHz": 358.0,
+      "IDT_pitch_nm_at_6GHz": 298.0
+    },
+    {
+      "sc_pct": 36,
+      "C44_GPa": 51.2,
+      "rho_kg_m3": 3706.0,
+      "v_SAW_m_s": 3346.0,
+      "IDT_pitch_nm_at_4GHz": 418.0,
+      "IDT_pitch_nm_at_5GHz": 335.0,
+      "IDT_pitch_nm_at_6GHz": 279.0
+    }
+  ]
+}
