@@ -39,7 +39,7 @@ data before making engineering decisions.
 
 - de Graaf et al., Nature Communications 9, 1143 (2018)
 - Weis & Gaylord, Appl. Phys. A 37, 191-203 (1985)
-- Watanabe & Takigawa, Appl. Surf. Sci. (2023)
+- K. Watanabe & R. Takigawa, Appl. Surf. Sci. 620, 156666 (2023). DOI: 10.1016/j.apsusc.2023.156666
 - S. Zhang, W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, J. Appl. Phys. 114, 243516 (2013). DOI: 10.1063/1.4848036
 - Johnson & Christy, Phys. Rev. B 6, 4370 (1972)
 - Ciprian, Mihalic, Lüttich, Hörich, Wade, Christian, Dadgar, Ambacher, Appl. Phys. Lett. 124, 052203 (2024). DOI: 10.1063/5.0176082 (ScN CTE: 6.61±0.60 ppm/K)
