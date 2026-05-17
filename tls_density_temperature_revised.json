@@ -58,19 +58,19 @@
     "Actual E_TLS distribution of TLS on Au nanogap is unmeasured",
     "Which energy range DIET preferentially removes is unknown",
     "AHV model applicability to Au nanogap TLS is unverified",
-    "de Graaf 2018 desorption energy ~8600 ueV is ~6600x larger than kT(15mK)=1.3 ueV. Direct connection between DIET and qubit-relevant TLS removal is unverified."
+    "de Graaf 2018 TLF bandwidth W ~ 100 K (~8600 ueV, limited by desorption energy) is ~6600x larger than kT(15mK)=1.3 ueV. Note: DIET removed TLF (slow fluctuators), not cTLS. Direct connection between DIET and qubit-relevant TLS removal is unverified."
   ],
   "de_Graaf_2018_energy_scale": {
-    "desorption_energy_K": 100,
-    "desorption_energy_ueV": 8600,
+    "W_bandwidth_K": 100,
+    "W_bandwidth_ueV": 8600,
     "source": "de Graaf et al., Nat. Commun. 9, 1143 (2018), Discussion section",
     "quote": "For weakly absorbed spins it is reasonable to expect that W ~ 100 K, limited by the observed desorption energy."
   },
   "energy_gap_problem": {
     "kT_15mK_ueV": 1.3,
-    "deGraaf_desorption_ueV": 8600,
+    "deGraaf_W_bandwidth_ueV": 8600,
     "ratio": 6615.384615384615,
-    "conclusion": "The TLS removed by DIET in de Graaf 2018 (desorption energy ~8600 ueV) are at an energy scale ~6600x larger than TLS affecting qubits at 15mK (E < 1.3 ueV). Whether DIET removes the TLS relevant to qubit operation is an open experimental question.",
+    "conclusion": "The TLF removed by DIET in de Graaf 2018 (W bandwidth ~8600 ueV, limited by desorption energy) are at an energy scale ~6600x larger than TLS affecting qubits at 15mK (E < 1.3 ueV). Whether DIET removes the TLS relevant to qubit operation is an open experimental question.",
     "significance": "This energy scale discrepancy is a previously unquantified problem. Identifying it is a novel theoretical contribution of this work."
   },
   "material_caveat": {
