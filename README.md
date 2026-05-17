@@ -21,7 +21,7 @@ https://e-ito-research.github.io/au-nanogap-suite/
 If you use these tools in your research, please cite:
 
     e.ito.research (2026). Research Design Tools for Quantum Devices.
-    Zenodo. https://doi.org/10.5281/zenodo.20249140
+    Zenodo. https://doi.org/10.5281/zenodo.20254940
 
 ## Disclaimer
 
