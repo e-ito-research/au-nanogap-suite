@@ -1,0 +1,30 @@
+{
+  "description": "Connection between Au nanogap and ScAlN SAW-IDT structure",
+  "confirmed_facts": {
+    "Au_nanogap_range_nm": [
+      1.5,
+      3.3
+    ],
+    "IDT_pitch_5GHz_Sc0_nm": 540,
+    "IDT_pitch_5GHz_Sc33_nm": 360,
+    "ratio_nanogap_to_IDT": "1/100 to 1/300",
+    "conclusion": "Au nanogap (1.5-3.3 nm) is 100-300x smaller than IDT pitch. Au nanogap cannot function as IDT electrode for 5GHz SAW."
+  },
+  "theoretical_proposal": {
+    "status": "Theoretical proposal. No peer-reviewed paper confirmed as of 2025.",
+    "concept": "Au nanogap as passive target structure: SAW-generated piezoelectric field concentrates at Au nanogap, coupling to nano-element (quantum dot, molecule, TLS) placed at gap. This is physically distinct from IDT electrode function.",
+    "physical_basis": [
+      "SAW wavelength (360-540 nm) >> Au nanogap (1.5-3.3 nm)",
+      "Local field concentration at nanogap possible via plasmonic enhancement",
+      "DIET pre-treatment of ScAlN substrate removes TLS before IDT fabrication"
+    ],
+    "connection_to_this_work": "Au nanogap DIET (de Graaf 2018) removes surface TLS. ScAlN SAW substrate with low TLS density enables higher Q SAW resonator. Au nanogap as TLS sensor (Tool 1) monitors substrate quality."
+  },
+  "limitations": [
+    "No peer-reviewed paper proposes ScAlN SAW + Au nanogap combination",
+    "SAW field concentration at nanogap not calculated (FDTD required)",
+    "Coupling efficiency between SAW and nanogap element unknown"
+  ],
+  "source_SAW": "Zhang et al. JAP 114, 243516 (2013); Rayleigh wave approximation",
+  "source_DIET": "de Graaf et al. Nature Communications 9, 1143 (2018)"
+}
