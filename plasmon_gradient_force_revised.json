@@ -85,5 +85,5 @@
     "Gradient force vs desorption energy comparison does not constitute DIET evaluation",
     "I0=1e10 W/m2 poses nanogap damage risk due to local fluence amplification"
   ],
-  "gans_model_critical_note": "Gans 1915 theory is for isolated prolate spheroids. Au nanogap is a dimer structure. Gans exact solution gives ~735x at gap=1.5nm (gap-independent for R>>1), while (lambda/gap)^1.5 gives 12479x (17x overestimate). FDTD required for accurate enhancement values."
+  "gans_model_critical_note": "Gans 1915 theory is for isolated prolate spheroids. Au nanogap is a dimer structure. Gans exact solution gives ~730x (|ε_Au|² at λ=830nm, Gans R>>1 limit, gap-independent), while (lambda/gap)^1.5 gives ~12,000x (λ/gap)^1.5 empirical, λ unspecified (17x overestimate vs Gans). FDTD required for accurate enhancement values."
 }

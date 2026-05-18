@@ -29,7 +29,7 @@
     "de_Graaf_desorption_ueV": 8600,
     "kT_15mK_ueV": 1.3,
     "ratio": 6615,
-    "conclusion": "de Graaf 2018 removed TLS with desorption energy ~8600 ueV, while qubits at 15mK are affected by TLS with E < 1.3 ueV. This 6615x energy scale discrepancy is an open problem."
+    "conclusion": "de Graaf 2018 removed TLF with W bandwidth ~8600 ueV (limited by desorption energy), while qubits at 15mK are affected by TLS with E < 1.3 ueV. This 6615x energy scale discrepancy is an open problem."
   },
   "limitations": [
     "ln(omega_c/omega_ir) depends on cutoff frequency choice (typical values used)",

@@ -43,7 +43,7 @@ data before making engineering decisions.
 - S. Zhang, W.Y. Fu, D. Holec, C.J. Humphreys, M.A. Moram, J. Appl. Phys. 114, 243516 (2013). DOI: 10.1063/1.4848036
 - Johnson & Christy, Phys. Rev. B 6, 4370 (1972)
 - Ciprian, Mihalic, Lüttich, Hörich, Wade, Christian, Dadgar, Ambacher, Appl. Phys. Lett. 124, 052203 (2024). DOI: 10.1063/5.0176082 (ScN CTE: 6.61±0.60 ppm/K)
-- Zukauskaite et al., APL Mater. 6, 076105 (2018) (ScAlN CTE: 4.18–4.65 ppm/K, all Sc%; contradicts CTE-matching prediction)
+- Lu et al., APL Mater. 6, 076105 (2018) (ScAlN CTE: 4.18–4.65 ppm/K, all Sc%; contradicts CTE-matching prediction)
 
 ## License
 

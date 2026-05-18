@@ -398,7 +398,7 @@ canvas{width:100%!important;display:block;}
     <div class="panel-body">
       <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">
         Calculates thermal stress, K2, Q-factor, and FOM for ScAlN on C-Sapphire at any Sc concentration.<br>
-        Elastic constants: Zukauskaite et al., J.Appl.Phys. 114, 243516 (2013) · Phase stable: x &lt; 43.75%
+        Elastic constants: Zhang et al., J.Appl.Phys. 114, 243516 (2013) · Phase stable: x &lt; 43.75%
       </p>
 
       <div class="section-label">Sc Concentration</div>
@@ -479,7 +479,7 @@ canvas{width:100%!important;display:block;}
       </div>
 
       <div class="footnote" style="margin-top:10px;">
-        Elastic constants interpolated from Zukauskaite et al. (2013) · K2 from Ligl et al. (2021) ·
+        Elastic constants interpolated from Zhang et al. (2013) · K2 from Ligl et al. (2021) ·
         Q_disorder: Rayleigh mass-disorder scattering model · Biaxial modulus: Freund &amp; Suresh (2003)
       </div>
     </div>
@@ -491,7 +491,7 @@ canvas{width:100%!important;display:block;}
 // ScAlN Physics Engine
 // ================================================
 
-// Elastic constants (linear interpolation from Zukauskaite 2013)
+// Elastic constants (linear interpolation from Zhang 2013)
 // x=0 (AlN): C11=410, C33=389, C44=125, C12=149, C13=99
 // x=0.36:    C11=190, C33=140, C44=30,  C12=172, C13=138
 function scalnElastic(x){
@@ -1353,7 +1353,7 @@ document.getElementById('chart-tabs').querySelectorAll('.chart-tab').forEach(tab
           <div>Elastic constants (LiNbO&#8323;) &nbsp;: Weis &amp; Gaylord, <em>Appl. Phys. A</em> 37, 191&ndash;203 (1985)</div>
           <div>Bond limit 23 MPa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: K. Watanabe &amp; R. Takigawa, <em>Appl. Surf. Sci.</em> 620, 156666 (2023). DOI: 10.1016/j.apsusc.2023.156666</div>
           <div>Fracture toughness K&#8331;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Bhatt et al., <em>Opt. Mater.</em> (2012)</div>
-          <div>ScAlN elastic constants &nbsp;&nbsp;&nbsp;&nbsp;: Zukauskaite et al., <em>J. Appl. Phys.</em> 114, 243516 (2013)</div>
+          <div>ScAlN elastic constants &nbsp;&nbsp;&nbsp;&nbsp;: Zhang et al., <em>J. Appl. Phys.</em> 114, 243516 (2013)</div>
           <div>ScAlN piezo constants &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Ligl et al., <em>J. Appl. Phys.</em> 130, 045102 (2021)</div>
           <div>Substrate CTE values &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Slack &amp; Bartram (1975), Okada &amp; Tokumaru (1984), Blakemore (1982)</div>
           <div>Pyroelectric coefficient &nbsp;&nbsp;&nbsp;: Savage, <em>J. Appl. Phys.</em> 37, 3071 (1966)</div>
